@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import Handlebars from "handlebars";
 import { askProjectName, askIssueTracker, askComponents } from "./prompts.js";
 import { detectProjectProfile } from "./detect.js";
+import { infoBox, progressBar, spinner, summaryLine, style } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "..", "templates");
@@ -115,6 +116,7 @@ function write(targetPath, content, options = {}) {
   }
 
   writeFileSync(targetPath, content, "utf-8");
+  options.onProgress?.();
   return "written";
 }
 
@@ -127,6 +129,7 @@ function copyFile(src, dest, options = {}) {
   }
 
   copyFileSync(src, dest);
+  options.onProgress?.();
   return "written";
 }
 
@@ -171,51 +174,55 @@ function renderDir(srcDir, destDir, data, options = {}) {
   return results;
 }
 
-function scaffoldRoot(config, hbData) {
+function scaffoldRoot(config, hbData, extraOpts = {}) {
   const rootSrc = join(TEMPLATES_DIR, "root");
   const rootDest = config.target;
-  return renderDir(rootSrc, rootDest, hbData, { force: config.force });
+  return renderDir(rootSrc, rootDest, hbData, { force: config.force, ...extraOpts });
 }
 
-function scaffoldDocs(config, hbData) {
+function scaffoldDocs(config, hbData, extraOpts = {}) {
   const docsSrc = join(TEMPLATES_DIR, "docs");
   const docsDest = join(config.target, "docs");
-  return renderDir(docsSrc, docsDest, hbData, { force: config.force });
+  return renderDir(docsSrc, docsDest, hbData, { force: config.force, ...extraOpts });
 }
 
-function scaffoldScripts(config, hbData) {
+function scaffoldScripts(config, hbData, extraOpts = {}) {
   const scriptsSrc = join(TEMPLATES_DIR, "scripts");
   const scriptsDest = join(config.target, "scripts");
-  return renderDir(scriptsSrc, scriptsDest, hbData, { force: config.force });
+  return renderDir(scriptsSrc, scriptsDest, hbData, { force: config.force, ...extraOpts });
 }
 
-function scaffoldSkills(config) {
+function scaffoldSkills(config, extraOpts = {}) {
   const skillsSrc = join(TEMPLATES_DIR, "skills");
   const skillsDest = join(config.target, ".agents", "skills");
-  return copyStaticDir(skillsSrc, skillsDest, { force: config.force });
+  return copyStaticDir(skillsSrc, skillsDest, { force: config.force, ...extraOpts });
 }
 
-function scaffoldScratchpad(config) {
+function scaffoldScratchpad(config, extraOpts = {}) {
   const src = join(TEMPLATES_DIR, "scratchpad");
   const dest = join(config.target, ".scratchpad");
-  return copyStaticDir(src, dest, { force: config.force });
+  return copyStaticDir(src, dest, { force: config.force, ...extraOpts });
 }
 
-function scaffoldHistory(config) {
+function scaffoldHistory(config, extraOpts = {}) {
   const src = join(TEMPLATES_DIR, "history");
   const dest = join(config.target, ".history");
-  return copyStaticDir(src, dest, { force: config.force });
+  return copyStaticDir(src, dest, { force: config.force, ...extraOpts });
 }
 
-function printSummary(results) {
-  const written = results.filter((r) => r === "written").length;
-  const skipped = results.filter((r) => r === "skipped-existing").length;
-  const lines = [`Done. ${written} file${written !== 1 ? "s" : ""} scaffolded.`];
-  if (skipped > 0) {
-    lines.push(`${skipped} file${skipped !== 1 ? "s" : ""} skipped — already exist.`);
-    lines.push("Run with --force to overwrite existing files.");
-  }
-  lines.forEach((l) => console.log(`  ${l}`));
+function countTemplateFiles(config) {
+  const dirs = [
+    join(TEMPLATES_DIR, "root"),
+    ...(config.include.has("docs") ? [join(TEMPLATES_DIR, "docs")] : []),
+    ...(config.include.has("scripts") ? [join(TEMPLATES_DIR, "scripts")] : []),
+    ...(config.include.has("skills") ? [join(TEMPLATES_DIR, "skills")] : []),
+    join(TEMPLATES_DIR, "scratchpad"),
+    join(TEMPLATES_DIR, "history"),
+  ];
+  return dirs.reduce((sum, d) => {
+    if (existsSync(d)) return sum + walkDir(d).length;
+    return sum;
+  }, 0);
 }
 
 export async function scaffold(argv) {
@@ -231,31 +238,47 @@ export async function scaffold(argv) {
 
   const hbData = buildHandlebars(config);
 
-  const langInfo = config.packageManager
-    ? `${config.packageManager} package manager`
-    : "no package manager detected";
-  const ciInfo = config.ciProvider
-    ? `${config.ciProvider} CI`
-    : "no CI detected";
+  const detected = [];
+  if (config.languages.length > 0) detected.push(config.languages.join(", "));
+  if (config.packageManager) detected.push(style.cyan(config.packageManager));
+  if (config.ciProvider) detected.push(style.cyan(config.ciProvider));
+  const detectedStr = detected.length > 0 ? detected.join(" · ") : style.dim("none");
 
-  console.log(`\nScaffolding agentic development config into ${config.target}`);
-  console.log(`  Project:   ${config.projectName}`);
-  const langLabel = config.languages.length > 0 ? config.languages.join(", ") + " " : "";
-  console.log(`  Detected:  ${langLabel}project, ${langInfo}, ${ciInfo}`);
-  console.log(`  Tracker:   ${config.issueTracker}`);
-  console.log(`  Include:   ${[...config.include].join(", ") || "(none)"}`);
+  const rows = [
+    ["Project", style.cyan(config.projectName)],
+    ["Detected", detectedStr],
+    ["Tracker", style.dim(config.issueTracker)],
+    ["Include", [...config.include].join(" + ") || style.dim("(none)")],
+  ];
+  console.log(`\n${infoBox(rows)}`);
+
+  const total = countTemplateFiles(config);
+  let done = 0;
+  const tickOpts = {
+    onProgress: () => {
+      done++;
+      process.stdout.write(`\r  ${spinner(done)} ${progressBar(done, total)}`);
+    },
+  };
 
   const results = [
-    ...scaffoldRoot(config, hbData),
+    ...scaffoldRoot(config, hbData, tickOpts),
   ];
 
-  if (config.include.has("docs")) results.push(...scaffoldDocs(config, hbData));
-  if (config.include.has("scripts")) results.push(...scaffoldScripts(config, hbData));
-  if (config.include.has("skills")) results.push(...scaffoldSkills(config));
+  if (config.include.has("docs")) results.push(...scaffoldDocs(config, hbData, tickOpts));
+  if (config.include.has("scripts")) results.push(...scaffoldScripts(config, hbData, tickOpts));
+  if (config.include.has("skills")) results.push(...scaffoldSkills(config, tickOpts));
 
-  results.push(...scaffoldScratchpad(config));
-  results.push(...scaffoldHistory(config));
+  results.push(...scaffoldScratchpad(config, tickOpts));
+  results.push(...scaffoldHistory(config, tickOpts));
 
-  console.log("");
-  printSummary(results);
+  process.stdout.write("\r".padEnd(60) + "\r");
+
+  const written = results.filter((r) => r === "written").length;
+  const skipped = results.filter((r) => r === "skipped-existing").length;
+  console.log(` ${summaryLine(`Done! ${written} file${written !== 1 ? "s" : ""} scaffolded.`, "done")}`);
+  if (skipped > 0) {
+    console.log(`   ${summaryLine(`${skipped} file${skipped !== 1 ? "s" : ""} skipped — already exist.`, "warn")}`);
+    console.log(`   ${style.dim("·")}  ${style.dim("Run with --force to overwrite existing files.")}`);
+  }
 }

@@ -117,6 +117,11 @@ CLI flags.
 | `scripts` | Python memory indexing pipeline (sqlite-vec based RAG) | `--skip-scripts` |
 | `skills` | 19 agent skills (implement, bugfix, diagnose, tdd, etc.) | `--skip-skills` |
 
+## New in v0.4
+
+- **Sci-fi themed CLI UI** — styled info-box header, animated spinner, real-time progress bar, colored summary with icons.
+- **New `src/ui.js` module** — reusable `infoBox()`, `progressBar()`, `spinner()`, `summaryLine()` helpers.
+
 ## New in v0.3
 
 - **Auto-detection engine** — detects languages, package manager, CI, AI tools from project files.
