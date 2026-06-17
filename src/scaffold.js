@@ -3,7 +3,7 @@ import { readdirSync, statSync, copyFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import Handlebars from "handlebars";
-import { askProjectName, askIssueTracker, askComponents } from "./prompts.js";
+import { askProjectName, askIssueTracker, askComponents, askOverwrite } from "./prompts.js";
 import { detectProjectProfile } from "./detect.js";
 import { infoBox, progressBar, spinner, summaryLine, style } from "./ui.js";
 
@@ -32,6 +32,7 @@ function resolveConfig(argv) {
     aiTools: argv.aiTools ? argv.aiTools.split(",").map((s) => s.trim()).filter(Boolean) : profile.aiTools,
     scriptLanguage: argv.scriptLanguage ?? profile.scriptLanguage ?? DEFAULTS.scriptLanguage,
     force: argv.force ?? false,
+    interactive: argv.interactive ?? false,
     include: resolveIncludes(argv),
   };
 
@@ -97,6 +98,19 @@ function buildIncompleteFiles(config) {
   return files;
 }
 
+function showDetectedProfile(config) {
+  const rows = [
+    ["Project", style.cyan(config.projectName)],
+    ["Languages", config.languages.length > 0 ? config.languages.join(", ") : style.dim("none")],
+    ["Package", config.packageManager ? style.cyan(config.packageManager) : style.dim("none")],
+    ["CI", config.ciProvider ? style.cyan(config.ciProvider) : style.dim("none")],
+    ["AI tools", config.aiTools.length > 0 ? config.aiTools.join(", ") : style.dim("none")],
+    ["Tracker", config.issueTracker ? style.cyan(config.issueTracker) : style.dim("none")],
+    ["Script lang", config.scriptLanguage ? style.cyan(config.scriptLanguage) : style.dim("none")],
+  ];
+  console.log(`\n${infoBox(rows)}`);
+}
+
 function buildHandlebars(config) {
   const tracker = ISSUE_TRACKER_DOCS[config.issueTracker] || ISSUE_TRACKER_DOCS.linear;
   return {
@@ -124,12 +138,17 @@ function renderTemplate(sourcePath, hbData) {
   return template(hbData);
 }
 
-function write(targetPath, content, options = {}) {
+async function write(targetPath, content, options = {}) {
   const dir = dirname(targetPath);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
   if (existsSync(targetPath)) {
-    if (!options.force) return "skipped-existing";
+    if (options.interactive && !options.force) {
+      const ok = await askOverwrite(targetPath);
+      if (!ok) return "skipped-existing";
+    } else if (!options.force) {
+      return "skipped-existing";
+    }
   }
 
   writeFileSync(targetPath, content, "utf-8");
@@ -137,12 +156,17 @@ function write(targetPath, content, options = {}) {
   return "written";
 }
 
-function copyFile(src, dest, options = {}) {
+async function copyFile(src, dest, options = {}) {
   const dir = dirname(dest);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
   if (existsSync(dest)) {
-    if (!options.force) return "skipped-existing";
+    if (options.interactive && !options.force) {
+      const ok = await askOverwrite(dest);
+      if (!ok) return "skipped-existing";
+    } else if (!options.force) {
+      return "skipped-existing";
+    }
   }
 
   copyFileSync(src, dest);
@@ -164,17 +188,17 @@ function walkDir(dir) {
   return entries;
 }
 
-function copyStaticDir(srcDir, destDir, options = {}) {
+async function copyStaticDir(srcDir, destDir, options = {}) {
   if (!existsSync(srcDir)) return [];
   const results = [];
   for (const entry of walkDir(srcDir)) {
     const dest = join(destDir, entry.name);
-    results.push(copyFile(entry.full, dest, options));
+    results.push(await copyFile(entry.full, dest, options));
   }
   return results;
 }
 
-function renderDir(srcDir, destDir, data, options = {}) {
+async function renderDir(srcDir, destDir, data, options = {}) {
   if (!existsSync(srcDir)) return [];
   const results = [];
   for (const entry of walkDir(srcDir)) {
@@ -183,48 +207,48 @@ function renderDir(srcDir, destDir, data, options = {}) {
     const dest = join(destDir, outName);
     if (isHbs) {
       const content = renderTemplate(entry.full, data);
-      results.push(write(dest, content, options));
+      results.push(await write(dest, content, options));
     } else {
-      results.push(copyFile(entry.full, dest, options));
+      results.push(await copyFile(entry.full, dest, options));
     }
   }
   return results;
 }
 
-function scaffoldRoot(config, hbData, extraOpts = {}) {
+async function scaffoldRoot(config, hbData, extraOpts = {}) {
   const rootSrc = join(TEMPLATES_DIR, "root");
   const rootDest = config.target;
-  return renderDir(rootSrc, rootDest, hbData, { force: config.force, ...extraOpts });
+  return renderDir(rootSrc, rootDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-function scaffoldDocs(config, hbData, extraOpts = {}) {
+async function scaffoldDocs(config, hbData, extraOpts = {}) {
   const docsSrc = join(TEMPLATES_DIR, "docs");
   const docsDest = join(config.target, "docs");
-  return renderDir(docsSrc, docsDest, hbData, { force: config.force, ...extraOpts });
+  return renderDir(docsSrc, docsDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-function scaffoldScripts(config, hbData, extraOpts = {}) {
+async function scaffoldScripts(config, hbData, extraOpts = {}) {
   const scriptsSrc = join(TEMPLATES_DIR, "scripts");
   const scriptsDest = join(config.target, "scripts");
-  return renderDir(scriptsSrc, scriptsDest, hbData, { force: config.force, ...extraOpts });
+  return renderDir(scriptsSrc, scriptsDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-function scaffoldSkills(config, extraOpts = {}) {
+async function scaffoldSkills(config, extraOpts = {}) {
   const skillsSrc = join(TEMPLATES_DIR, "skills");
   const skillsDest = join(config.target, ".agents", "skills");
-  return copyStaticDir(skillsSrc, skillsDest, { force: config.force, ...extraOpts });
+  return copyStaticDir(skillsSrc, skillsDest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-function scaffoldScratchpad(config, extraOpts = {}) {
+async function scaffoldScratchpad(config, extraOpts = {}) {
   const src = join(TEMPLATES_DIR, "scratchpad");
   const dest = join(config.target, ".scratchpad");
-  return copyStaticDir(src, dest, { force: config.force, ...extraOpts });
+  return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-function scaffoldHistory(config, extraOpts = {}) {
+async function scaffoldHistory(config, extraOpts = {}) {
   const src = join(TEMPLATES_DIR, "history");
   const dest = join(config.target, ".history");
-  return copyStaticDir(src, dest, { force: config.force, ...extraOpts });
+  return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
 function countTemplateFiles(config) {
@@ -246,9 +270,11 @@ export async function scaffold(argv) {
   let config = resolveConfig(argv);
 
   if (argv.interactive) {
+    console.log(`\n ${style.bold("Detected project profile:")}`);
+    showDetectedProfile(config);
+
     config.projectName = await askProjectName(config.projectName);
-    const tracker = await askIssueTracker();
-    config.issueTracker = tracker;
+    config.issueTracker = await askIssueTracker(config.issueTracker);
     const components = await askComponents();
     config.include = new Set(components);
   }
@@ -279,15 +305,15 @@ export async function scaffold(argv) {
   };
 
   const results = [
-    ...scaffoldRoot(config, hbData, tickOpts),
+    ...(await scaffoldRoot(config, hbData, tickOpts)),
   ];
 
-  if (config.include.has("docs")) results.push(...scaffoldDocs(config, hbData, tickOpts));
-  if (config.include.has("scripts")) results.push(...scaffoldScripts(config, hbData, tickOpts));
-  if (config.include.has("skills")) results.push(...scaffoldSkills(config, tickOpts));
+  if (config.include.has("docs")) results.push(...(await scaffoldDocs(config, hbData, tickOpts)));
+  if (config.include.has("scripts")) results.push(...(await scaffoldScripts(config, hbData, tickOpts)));
+  if (config.include.has("skills")) results.push(...(await scaffoldSkills(config, tickOpts)));
 
-  results.push(...scaffoldScratchpad(config, tickOpts));
-  results.push(...scaffoldHistory(config, tickOpts));
+  results.push(...(await scaffoldScratchpad(config, tickOpts)));
+  results.push(...(await scaffoldHistory(config, tickOpts)));
 
   process.stdout.write("\r".padEnd(60) + "\r");
 

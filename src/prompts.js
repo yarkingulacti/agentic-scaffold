@@ -12,16 +12,25 @@ export async function askProjectName(defaultName) {
   return answer.trim() || defaultName;
 }
 
-export async function askIssueTracker() {
+export async function askIssueTracker(detectedValue) {
   const r = rl();
+  const defaultChoice = detectedValue || "linear";
+  const defaultNum = { linear: "1", github: "2", both: "3" }[defaultChoice] || "1";
   console.log("\nIssue tracker type:");
   console.log("  1) Linear");
   console.log("  2) GitHub Issues");
   console.log("  3) Both");
-  const answer = await r.question("Choice [1]: ");
+  const answer = await r.question(`Choice [${defaultNum}]: `);
   r.close();
   const map = { "1": "linear", "2": "github", "3": "both" };
-  return map[answer.trim()] || "linear";
+  return map[answer.trim()] || defaultChoice;
+}
+
+export async function askOverwrite(filePath) {
+  const r = rl();
+  const answer = await r.question(`  ${filePath} already exists. Overwrite? [y/N]: `);
+  r.close();
+  return answer.trim().toLowerCase() === "y";
 }
 
 export async function askComponents() {

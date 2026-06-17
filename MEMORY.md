@@ -2,6 +2,11 @@
 
 ## Git flow — follow this every time
 
+### Golden rules
+
+1. **Feature branches are mandatory.** Every new feature MUST start by creating a `feature/<short-description>` branch from master. Never commit feature work directly to master.
+2. **Every release gets a version tag.** After merging to master, always create an annotated `git tag v<version>` and push it to origin.
+
 ### Release workflow (from `docs/engineering/GIT_FLOW.md`)
 
 1. Update `CHANGELOG.md` with new version entry.
