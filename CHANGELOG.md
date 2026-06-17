@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.4.0] - 2026-06-17
+
+### Added
+
+- Sci-fi themed CLI UI: styled info-box header, animated spinner, real-time progress bar, colored summary with status icons.
+- `src/ui.js` module with reusable `infoBox()`, `progressBar()`, `spinner()`, `summaryLine()` helpers.
+- `onProgress` callback to `write()` and `copyFile()` for real-time progress tracking.
+- All scaffold functions accept `extraOpts` to pass through progress callbacks to file operations.
+
 ## [v0.3.1] - 2026-06-17
 
 ### Added
