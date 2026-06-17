@@ -1,0 +1,29 @@
+{
+  "name": "@yarkingulacti/agentic-scaffold",
+  "version": "0.1.0",
+  "description": "Scaffold agentic development documentation & configuration into any project",
+  "type": "module",
+  "bin": {
+    "agentic-scaffold": "bin/index.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/"
+  ],
+  "scripts": {
+    "test": "node bin/index.js --help"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.8",
+    "yargs": "^17.7.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yarkingulacti/agentic-scaffold.git"
+  }
+}

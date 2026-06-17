@@ -1,0 +1,45 @@
+# {{projectName}}
+
+## Agent skills
+
+### Project brain
+
+Read `BUSINESS_LOGIC.md` first for product fundamentals, core domain concepts,
+non-negotiable rules, and decision references. Future task plans must cite the
+relevant `BUSINESS_LOGIC.md` section before implementation.
+
+`CONTEXT.md` remains a generated historical mirror from the Obsidian vault. Use
+`docs/context/INDEX.md` to locate narrow sections when old context is needed;
+do not read the whole file by default.
+
+### Issue tracker
+
+{{issueTrackerDescription}}
+
+### Work history
+
+Shipped work is summarized in `.history/DD.MM.YYYY/README.md`. Use separated
+dated worklog files only; do not use issue comments as the project memory.
+After every successful coding session, follow `docs/agents/session-close.md`.
+
+### Domain docs
+
+Use `BUSINESS_LOGIC.md`, `docs/`, and `docs/adr/` as tracked source material.
+See `docs/agents/domain.md`.
+
+### Coding principles
+
+Follow `docs/CODING_PRINCIPLES.md`: simple direct code, YAGNI, KISS, pragmatic
+DRY, existing conventions, explicit boundaries, fail-fast validation, and
+focused tests.
+
+### Agent memory
+
+Use repo automation from `scripts/`:
+
+- `scripts/memory_index.py` indexes project Markdown.
+- `scripts/memory_search.py` searches indexed Markdown.
+- `scripts/memory_bundle.py` writes a focused Markdown bundle for a task.
+- `scripts/sync-context.sh` syncs the generated historical `CONTEXT.md`.
+
+Generated memory files live under `.memory/` and are gitignored.
