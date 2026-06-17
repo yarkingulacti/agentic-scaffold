@@ -87,7 +87,7 @@ project/
 │   │   └── glossary.md       # Ubiquitous language glossary
 │   ├── engineering/README.md
 │   └── product/README.md
-├── .agents/skills/           # Agent skill definitions (19 skills)
+├── .agents/skills/           # Agent skill definitions (20 skills)
 ├── scripts/                  # Markdown memory indexing pipeline
 ├── .scratchpad/              # Local detailed planning
 └── .history/                 # Shipped work summaries
@@ -115,7 +115,13 @@ CLI flags.
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
 | `scripts` | Python memory indexing pipeline (sqlite-vec based RAG) | `--skip-scripts` |
-| `skills` | 19 agent skills (implement, bugfix, diagnose, tdd, etc.) | `--skip-skills` |
+| `skills` | 20 agent skills (implement, bugfix, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
+
+## New in v0.5
+
+- **`fill-docs` skill** — new agent skill that interviews you to complete placeholder content in BUSINESS_LOGIC.md, glossary, and other scaffolded docs.
+- **Scaffold metadata in AGENTS.md/CLAUDE.md** — version info, incomplete files list, and fill-docs skill reference at the bottom of every scaffolded project.
+- **Post-scaffold completion checklist** — the CLI now lists which documentation files have placeholder content and suggests the `fill-docs` skill.
 
 ## New in v0.4
 
