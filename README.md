@@ -5,6 +5,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/yarkingulacti/agentic-scaffold?style=flat&logo=github)](https://github.com/yarkingulacti/agentic-scaffold)
 
 Scaffold agentic development documentation and configuration into any project.
+Run with zero flags and it auto-detects your project's language, package manager,
+CI provider, and AI tools — scaffolding only what's missing. Or use flags and
+interactive mode for full control.
 
 Inspired by the methodology evolved in the [haprec.com](https://haprec.com) project — extracts the reusable patterns (agent config, domain docs, ADR system, memory scripts, skill system, scratchpad conventions) so every project can start with an AI-native foundation.
 
@@ -14,12 +17,43 @@ Inspired by the methodology evolved in the [haprec.com](https://haprec.com) proj
 npx @yarkingulacti/agentic-scaffold
 ```
 
-This copies everything into the current directory with defaults (project name = directory name, issue tracker = Linear).
+Auto-detects your project (language, package manager, CI, AI tools) and
+scaffolds only what's missing. Never overwrites existing files.
+
+## Tiers
+
+The scaffold works in three tiers depending on how much control you need:
+
+```
+Zero-config   npx @yarkingulacti/agentic-scaffold
+              Auto-detect and scaffold. No flags, no prompts.
+
+Flag mode     npx ... --force --ci-provider github
+              Override auto-detection with CLI flags. Add --force to overwrite.
+
+Interactive   npx ... -i
+              Step-by-step prompts with detected defaults pre-filled.
+```
 
 ## CLI
 
 ```bash
-# Interactive mode — prompts for project name, issue tracker, component selection
+# Zero-config — auto-detect and scaffold what's missing
+npx @yarkingulacti/agentic-scaffold
+
+# Force overwrite existing files
+npx @yarkingulacti/agentic-scaffold --force
+
+# Override auto-detection
+npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
+
+# Generate AI tool configs
+npx @yarkingulacti/agentic-scaffold --ai-tools opencode,cursor
+
+# Choose script language for memory pipeline
+npx @yarkingulacti/agentic-scaffold --script-language node
+
+# Interactive mode — prompts with detected defaults pre-filled
 npx @yarkingulacti/agentic-scaffold --interactive
 
 # Scaffold into a specific directory
@@ -27,9 +61,6 @@ npx @yarkingulacti/agentic-scaffold --target ../my-project
 
 # Skip specific groups
 npx @yarkingulacti/agentic-scaffold --skip-skills --skip-scripts
-
-# Include only specific groups
-npx @yarkingulacti/agentic-scaffold --only docs,scripts
 
 # Pre-configure values
 npx @yarkingulacti/agentic-scaffold --project-name "my-app" --issue-tracker github
@@ -62,6 +93,22 @@ project/
 └── .history/                 # Shipped work summaries
 ```
 
+## Auto-detection
+
+The scaffold scans your project and detects:
+
+| What | How |
+|------|-----|
+| **Languages** | JavaScript/TypeScript, Python, Go, Rust (from manifest files) |
+| **Package manager** | npm, yarn, pnpm, pip, poetry (from lockfiles) |
+| **CI provider** | GitHub Actions, GitLab CI, CircleCI (from config files) |
+| **AI tools** | opencode, Cursor, Copilot, Windsurf, Cline (from config files) |
+| **Issue tracker** | GitHub Issues (from .github/ directory) |
+| **Script language** | Node.js, Python (from manifest files) |
+
+Detected values are rendered into `AGENTS.md` / `CLAUDE.md`. Override any with
+CLI flags.
+
 ## Components
 
 | Group | Description | Flag |
@@ -70,6 +117,16 @@ project/
 | `scripts` | Python memory indexing pipeline (sqlite-vec based RAG) | `--skip-scripts` |
 | `skills` | 19 agent skills (implement, bugfix, diagnose, tdd, etc.) | `--skip-skills` |
 
+## New in v0.3
+
+- **Auto-detection engine** — detects languages, package manager, CI, AI tools from project files.
+- **Three tiers** — zero-config, flag mode, and interactive mode.
+- **`--force`** (`-f`) — overwrite existing files.
+- **Override flags** — `--package-manager`, `--ci-provider`, `--ai-tools`, `--script-language`.
+- **Rich `--help`** — tiers overview and usage examples.
+- **Conditional AGENTS.md** — sections for package manager, CI/CD, script runtime appear only when detected.
+- **82 tests** — detection, scaffolding, and CLI tested end-to-end.
+
 ## After scaffolding
 
 1. Fill in `BUSINESS_LOGIC.md` with your product domain.
@@ -77,6 +134,7 @@ project/
 3. `python3 -m venv .venv && pip install sqlite-vec` if you want vector memory.
 4. Install the skills in your AI tool (e.g. opencode) — each `.agents/skills/*/SKILL.md` is self-contained.
 5. Customize `docs/agents/triage-labels.md` to match your tracker's vocabulary.
+6. Use the `fill-docs` skill (`.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.
 
 ## Open source
 

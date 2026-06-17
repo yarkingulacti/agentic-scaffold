@@ -64,13 +64,25 @@ This project follows [Semantic Versioning](https://semver.org/).
 4. Tag: `git tag v<version>` and `git push origin v<version>`.
 5. The CI publish workflow triggers on the tag and publishes to npm.
 
+## Before every PR
+
+Before creating a PR, ensure `README.md` at the repo root is up to date:
+
+- If new CLI flags were added, list them in the CLI section.
+- If new component groups were added, list them in the Components table.
+- If the scaffold output changed, update the "What you get" tree.
+- If the quick-start or after-scaffolding instructions changed, update them.
+
+This keeps the published README accurate for users running `npx`.
+
 ## PR workflow
 
 1. Create a feature/bugfix/docs branch from master.
-2. Commit with Conventional Commit format.
-3. Push the branch to origin.
-4. Create a PR on GitHub.
-5. Review the PR — check diff, verify tests pass, confirm commit message style.
-6. Merge the PR (squash or merge commit, no rebase).
-7. Delete the PR branch locally and on origin.
-8. Follow the release workflow above to ship.
+2. Update `README.md` if the change affects the user-facing interface.
+3. Commit with Conventional Commit format.
+4. Push the branch to origin.
+5. Create a PR on GitHub.
+6. Review the PR — check diff, verify `npm test` passes, confirm README is current.
+7. Merge the PR (squash or merge commit, no rebase).
+8. Delete the PR branch locally and on origin.
+9. Follow the release workflow above to ship.
