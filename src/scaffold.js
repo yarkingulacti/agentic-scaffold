@@ -1,26 +1,39 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { readdirSync, statSync, copyFileSync } from "node:fs";
-import { join, dirname, relative } from "node:path";
+import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import Handlebars from "handlebars";
 import { askProjectName, askIssueTracker, askComponents } from "./prompts.js";
+import { detectProjectProfile } from "./detect.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "..", "templates");
 
-function resolveConfig(argv) {
-  const target = argv.target;
-  const defaultName = target === process.cwd()
-    ? process.cwd().split("/").pop()
-    : target.split("/").pop();
+const DEFAULTS = {
+  projectDescription: "A project.",
+  issueTracker: "linear",
+  scriptLanguage: "python",
+};
 
-  return {
-    projectName: argv.projectName || defaultName,
-    issueTracker: argv.issueTracker || "linear",
-    projectDescription: "A project.",
+function resolveConfig(argv) {
+  const target = argv.target || process.cwd();
+  const profile = detectProjectProfile(target);
+
+  const config = {
     target,
+    projectName: argv.projectName ?? profile.projectName ?? (target.split("/").filter(Boolean).pop() ?? "project"),
+    projectDescription: argv.projectDescription ?? profile.projectDescription ?? DEFAULTS.projectDescription,
+    languages: profile.languages,
+    issueTracker: argv.issueTracker ?? profile.issueTracker ?? DEFAULTS.issueTracker,
+    packageManager: argv.packageManager ?? profile.packageManager ?? null,
+    ciProvider: argv.ciProvider ?? profile.ciProvider ?? null,
+    aiTools: argv.aiTools ? argv.aiTools.split(",").map((s) => s.trim()).filter(Boolean) : profile.aiTools,
+    scriptLanguage: argv.scriptLanguage ?? profile.scriptLanguage ?? DEFAULTS.scriptLanguage,
+    force: argv.force ?? false,
     include: resolveIncludes(argv),
   };
+
+  return config;
 }
 
 function resolveIncludes(argv) {
@@ -81,6 +94,9 @@ function buildHandlebars(config) {
     trackerDoc: tracker.trackerDoc,
     envFile: tracker.envFile,
     envTemplate: tracker.envTemplate,
+    packageManager: config.packageManager,
+    ciProvider: config.ciProvider,
+    scriptLanguage: config.scriptLanguage,
   };
 }
 
@@ -90,16 +106,28 @@ function renderTemplate(sourcePath, hbData) {
   return template(hbData);
 }
 
-function write(targetPath, content) {
+function write(targetPath, content, options = {}) {
   const dir = dirname(targetPath);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+
+  if (existsSync(targetPath)) {
+    if (!options.force) return "skipped-existing";
+  }
+
   writeFileSync(targetPath, content, "utf-8");
+  return "written";
 }
 
-function copyFile(src, dest) {
+function copyFile(src, dest, options = {}) {
   const dir = dirname(dest);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+
+  if (existsSync(dest)) {
+    if (!options.force) return "skipped-existing";
+  }
+
   copyFileSync(src, dest);
+  return "written";
 }
 
 function walkDir(dir) {
@@ -116,63 +144,78 @@ function walkDir(dir) {
   return entries;
 }
 
-function copyStaticDir(srcDir, destDir) {
-  if (!existsSync(srcDir)) return;
+function copyStaticDir(srcDir, destDir, options = {}) {
+  if (!existsSync(srcDir)) return [];
+  const results = [];
   for (const entry of walkDir(srcDir)) {
     const dest = join(destDir, entry.name);
-    copyFile(entry.full, dest);
+    results.push(copyFile(entry.full, dest, options));
   }
+  return results;
 }
 
-function renderDir(srcDir, destDir, data, { suffix = ".hbs" } = {}) {
-  if (!existsSync(srcDir)) return;
+function renderDir(srcDir, destDir, data, options = {}) {
+  if (!existsSync(srcDir)) return [];
+  const results = [];
   for (const entry of walkDir(srcDir)) {
-    const isHbs = entry.name.endsWith(suffix);
-    const outName = isHbs ? entry.name.slice(0, -suffix.length) : entry.name;
+    const isHbs = entry.name.endsWith(".hbs");
+    const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
     const dest = join(destDir, outName);
     if (isHbs) {
       const content = renderTemplate(entry.full, data);
-      write(dest, content);
+      results.push(write(dest, content, options));
     } else {
-      copyFile(entry.full, dest);
+      results.push(copyFile(entry.full, dest, options));
     }
   }
+  return results;
 }
 
 function scaffoldRoot(config, hbData) {
   const rootSrc = join(TEMPLATES_DIR, "root");
   const rootDest = config.target;
-  renderDir(rootSrc, rootDest, hbData);
+  return renderDir(rootSrc, rootDest, hbData, { force: config.force });
 }
 
 function scaffoldDocs(config, hbData) {
   const docsSrc = join(TEMPLATES_DIR, "docs");
   const docsDest = join(config.target, "docs");
-  renderDir(docsSrc, docsDest, hbData);
+  return renderDir(docsSrc, docsDest, hbData, { force: config.force });
 }
 
 function scaffoldScripts(config, hbData) {
   const scriptsSrc = join(TEMPLATES_DIR, "scripts");
   const scriptsDest = join(config.target, "scripts");
-  renderDir(scriptsSrc, scriptsDest, hbData);
+  return renderDir(scriptsSrc, scriptsDest, hbData, { force: config.force });
 }
 
 function scaffoldSkills(config) {
   const skillsSrc = join(TEMPLATES_DIR, "skills");
   const skillsDest = join(config.target, ".agents", "skills");
-  copyStaticDir(skillsSrc, skillsDest);
+  return copyStaticDir(skillsSrc, skillsDest, { force: config.force });
 }
 
 function scaffoldScratchpad(config) {
   const src = join(TEMPLATES_DIR, "scratchpad");
   const dest = join(config.target, ".scratchpad");
-  copyStaticDir(src, dest);
+  return copyStaticDir(src, dest, { force: config.force });
 }
 
 function scaffoldHistory(config) {
   const src = join(TEMPLATES_DIR, "history");
   const dest = join(config.target, ".history");
-  copyStaticDir(src, dest);
+  return copyStaticDir(src, dest, { force: config.force });
+}
+
+function printSummary(results) {
+  const written = results.filter((r) => r === "written").length;
+  const skipped = results.filter((r) => r === "skipped-existing").length;
+  const lines = [`Done. ${written} file${written !== 1 ? "s" : ""} scaffolded.`];
+  if (skipped > 0) {
+    lines.push(`${skipped} file${skipped !== 1 ? "s" : ""} skipped — already exist.`);
+    lines.push("Run with --force to overwrite existing files.");
+  }
+  lines.forEach((l) => console.log(`  ${l}`));
 }
 
 export async function scaffold(argv) {
@@ -188,20 +231,31 @@ export async function scaffold(argv) {
 
   const hbData = buildHandlebars(config);
 
+  const langInfo = config.packageManager
+    ? `${config.packageManager} package manager`
+    : "no package manager detected";
+  const ciInfo = config.ciProvider
+    ? `${config.ciProvider} CI`
+    : "no CI detected";
+
   console.log(`\nScaffolding agentic development config into ${config.target}`);
   console.log(`  Project:   ${config.projectName}`);
+  const langLabel = config.languages.length > 0 ? config.languages.join(", ") + " " : "";
+  console.log(`  Detected:  ${langLabel}project, ${langInfo}, ${ciInfo}`);
   console.log(`  Tracker:   ${config.issueTracker}`);
   console.log(`  Include:   ${[...config.include].join(", ") || "(none)"}`);
 
-  scaffoldRoot(config, hbData);
+  const results = [
+    ...scaffoldRoot(config, hbData),
+  ];
 
-  if (config.include.has("docs")) scaffoldDocs(config, hbData);
-  if (config.include.has("scripts")) scaffoldScripts(config, hbData);
-  if (config.include.has("skills")) scaffoldSkills(config);
+  if (config.include.has("docs")) results.push(...scaffoldDocs(config, hbData));
+  if (config.include.has("scripts")) results.push(...scaffoldScripts(config, hbData));
+  if (config.include.has("skills")) results.push(...scaffoldSkills(config));
 
-  scaffoldScratchpad(config);
-  scaffoldHistory(config);
+  results.push(...scaffoldScratchpad(config));
+  results.push(...scaffoldHistory(config));
 
-  console.log("\nDone.");
-  console.log("Next: fill in BUSINESS_LOGIC.md with your domain, then customize.");
+  console.log("");
+  printSummary(results);
 }
