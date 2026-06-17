@@ -5,6 +5,18 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.6.0] - 2026-06-17
+
+### Added
+
+- Interactive mode redesign: shows detected project profile before prompts, pre-fills prompts with detected values, and per-file conflict resolver that asks before overwriting existing files.
+- MEMORY.md golden rules: feature branches mandatory for new features, every release gets a version tag.
+
+### Changed
+
+- `src/prompts.js` — `askIssueTracker()` now accepts detected value as default; new `askOverwrite()` for per-file conflict resolution.
+- `src/scaffold.js` — new `showDetectedProfile()` function; `write()` and `copyFile()` made async to support interactive overwrite prompts; `interactive` config flag threaded through all scaffold functions.
+
 ## [v0.5.1] - 2026-06-17
 
 ### Changed
