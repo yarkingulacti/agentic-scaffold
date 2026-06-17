@@ -5,6 +5,12 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.4.2] - 2026-06-17
+
+### Added
+
+- `.history/` directory with full project release history (9 entries from v0.2.0 through v0.4.1), built from git log.
+
 ## [v0.4.1] - 2026-06-17
 
 ### Added
