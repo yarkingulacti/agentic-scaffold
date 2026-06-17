@@ -1,5 +1,9 @@
 # @yarkingulacti/agentic-scaffold
 
+[![npm version](https://img.shields.io/npm/v/%40yarkingulacti%2Fagentic-scaffold?logo=npm&label=version)](https://www.npmjs.com/package/@yarkingulacti/agentic-scaffold)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/yarkingulacti/agentic-scaffold?style=flat&logo=github)](https://github.com/yarkingulacti/agentic-scaffold)
+
 Scaffold agentic development documentation and configuration into any project.
 
 Inspired by the methodology evolved in the [haprec.com](https://haprec.com) project — extracts the reusable patterns (agent config, domain docs, ADR system, memory scripts, skill system, scratchpad conventions) so every project can start with an AI-native foundation.
@@ -74,6 +78,9 @@ project/
 4. Install the skills in your AI tool (e.g. opencode) — each `.agents/skills/*/SKILL.md` is self-contained.
 5. Customize `docs/agents/triage-labels.md` to match your tracker's vocabulary.
 
-## License
+## Open source
 
-MIT
+- [LICENSE](LICENSE) — MIT
+- [CONTRIBUTING.md](CONTRIBUTING.md) — contribution guidelines
+- [SECURITY.md](SECURITY.md) — security policy
+- [Issues](https://github.com/yarkingulacti/agentic-scaffold/issues) — bug reports and feature requests
