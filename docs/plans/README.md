@@ -16,5 +16,11 @@ tool itself.
 
 ## Status
 
-- Sprint 1: Not started
+- Sprint 1 (core infrastructure):          Done in v0.4.x
+- Sprint 2 (scaffold metadata + fill-docs): Done in v0.5.0
+- Sprint 3 (interactive mode redesign):     Done in v0.6.0
+- Sprint 4 (CI/CD + AI configs):            Not started
+- Sprint 5 (memory pipeline):               Not started
+- Sprint 6 (migrations + contribution):     Not started
+- Sprint 7 (extras + cleanup):              Not started
 - Created: 2026-06-17
