@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.5.1] - 2026-06-17
+
+### Changed
+
+- Updated README.md to document v0.5.0 features.
+- Added MEMORY.md with git flow rules for agent reference.
+
 ## [v0.5.0] - 2026-06-17
 
 ### Added
