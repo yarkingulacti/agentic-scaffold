@@ -1,12 +1,22 @@
 name: Publish
 
 on:
+  pull_request:
+    types: [closed]
+    branches: [master]
   push:
     tags:
       - "v*"
 
+concurrency:
+  group: publish
+  cancel-in-progress: true
+
 jobs:
   publish:
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     permissions:
       contents: read
