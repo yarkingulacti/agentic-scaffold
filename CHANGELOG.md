@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.4.1] - 2026-06-17
+
+### Added
+
+- Test job in publish workflow — runs `npm test` before publishing.
+- `prepublishOnly` script in `package.json` — ensures tests pass before every `npm publish`.
+
 ## [v0.4.0] - 2026-06-17
 
 ### Added

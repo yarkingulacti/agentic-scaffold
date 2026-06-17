@@ -10,7 +10,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - name: Run tests
+        run: npm test
+
   publish:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,6 +37,8 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+
+      - run: npm ci
 
       - name: Publish to npmjs.org
         run: npm publish

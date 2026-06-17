@@ -122,6 +122,11 @@ CLI flags.
 - **Sci-fi themed CLI UI** — styled info-box header, animated spinner, real-time progress bar, colored summary with icons.
 - **New `src/ui.js` module** — reusable `infoBox()`, `progressBar()`, `spinner()`, `summaryLine()` helpers.
 
+## New in v0.4.1
+
+- **Test-before-publish CI** — publish workflow runs test job first; publish depends on it.
+- **`prepublishOnly` script** — `npm test` runs automatically before every `npm publish`.
+
 ## New in v0.3
 
 - **Auto-detection engine** — detects languages, package manager, CI, AI tools from project files.
