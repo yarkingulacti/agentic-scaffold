@@ -176,4 +176,44 @@ describe("scaffold", () => {
     assert.ok(content.includes("This project uses **github** for CI/CD"));
     rmSync(dir, { recursive: true });
   });
+
+  it("renders scaffold version in AGENTS.md and CLAUDE.md", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true });
+    const agents = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+    const claude = readFileSync(join(dir, "CLAUDE.md"), "utf-8");
+    assert.ok(agents.includes("@yarkingulacti/agentic-scaffold"));
+    assert.ok(agents.match(/v\d+\.\d+\.\d+/));
+    assert.ok(claude.includes("@yarkingulacti/agentic-scaffold"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("renders only BUSINESS_LOGIC.md in scaffold info when docs are skipped", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true });
+    const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+    assert.ok(content.includes("BUSINESS_LOGIC.md"));
+    assert.equal(content.includes("docs/context/glossary.md"), false);
+    rmSync(dir, { recursive: true });
+  });
+
+  it("renders multiple incomplete files when docs are included", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipScripts: true, skipSkills: true });
+    const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+    assert.ok(content.includes("BUSINESS_LOGIC.md"));
+    assert.ok(content.includes("docs/context/glossary.md"));
+    assert.ok(content.includes("docs/product/README.md"));
+    assert.ok(content.includes("docs/engineering/README.md"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("renders fill-docs skill reference when skills are included", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: false });
+    const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+    assert.ok(content.includes("fill-docs"));
+    assert.ok(content.includes(".agents/skills/fill-docs/SKILL.md"));
+    rmSync(dir, { recursive: true });
+  });
 });

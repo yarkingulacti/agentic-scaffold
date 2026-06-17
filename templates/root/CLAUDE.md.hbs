@@ -43,3 +43,17 @@ Use repo automation from `scripts/`:
 - `scripts/sync-context.sh` syncs the generated historical `CONTEXT.md`.
 
 Generated memory files live under `.memory/` and are gitignored.
+
+{{#if scaffoldVersion}}
+## Scaffold information
+
+This project was bootstrapped with `@yarkingulacti/agentic-scaffold` v{{scaffoldVersion}}.
+
+Some files contain placeholder content that must be completed:
+{{#each incompleteFiles}}
+- **{{file}}** — {{sections}}
+{{/each}}
+
+To complete these, invoke the `fill-docs` skill:
+`.agents/skills/fill-docs/SKILL.md`
+{{/if}}

@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.5.0] - 2026-06-17
+
+### Added
+
+- `fill-docs` skill template (`templates/skills/fill-docs/SKILL.md`) — interviews the user to complete placeholder content in scaffolded documentation files.
+- Scaffold metadata section in `AGENTS.md` and `CLAUDE.md` — lists the scaffolder version, incomplete files, and a reference to the fill-docs skill.
+- Post-scaffold completion checklist in CLI output — shows which documentation files have placeholder content and suggests the fill-docs skill.
+
 ## [v0.4.2] - 2026-06-17
 
 ### Added

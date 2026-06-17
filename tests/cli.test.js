@@ -151,6 +151,31 @@ describe("CLI", () => {
       assert.ok(content.includes("**github**"));
       rmSync(dir, { recursive: true });
     });
+
+    it("prints completion checklist when docs are included", () => {
+      const dir = tempDir();
+      const out = run(`--target ${dir} --force --skip-skills --skip-scripts`);
+      assert.ok(out.includes("Documentation files that need completion"));
+      assert.ok(out.includes("BUSINESS_LOGIC.md"));
+      rmSync(dir, { recursive: true });
+    });
+
+    it("prints fill-docs skill hint when skills are included", () => {
+      const dir = tempDir();
+      const out = run(`--target ${dir} --force --skip-docs --skip-scripts`);
+      assert.ok(out.includes("fill-docs"));
+      rmSync(dir, { recursive: true });
+    });
+
+    it("omits doc-group files from checklist when --skip-docs is set", () => {
+      const dir = tempDir();
+      const out = run(`--target ${dir} --force --skip-docs --skip-skills --skip-scripts`);
+      assert.equal(out.includes("docs/context/glossary.md"), false);
+      assert.equal(out.includes("docs/product/README.md"), false);
+      assert.equal(out.includes("docs/engineering/README.md"), false);
+      assert.ok(out.includes("BUSINESS_LOGIC.md"));
+      rmSync(dir, { recursive: true });
+    });
   });
 
   describe("--version", () => {

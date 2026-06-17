@@ -9,6 +9,7 @@ import { infoBox, progressBar, spinner, summaryLine, style } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "..", "templates");
+const PKG = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf-8"));
 
 const DEFAULTS = {
   projectDescription: "A project.",
@@ -82,6 +83,20 @@ LINEAR_PROJECT_ID=`,
   },
 };
 
+function buildIncompleteFiles(config) {
+  const files = [
+    { file: "BUSINESS_LOGIC.md", sections: "Core Domain Concepts, Non-Negotiable Rules, Architecture Decisions" },
+  ];
+  if (config.include.has("docs")) {
+    files.push(
+      { file: "docs/context/glossary.md", sections: "domain term definitions" },
+      { file: "docs/product/README.md", sections: "product spec descriptions" },
+      { file: "docs/engineering/README.md", sections: "implementation conventions" },
+    );
+  }
+  return files;
+}
+
 function buildHandlebars(config) {
   const tracker = ISSUE_TRACKER_DOCS[config.issueTracker] || ISSUE_TRACKER_DOCS.linear;
   return {
@@ -98,6 +113,8 @@ function buildHandlebars(config) {
     packageManager: config.packageManager,
     ciProvider: config.ciProvider,
     scriptLanguage: config.scriptLanguage,
+    scaffoldVersion: PKG.version,
+    incompleteFiles: buildIncompleteFiles(config),
   };
 }
 
@@ -280,5 +297,21 @@ export async function scaffold(argv) {
   if (skipped > 0) {
     console.log(`   ${summaryLine(`${skipped} file${skipped !== 1 ? "s" : ""} skipped — already exist.`, "warn")}`);
     console.log(`   ${style.dim("·")}  ${style.dim("Run with --force to overwrite existing files.")}`);
+  }
+
+  const incompleteFiles = buildIncompleteFiles(config);
+  if (incompleteFiles.length > 0) {
+    console.log(`\n ${style.dim("Documentation files that need completion:")}`);
+    for (const { file, sections } of incompleteFiles) {
+      console.log(`   ${style.bold(file)}`);
+      for (const section of sections.split(", ")) {
+        console.log(`     ${style.dim("→")} ${section} ${style.dim("(empty)")}`);
+      }
+    }
+    if (config.include.has("skills")) {
+      console.log(`\n ${style.dim("Agent skill available to help:")}`);
+      console.log(`   .agents/skills/fill-docs/SKILL.md`);
+      console.log(`   ${style.dim("Invoke it with your AI agent to fill in these files conversationally.")}`);
+    }
   }
 }
