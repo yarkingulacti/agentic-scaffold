@@ -33,6 +33,22 @@ Follow `docs/CODING_PRINCIPLES.md`: simple direct code, YAGNI, KISS, pragmatic
 DRY, existing conventions, explicit boundaries, fail-fast validation, and
 focused tests.
 
+{{#if packageManager}}
+### Package manager
+
+This project uses **{{packageManager}}**.
+{{/if}}
+
+{{#if ciProvider}}
+### CI/CD
+
+This project uses **{{ciProvider}}** for CI/CD.
+{{/if}}
+
+### Script runtime
+
+Memory and utility scripts use **{{scriptLanguage}}**.
+
 ### Agent memory
 
 Use repo automation from `scripts/`:
