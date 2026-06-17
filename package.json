@@ -14,7 +14,8 @@
     "templates/"
   ],
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "prepublishOnly": "npm test"
   },
   "dependencies": {
     "handlebars": "^4.7.8",
