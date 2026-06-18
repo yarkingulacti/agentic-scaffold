@@ -10,7 +10,7 @@ Replaces the legacy session-close workflow.
    - After feature work: `.agentic-scaffold/.agents/hooks/post-feature.md`
    - After bugfix work: `.agentic-scaffold/.agents/hooks/post-bugfix.md`
 3. Build every touched project when a build command exists.
-4. Run `.agentic-scaffold/scripts/memory_index.py` so `.agentic-scaffold/.history/` is in the vector database.
+4. Run `.agentic-scaffold/scripts/memory_index.mjs` so `.agentic-scaffold/.history/` is in the keyword index.
 5. Update all affected `.agentic-scaffold/.scratchpad/` status lines.
 6. Push the feature/bugfix branch to the remote.
 7. Create a PR, review it, merge it, then delete the PR branch.

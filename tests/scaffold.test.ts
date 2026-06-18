@@ -84,7 +84,7 @@ describe("scaffold", () => {
   it("includes scripts under .agentic-scaffold when not skipped", async () => {
     const dir = tempDir();
     await scaffold({ target: dir, force: true, skipDocs: true, skipSkills: true });
-    assert.ok(existsSync(p(dir, S, "scripts", "memory_index.py")));
+    assert.ok(existsSync(p(dir, S, "scripts", "memory_index.mjs")));
     rmSync(dir, { recursive: true });
   });
 

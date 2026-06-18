@@ -57,18 +57,18 @@ gracefully fall back instead of silently skipping.
 
 ## Phase 2 — Dependency Reduction (next milestone)
 
-### 2.1 Replace Python memory pipeline with Node.js ❌ Open
+### 2.1 Replace Python memory pipeline with Node.js ✅ Resolved
 
-The scaffold generates Python scripts (`memory_index.py`, `memory_search.py`,
+The scaffold generated Python scripts (`memory_index.py`, `memory_search.py`,
 `memory_bundle.py`, `memory_common.py.hbs`) that require Python 3 + optional
 `sqlite-vec`. Since the scaffold already requires Node.js, the memory pipeline
 should work without a second runtime.
 
-- Rewrite the 4 Python scripts as TypeScript/Node.js Handlebars templates
-- Use `node:fs`, `node:crypto`, `node:path` — zero additional npm dependencies
-- Replace SQLite dependency with a flat-file keyword index (FTS is overkill for
+- Rewrote the 4 Python scripts as Node.js ESM modules (`.mjs`)
+- Uses `node:fs`, `node:crypto`, `node:path` — zero additional npm dependencies
+- Replaced SQLite dependency with a flat-file keyword index (FTS is overkill for
   agent session memory that's searched by `grep`-equivalent patterns)
-- Files: `templates/scripts/*.py` → `templates/scripts/*.ts.hbs`
+- Files: `templates/scripts/*.py` → `templates/scripts/*.mjs`
 
 ### 2.2 Opt-in `.history/` and `.scratchpad/` ❌ Open
 

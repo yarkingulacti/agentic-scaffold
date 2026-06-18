@@ -125,9 +125,15 @@ CLI flags.
 | Group | Description | Flag |
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
-| `scripts` | Python memory indexing pipeline (sqlite-vec based RAG) | `--skip-scripts` |
+| `scripts` | Node.js memory indexing pipeline (flat-file keyword index) | `--skip-scripts` |
 | `skills` | 21 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
 | `hooks` | Pre/post lifecycle hooks for agent workflows (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
+
+## New in v0.9
+
+- **Node.js memory pipeline** — Python scripts replaced with zero-dependency Node.js ESM modules (`memory_index.mjs`, `memory_search.mjs`, `memory_bundle.mjs`). No more Python or `sqlite-vec` requirement.
+- **Flat-file keyword index** — SQLite/vector search replaced with a JSON flat-file keyword index. Search works with just `node:fs`, `node:crypto`, and `node:path`.
+- **101 tests** — all tests pass.
 
 ## New in v0.7
 
@@ -179,7 +185,7 @@ CLI flags.
 
 1. Fill in `.agentic-scaffold/BUSINESS_LOGIC.md` with your product domain.
 2. Run `npm install` / `pnpm install` for your project's actual dependencies.
-3. `python3 -m venv .venv && pip install sqlite-vec` if you want vector memory.
+3. Run `node .agentic-scaffold/scripts/memory_index.mjs` to index your project Markdown (no additional setup needed).
 4. Install the skills in your AI tool (e.g. opencode) — each `.agentic-scaffold/.agents/skills/*/SKILL.md` is self-contained.
 5. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
 6. Use the `fill-docs` skill (`.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.

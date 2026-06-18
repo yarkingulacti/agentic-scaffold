@@ -63,10 +63,9 @@ understand why past decisions were made and does not re-litigate them.
 
 `scripts/` — A local vector database for project knowledge:
 
-- `memory_index.py` — Indexes all project Markdown into SQLite with FTS5 and
-  optional sqlite-vec embeddings
-- `memory_search.py` — Search by query with fallback: vector → cosine → FTS5
-- `memory_bundle.py` — Write a focused Markdown bundle from search results
+- `memory_index.mjs` — Indexes all project Markdown into a flat-file keyword index.
+- `memory_search.mjs` — Search by query with keyword overlap scoring.
+- `memory_bundle.mjs` — Write a focused Markdown bundle from search results
 
 The agent can retrieve relevant context across sessions without human hand-holding.
 
