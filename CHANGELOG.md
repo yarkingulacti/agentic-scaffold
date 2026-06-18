@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.2.1...v1.2.2) (2026-06-18)
+
+
+### Changed
+
+* **wiki:** add module dependency graph to Architecture ([56c56e0](https://github.com/yarkingulacti/agentic-scaffold/commit/56c56e06c7ce434c7a384f50c8ef0b6bdfe13e83))
+
 ## [1.2.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.2.0...v1.2.1) (2026-06-18)
 
 
