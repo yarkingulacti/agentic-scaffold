@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { componentNamesByCategory } from "./components.js";
+import { AI_CONFIG_TOOLS, componentNamesByCategory } from "./components.js";
 import { detectProjectProfile } from "./detect.js";
 
 export const DEFAULTS = {
@@ -168,14 +168,12 @@ function resolveIncludes(argv: ScaffoldArgs): Set<string> {
   return set;
 }
 
-const ALL_AI_TOOLS = ["opencode", "cursor", "copilot", "windsurf", "cline"];
-
 function resolveAiTools(value: string): string[] {
   const tools = value
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  if (tools.includes("all")) return [...ALL_AI_TOOLS];
+  if (tools.includes("all")) return [...AI_CONFIG_TOOLS];
   return tools;
 }
 function resolveScriptLanguage(value: string | null | undefined): string {
@@ -183,6 +181,15 @@ function resolveScriptLanguage(value: string | null | undefined): string {
   if (!SUPPORTED_SCRIPT_LANGUAGES.includes(resolved)) {
     throw new Error(
       `Unsupported scriptLanguage "${resolved}". Only node is supported because shipped scripts are .mjs files.`,
+    );
+  }
+  return resolved;
+}
+function resolveIssueTracker(value: string | null | undefined): string {
+  const resolved = value ?? DEFAULTS.issueTracker;
+  if (!ISSUE_TRACKER_DOCS[resolved]) {
+    throw new Error(
+      `Unsupported issueTracker "${resolved}". Supported: ${Object.keys(ISSUE_TRACKER_DOCS).join(", ")}.`,
     );
   }
   return resolved;
@@ -198,7 +205,7 @@ export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
     projectName: argv.projectName ?? profile.projectName ?? target.split("/").filter(Boolean).pop() ?? "project",
     projectDescription: argv.projectDescription ?? DEFAULTS.projectDescription,
     languages: profile.languages,
-    issueTracker: argv.issueTracker ?? profile.issueTracker ?? DEFAULTS.issueTracker,
+    issueTracker: resolveIssueTracker(argv.issueTracker ?? profile.issueTracker),
     packageManager: argv.packageManager ?? profile.packageManager ?? null,
     ciProvider: argv.ciProvider ?? profile.ciProvider ?? null,
     aiTools: argv.aiTools ? resolveAiTools(argv.aiTools) : profile.aiTools,
@@ -213,7 +220,7 @@ export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
 }
 
 export function buildHandlebars(config: ScaffoldConfig, version: string): HandlebarsData {
-  const tracker = ISSUE_TRACKER_DOCS[config.issueTracker] || ISSUE_TRACKER_DOCS.linear;
+  const tracker = ISSUE_TRACKER_DOCS[config.issueTracker];
   return {
     projectName: config.projectName,
     projectDescription: config.projectDescription,

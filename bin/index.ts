@@ -108,7 +108,7 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     })
     .option("issue-tracker", {
       type: "string",
-      choices: ["linear", "github", "both"] as const,
+      choices: ["linear", "github"] as const,
       description: "Issue tracker type",
     })
     .option("force", {

@@ -69,7 +69,7 @@ npx @yarkingulacti/agentic-scaffold un --force
 | `--skip-history` | boolean | Skip `.history` directory |
 | `--skip-scratchpad` | boolean | Skip `.scratchpad` directory |
 | `--project-name` | string | Project name (used in generated files) |
-| `--issue-tracker` | `linear` \| `github` \| `both` | Issue tracker type |
+| `--issue-tracker` | `linear` \| `github` | Issue tracker type |
 | `-f, --force` | boolean | Overwrite existing files |
 | `--package-manager` | `npm` \| `yarn` \| `pnpm` \| `pip` \| `poetry` \| `go-mod` \| `cargo` | Package manager (overrides auto-detection) |
 | `--ci-provider` | `github` \| `gitlab` \| `circleci` | CI provider (overrides auto-detection) |

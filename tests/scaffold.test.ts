@@ -3,6 +3,8 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import type { ScaffoldArgs } from "../src/config.js";
+import { resolveConfig } from "../src/config.js";
 import { scaffold } from "../src/scaffold.js";
 
 const S = ".agentic-scaffold";
@@ -374,6 +376,33 @@ describe("scaffold", () => {
     const content = readFileSync(p(dir, S, ".agents", "hooks", "scripts", "post-feature.sh"), "utf-8");
     assert.ok(content.includes("TestApp"));
     assert.ok(content.includes("pnpm"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("ai-config writes only the tools named in --ai-tools", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, extras: "ai-config", aiTools: "opencode", force: true, quiet: true });
+    assert.ok(existsSync(p(dir, "opencode.json")));
+    assert.ok(!existsSync(p(dir, ".cursorrules")));
+    assert.ok(!existsSync(p(dir, ".copilot-instructions.md")));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("ai-config writes all renderable tools when --ai-tools is omitted", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, extras: "ai-config", force: true, quiet: true });
+    assert.ok(existsSync(p(dir, "opencode.json")));
+    assert.ok(existsSync(p(dir, ".cursorrules")));
+    assert.ok(existsSync(p(dir, ".copilot-instructions.md")));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("rejects an unsupported issue tracker", () => {
+    const dir = tempDir();
+    assert.throws(
+      () => resolveConfig({ target: dir, issueTracker: "both" } as ScaffoldArgs),
+      /Unsupported issueTracker/,
+    );
     rmSync(dir, { recursive: true });
   });
 });

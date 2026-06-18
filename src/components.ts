@@ -1,10 +1,10 @@
 import { join } from "node:path";
 import type { HandlebarsData, ScaffoldConfig } from "./config.js";
 import type { WriteOptions } from "./fs-utils.js";
-import { copyStaticDir } from "./fs-utils.js";
+import { copyStaticDir, write } from "./fs-utils.js";
 import { TEMPLATES_DIR } from "./paths.js";
 import type { DryRunEntry } from "./templates.js";
-import { listRenderedFiles, renderDir } from "./templates.js";
+import { listRenderedFiles, renderDir, renderTemplate } from "./templates.js";
 
 export type ComponentCategory = "core" | "extra" | "working-dir";
 export type DestBase = "scaffold" | "target";
@@ -66,6 +66,37 @@ function ciComponent(): RenderFns {
   };
 }
 
+const AI_TOOL_TEMPLATES: Record<string, { src: string; dest: string }> = {
+  opencode: { src: "opencode.json.hbs", dest: "opencode.json" },
+  cursor: { src: ".cursorrules.hbs", dest: ".cursorrules" },
+  copilot: { src: ".copilot-instructions.md.hbs", dest: ".copilot-instructions.md" },
+};
+
+export const AI_CONFIG_TOOLS = Object.keys(AI_TOOL_TEMPLATES);
+
+function selectedAiTools(config: ScaffoldConfig): string[] {
+  const requested = config.aiTools.length > 0 ? config.aiTools : AI_CONFIG_TOOLS;
+  return requested.filter((t) => t in AI_TOOL_TEMPLATES);
+}
+
+function aiConfigComponent(): RenderFns {
+  const baseDir = join(TEMPLATES_DIR, "ai-config");
+  return {
+    render: async (config, hbData, opts) => {
+      const writeOpts = { force: config.force, interactive: config.interactive, ...opts };
+      const results: string[] = [];
+      for (const tool of selectedAiTools(config)) {
+        const { src, dest } = AI_TOOL_TEMPLATES[tool];
+        const content = renderTemplate(join(baseDir, src), hbData);
+        results.push(await write(join(config.target, dest), content, writeOpts));
+      }
+      return results;
+    },
+    dryRun: (config) =>
+      selectedAiTools(config).map((tool) => ({ dest: join(".", AI_TOOL_TEMPLATES[tool].dest), type: "file" as const })),
+  };
+}
+
 export const COMPONENTS: ComponentSpec[] = [
   {
     name: "root",
@@ -122,7 +153,7 @@ export const COMPONENTS: ComponentSpec[] = [
     destBase: "target",
     conflict: "skip-existing",
     manifested: true,
-    ...componentRender("ai-config", "", "target"),
+    ...aiConfigComponent(),
   },
   {
     name: "rtk",
