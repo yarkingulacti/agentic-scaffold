@@ -34,7 +34,7 @@ This is the short repo version for day-to-day implementation by human and AI age
 
 - Is every new file needed for the current task?
 - Is each new abstraction used by real code today?
-- Does the code use project vocabulary from `BUSINESS_LOGIC.md` and `docs/context/glossary.md`?
+- Does the code use project vocabulary from `.agentic-scaffold/BUSINESS_LOGIC.md` and `.agentic-scaffold/docs/context/glossary.md`?
 - Are failures handled near the boundary where they become knowable?
 - Do tests cover the behavior that could regress?
 - Could a simpler function or module solve the same current requirement?

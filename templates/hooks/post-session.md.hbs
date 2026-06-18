@@ -5,13 +5,13 @@ Replaces the legacy session-close workflow.
 
 ## Steps
 
-1. Run `.agents/hooks/scripts/post-session.sh` if it exists.
+1. Run `.agentic-scaffold/.agents/hooks/scripts/post-session.sh` if it exists.
 2. Run all applicable post-* hooks that match the work done:
-   - After feature work: `.agents/hooks/post-feature.md`
-   - After bugfix work: `.agents/hooks/post-bugfix.md`
+   - After feature work: `.agentic-scaffold/.agents/hooks/post-feature.md`
+   - After bugfix work: `.agentic-scaffold/.agents/hooks/post-bugfix.md`
 3. Build every touched project when a build command exists.
-4. Run `scripts/memory_index.py` so `.history/` is in the vector database.
-5. Update all affected `.scratchpad/` status lines.
+4. Run `.agentic-scaffold/scripts/memory_index.py` so `.agentic-scaffold/.history/` is in the vector database.
+5. Update all affected `.agentic-scaffold/.scratchpad/` status lines.
 6. Push the feature/bugfix branch to the remote.
 7. Create a PR, review it, merge it, then delete the PR branch.
 
@@ -30,5 +30,5 @@ Allowed types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`
 ## Blockers
 
 If a step cannot run because the repo has no command, no remote, invalid
-auth, or missing external service, record that in `.history/` and the final
+auth, or missing external service, record that in `.agentic-scaffold/.history/` and the final
 response. Do not pretend the step succeeded.

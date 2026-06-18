@@ -6,6 +6,11 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 
 const CLI = "node " + join(import.meta.dirname, "..", "bin", "index.js");
+const S = ".agentic-scaffold";
+
+function p(dir, ...parts) {
+  return join(dir, ...parts);
+}
 
 function tempDir() {
   return mkdtempSync(join(tmpdir(), "cli-test-"));
@@ -18,7 +23,7 @@ function run(args = "") {
 describe("CLI", () => {
   describe("--help", () => {
     it("runs without error", () => {
-      run("--help"); // throws on non-zero exit
+      run("--help");
     });
 
     it("contains tier descriptions", () => {
@@ -64,9 +69,9 @@ describe("CLI", () => {
     it("creates files with default args", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --skip-skills --skip-scripts`);
-      assert.ok(existsSync(join(dir, "AGENTS.md")));
-      assert.ok(existsSync(join(dir, "BUSINESS_LOGIC.md")));
-      assert.ok(existsSync(join(dir, ".gitignore")));
+      assert.ok(existsSync(p(dir, "AGENTS.md")));
+      assert.ok(existsSync(p(dir, S, "BUSINESS_LOGIC.md")));
+      assert.ok(existsSync(p(dir, S, ".gitignore")));
       rmSync(dir, { recursive: true });
     });
 
@@ -88,9 +93,9 @@ describe("CLI", () => {
     it("overwrites with --force on second run", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --skip-skills --skip-scripts`);
-      writeFileSync(join(dir, "AGENTS.md"), "tampered", "utf-8");
+      writeFileSync(p(dir, S, "AGENTS.md"), "tampered", "utf-8");
       run(`--target ${dir} --force --skip-skills --skip-scripts`);
-      const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+      const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
       assert.notEqual(content, "tampered");
       rmSync(dir, { recursive: true });
     });
@@ -98,35 +103,35 @@ describe("CLI", () => {
     it("respects --skip-skills", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --skip-skills --skip-hooks --skip-scripts`);
-      assert.equal(existsSync(join(dir, ".agents")), false);
+      assert.equal(existsSync(p(dir, S, ".agents")), false);
       rmSync(dir, { recursive: true });
     });
 
     it("respects --skip-docs", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --skip-docs --skip-skills --skip-scripts`);
-      assert.equal(existsSync(join(dir, "docs")), false);
+      assert.equal(existsSync(p(dir, S, "docs")), false);
       rmSync(dir, { recursive: true });
     });
 
     it("creates hooks by default", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --skip-docs --skip-skills --skip-scripts`);
-      assert.ok(existsSync(join(dir, ".agents", "hooks", "post-feature.md")));
+      assert.ok(existsSync(p(dir, S, ".agents", "hooks", "post-feature.md")));
       rmSync(dir, { recursive: true });
     });
 
     it("respects --skip-hooks", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --skip-hooks --skip-docs --skip-skills --skip-scripts`);
-      assert.equal(existsSync(join(dir, ".agents", "hooks")), false);
+      assert.equal(existsSync(p(dir, S, ".agents", "hooks")), false);
       rmSync(dir, { recursive: true });
     });
 
     it("accepts --project-name", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --project-name MyProject --skip-skills --skip-scripts`);
-      const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+      const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
       assert.ok(content.includes("# MyProject"));
       rmSync(dir, { recursive: true });
     });
@@ -134,7 +139,7 @@ describe("CLI", () => {
     it("accepts --package-manager override", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --package-manager pnpm --skip-skills --skip-scripts`);
-      const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+      const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
       assert.ok(content.includes("**pnpm**"));
       rmSync(dir, { recursive: true });
     });
@@ -142,7 +147,7 @@ describe("CLI", () => {
     it("accepts --ci-provider override", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --ci-provider gitlab --skip-skills --skip-scripts`);
-      const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+      const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
       assert.ok(content.includes("**gitlab**"));
       rmSync(dir, { recursive: true });
     });
@@ -150,18 +155,18 @@ describe("CLI", () => {
     it("accepts --script-language override", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --script-language docker --skip-skills --skip-scripts`);
-      const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+      const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
       assert.ok(content.includes("**docker**"));
       rmSync(dir, { recursive: true });
     });
 
     it("auto-detects from project files", () => {
       const dir = tempDir();
-      writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "test" }), "utf-8");
-      mkdirSync(join(dir, ".github", "workflows"), { recursive: true });
-      writeFileSync(join(dir, "pnpm-lock.yaml"), "", "utf-8");
+      writeFileSync(p(dir, "package.json"), JSON.stringify({ name: "test" }), "utf-8");
+      mkdirSync(p(dir, ".github", "workflows"), { recursive: true });
+      writeFileSync(p(dir, "pnpm-lock.yaml"), "", "utf-8");
       run(`--target ${dir} --force --skip-skills --skip-scripts`);
-      const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+      const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
       assert.ok(content.includes("**pnpm**"));
       assert.ok(content.includes("**github**"));
       rmSync(dir, { recursive: true });
@@ -171,7 +176,7 @@ describe("CLI", () => {
       const dir = tempDir();
       const out = run(`--target ${dir} --force --skip-skills --skip-scripts`);
       assert.ok(out.includes("Documentation files that need completion"));
-      assert.ok(out.includes("BUSINESS_LOGIC.md"));
+      assert.ok(out.includes(".agentic-scaffold/BUSINESS_LOGIC.md"));
       rmSync(dir, { recursive: true });
     });
 
@@ -188,7 +193,7 @@ describe("CLI", () => {
       assert.equal(out.includes("docs/context/glossary.md"), false);
       assert.equal(out.includes("docs/product/README.md"), false);
       assert.equal(out.includes("docs/engineering/README.md"), false);
-      assert.ok(out.includes("BUSINESS_LOGIC.md"));
+      assert.ok(out.includes(".agentic-scaffold/BUSINESS_LOGIC.md"));
       rmSync(dir, { recursive: true });
     });
   });

@@ -6,6 +6,6 @@ Compare current work against the roadmap.
 
 1. Read `BUSINESS_LOGIC.md`.
 2. Read roadmap/backlog references in `CONTEXT.md` only through
-   `docs/context/INDEX.md`.
-3. Read `.scratchpad/` active plans and recent `.history/` entries.
+   `.agentic-scaffold/docs/context/INDEX.md`.
+3. Read `.agentic-scaffold/.scratchpad/` active plans and recent `.agentic-scaffold/.history/` entries.
 4. Report what is done, in progress, blocked, and next.

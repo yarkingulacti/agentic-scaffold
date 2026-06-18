@@ -8,7 +8,7 @@ description: >
 
 # Create Hook
 
-Add a new agent lifecycle hook to `.agents/hooks/`. Hooks are markdown files
+Add a new agent lifecycle hook to `.agentic-scaffold/.agents/hooks/`. Hooks are markdown files
 that describe what an AI agent should do at a specific point in the workflow
 (pre-feature, post-bugfix, etc.).
 
@@ -28,7 +28,7 @@ already chains to `post-feature.md` and `post-bugfix.md`.
 
 ### 2. Name and create the hook file
 
-Name the file `<prefix>-<name>.md` and create it at `.agents/hooks/`. Use
+Name the file `<prefix>-<name>.md` and create it at `.agentic-scaffold/.agents/hooks/`. Use
 this anatomy:
 
 ```markdown
@@ -40,7 +40,7 @@ Fires <when this hook runs, e.g. "after every database migration">.
 
 1. First step the agent should take.
 2. Second step.
-3. Run `.agents/hooks/scripts/<name>.sh` if it exists.
+3. Run `.agentic-scaffold/.agents/hooks/scripts/<name>.sh` if it exists.
 
 ## When to skip
 
@@ -49,7 +49,7 @@ Conditions under which the agent should silently skip this hook.
 
 ### 3. Create the optional executable script
 
-If the hook needs automation, create `.agents/hooks/scripts/<name>.sh`:
+If the hook needs automation, create `.agentic-scaffold/.agents/hooks/scripts/<name>.sh`:
 
 ```bash
 #!/usr/bin/env bash
@@ -66,16 +66,16 @@ Add a conditional reference in every skill where the hook should fire.
 Use the existing pattern:
 
 ```markdown
-4. If `.agents/hooks/<hook-name>.md` exists, read and follow it.
+4. If `.agentic-scaffold/.agents/hooks/<hook-name>.md` exists, read and follow it.
 ```
 
 Skills commonly wired to hooks:
 
 | Skill | Hook point | File |
 |-------|-----------|------|
-| `implement` | pre + post | `.agents/skills/implement/SKILL.md` |
-| `bugfix` | post | `.agents/skills/bugfix/SKILL.md` |
-| `tdd` | pre + post | `.agents/skills/tdd/SKILL.md` |
+| `implement` | pre + post | `.agentic-scaffold/.agents/skills/implement/SKILL.md` |
+| `bugfix` | post | `.agentic-scaffold/.agents/skills/bugfix/SKILL.md` |
+| `tdd` | pre + post | `.agentic-scaffold/.agents/skills/tdd/SKILL.md` |
 
 ### 5. Wire into the session close chain
 

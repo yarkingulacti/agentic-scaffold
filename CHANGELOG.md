@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.7.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.6.0...v0.7.0) (2026-06-18)
 
-# Changelog
-
-All notable changes to this project are documented here.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/),
-and this project adheres to [Semantic Versioning](https://semver.org/).
-
 ## [v0.6.0] - 2026-06-17
 
 ### Added

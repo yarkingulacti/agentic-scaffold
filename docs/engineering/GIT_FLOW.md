@@ -9,20 +9,16 @@
 
 ## Commit format
 
-Master work title as the first line, then the Conventional Commit line:
+Conventional Commits on the first line:
 
 ```
-<Master work title>
-
 <type>(<scope>): <short imperative summary>
 ```
 
 Example:
 
 ```
-Markdown memory system
-
-docs(memory): establish agent memory workflow
+feat(hooks): add pre/post lifecycle hooks for AI agent workflows
 ```
 
 Allowed types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`.
@@ -58,11 +54,9 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ## Release workflow
 
-1. Update `CHANGELOG.md` with the new version entry.
-2. Bump the `version` field in `package.json`.
-3. Commit: `chore(release): bump to v<version>`.
-4. Tag: `git tag v<version>` and `git push origin v<version>`.
-5. The CI publish workflow triggers on the tag and publishes to npm.
+1. Ensure you're on `master` with all changes merged.
+2. Run `npm run release` — this reads commits since the last tag, determines the next version, updates `CHANGELOG.md`, bumps `package.json`, commits, and tags.
+3. Run `git push --follow-tags origin master` to trigger the CI publish workflow.
 
 ## Before every PR
 

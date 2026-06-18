@@ -64,34 +64,44 @@ npx @yarkingulacti/agentic-scaffold --skip-skills --skip-scripts --skip-hooks
 
 # Pre-configure values
 npx @yarkingulacti/agentic-scaffold --project-name "my-app" --issue-tracker github
+
+# Remove all scaffolded files (asks for confirmation)
+npx @yarkingulacti/agentic-scaffold un
+
+# Remove without confirmation
+npx @yarkingulacti/agentic-scaffold un --force
 ```
 
 ## What you get
 
 ```
 project/
-├── AGENTS.md                 # Agent config (entry point for AI agents)
-├── CLAUDE.md                 # Mirror of AGENTS.md
-├── BUSINESS_LOGIC.md         # Shell — fill with your domain
-├── .gitignore
-├── docs/
-│   ├── CODING_PRINCIPLES.md  # Operating rules for code
-│   ├── adr/TEMPLATE.md       # Architecture Decision Record template
-│   ├── agents/
-│   │   ├── domain.md         # How to consume domain docs
-│   │   ├── session-close.md  # Post-coding session workflow
-│   │   ├── issue-tracker.md  # Issue tracker conventions
-│   │   └── triage-labels.md  # Triage status vocabulary
-│   ├── context/
-│   │   ├── INDEX.md          # Section index for CONTEXT.md
-│   │   └── glossary.md       # Ubiquitous language glossary
-│   ├── engineering/README.md
-│   └── product/README.md
-├── .agents/skills/           # Agent skill definitions (21 skills)
-├── .agents/hooks/            # Pre/post lifecycle hooks for agent workflows
-├── scripts/                  # Markdown memory indexing pipeline
-├── .scratchpad/              # Local detailed planning
-└── .history/                 # Shipped work summaries
+├── AGENTS.md -> .agentic-scaffold/AGENTS.md   # Symlink entry point
+├── CLAUDE.md -> .agentic-scaffold/CLAUDE.md   # Symlink entry point
+└── .agentic-scaffold/                          # Single wrapper directory
+    ├── AGENTS.md                 # Agent config (entry point for AI agents)
+    ├── CLAUDE.md                 # Mirror of AGENTS.md
+    ├── BUSINESS_LOGIC.md         # Shell — fill with your domain
+    ├── .gitignore
+    ├── docs/
+    │   ├── CODING_PRINCIPLES.md  # Operating rules for code
+    │   ├── adr/TEMPLATE.md       # Architecture Decision Record template
+    │   ├── agents/
+    │   │   ├── domain.md         # How to consume domain docs
+    │   │   ├── session-close.md  # Post-coding session workflow
+    │   │   ├── issue-tracker.md  # Issue tracker conventions
+    │   │   └── triage-labels.md  # Triage status vocabulary
+    │   ├── context/
+    │   │   ├── INDEX.md          # Section index for CONTEXT.md
+    │   │   └── glossary.md       # Ubiquitous language glossary
+    │   ├── engineering/README.md
+    │   └── product/README.md
+    ├── .agents/
+    │   ├── skills/               # Agent skill definitions (22 skills)
+    │   └── hooks/                # Pre/post lifecycle hooks
+    ├── scripts/                  # Markdown memory indexing pipeline
+    ├── .scratchpad/              # Local detailed planning
+    └── .history/                 # Shipped work summaries
 ```
 
 ## Auto-detection
@@ -126,6 +136,12 @@ CLI flags.
 - **`--skip-hooks` flag** — skip the hooks component group.
 - **98 tests** — detection, scaffolding, CLI, and hooks tested end-to-end.
 
+## New in v0.6
+
+- **Interactive mode redesign** — shows detected project profile before prompts, pre-fills prompts with detected values, and per-file conflict resolver that asks before overwriting existing files.
+- **MEMORY.md golden rules** — feature branches mandatory for new features, every release gets a version tag.
+- **Per-file conflict resolution** — `askOverwrite()` prompt lets you decide for each existing file during scaffolding.
+
 ## New in v0.5
 
 - **`fill-docs` skill** — new agent skill that interviews you to complete placeholder content in BUSINESS_LOGIC.md, glossary, and other scaffolded docs.
@@ -154,12 +170,26 @@ CLI flags.
 
 ## After scaffolding
 
-1. Fill in `BUSINESS_LOGIC.md` with your product domain.
+1. Fill in `.agentic-scaffold/BUSINESS_LOGIC.md` with your product domain.
 2. Run `npm install` / `pnpm install` for your project's actual dependencies.
 3. `python3 -m venv .venv && pip install sqlite-vec` if you want vector memory.
-4. Install the skills in your AI tool (e.g. opencode) — each `.agents/skills/*/SKILL.md` is self-contained.
-5. Customize `docs/agents/triage-labels.md` to match your tracker's vocabulary.
-6. Use the `fill-docs` skill (`.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.
+4. Install the skills in your AI tool (e.g. opencode) — each `.agentic-scaffold/.agents/skills/*/SKILL.md` is self-contained.
+5. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
+6. Use the `fill-docs` skill (`.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.
+
+## Unscaffold
+
+Remove all scaffolded files in one command:
+
+```bash
+# Interactive (asks for confirmation)
+npx @yarkingulacti/agentic-scaffold un
+
+# Non-interactive
+npx @yarkingulacti/agentic-scaffold un --force
+```
+
+This removes the entire `.agentic-scaffold/` directory and the root-level symlinks (AGENTS.md, CLAUDE.md). Your project files are left untouched.
 
 ## Open source
 

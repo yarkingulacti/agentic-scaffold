@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, symlinkSync } from "node:fs";
 import { readdirSync, statSync, copyFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,6 +23,7 @@ function resolveConfig(argv) {
 
   const config = {
     target,
+    scaffoldDir: join(target, ".agentic-scaffold"),
     projectName: argv.projectName ?? profile.projectName ?? (target.split("/").filter(Boolean).pop() ?? "project"),
     projectDescription: argv.projectDescription ?? profile.projectDescription ?? DEFAULTS.projectDescription,
     languages: profile.languages,
@@ -54,9 +55,9 @@ function resolveIncludes(argv) {
 const ISSUE_TRACKER_DOCS = {
   linear: {
     name: "Linear",
-    description: "Short implementation records live in Linear. Local, detailed planning lives in `.scratchpad/<feature>/`. See `docs/agents/issue-tracker.md`.",
+    description: "Short implementation records live in Linear. Local, detailed planning lives in `.agentic-scaffold/.scratchpad/<feature>/`. See `.agentic-scaffold/docs/agents/issue-tracker.md`.",
     trackerDoc: "Linear",
-    short: "Short issue records live in Linear. Local detailed planning lives in `.scratchpad/`.",
+    short: "Short issue records live in Linear. Local detailed planning lives in `.agentic-scaffold/.scratchpad/`.",
     statusTable: `| Label | Status string | Meaning |
 |-------|--------------|---------|
 | needs-triage | \`needs-triage\` | Maintainer needs to evaluate this issue |
@@ -70,7 +71,7 @@ LINEAR_PROJECT_ID=`,
   },
   github: {
     name: "GitHub Issues",
-    description: "Short implementation records live in GitHub Issues. Local, detailed planning lives in `.scratchpad/<feature>/`. See `docs/agents/issue-tracker.md`.",
+    description: "Short implementation records live in GitHub Issues. Local, detailed planning lives in `.agentic-scaffold/.scratchpad/<feature>/`. See `.agentic-scaffold/docs/agents/issue-tracker.md`.",
     trackerDoc: "GitHub Issues",
     short: "Short issue records live in GitHub Issues. Local detailed planning lives in `.scratchpad/`.",
     statusTable: `| Label | Meaning |
@@ -87,13 +88,13 @@ LINEAR_PROJECT_ID=`,
 
 function buildIncompleteFiles(config) {
   const files = [
-    { file: "BUSINESS_LOGIC.md", sections: "Core Domain Concepts, Non-Negotiable Rules, Architecture Decisions" },
+    { file: ".agentic-scaffold/BUSINESS_LOGIC.md", sections: "Core Domain Concepts, Non-Negotiable Rules, Architecture Decisions" },
   ];
   if (config.include.has("docs")) {
     files.push(
-      { file: "docs/context/glossary.md", sections: "domain term definitions" },
-      { file: "docs/product/README.md", sections: "product spec descriptions" },
-      { file: "docs/engineering/README.md", sections: "implementation conventions" },
+      { file: ".agentic-scaffold/docs/context/glossary.md", sections: "domain term definitions" },
+      { file: ".agentic-scaffold/docs/product/README.md", sections: "product spec descriptions" },
+      { file: ".agentic-scaffold/docs/engineering/README.md", sections: "implementation conventions" },
     );
   }
   return files;
@@ -117,7 +118,7 @@ function buildHandlebars(config) {
   return {
     projectName: config.projectName,
     projectDescription: config.projectDescription,
-    scriptsDir: "scripts",
+    scriptsDir: ".agentic-scaffold/scripts",
     issueTrackerName: tracker.name,
     issueTrackerDescription: tracker.description,
     issueTrackerShort: tracker.short,
@@ -216,46 +217,74 @@ async function renderDir(srcDir, destDir, data, options = {}) {
   return results;
 }
 
+const SCAFFOLD_DIR_NAME = ".agentic-scaffold";
+
+function scaffoldDir(config) {
+  return config.scaffoldDir;
+}
+
 async function scaffoldRoot(config, hbData, extraOpts = {}) {
   const rootSrc = join(TEMPLATES_DIR, "root");
-  const rootDest = config.target;
+  const rootDest = scaffoldDir(config);
   return renderDir(rootSrc, rootDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
 async function scaffoldDocs(config, hbData, extraOpts = {}) {
   const docsSrc = join(TEMPLATES_DIR, "docs");
-  const docsDest = join(config.target, "docs");
+  const docsDest = join(scaffoldDir(config), "docs");
   return renderDir(docsSrc, docsDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
 async function scaffoldScripts(config, hbData, extraOpts = {}) {
   const scriptsSrc = join(TEMPLATES_DIR, "scripts");
-  const scriptsDest = join(config.target, "scripts");
+  const scriptsDest = join(scaffoldDir(config), "scripts");
   return renderDir(scriptsSrc, scriptsDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
 async function scaffoldSkills(config, extraOpts = {}) {
   const skillsSrc = join(TEMPLATES_DIR, "skills");
-  const skillsDest = join(config.target, ".agents", "skills");
+  const skillsDest = join(scaffoldDir(config), ".agents", "skills");
   return copyStaticDir(skillsSrc, skillsDest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
 async function scaffoldHooks(config, hbData, extraOpts = {}) {
   const hooksSrc = join(TEMPLATES_DIR, "hooks");
-  const hooksDest = join(config.target, ".agents", "hooks");
+  const hooksDest = join(scaffoldDir(config), ".agents", "hooks");
   return renderDir(hooksSrc, hooksDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
 async function scaffoldScratchpad(config, extraOpts = {}) {
   const src = join(TEMPLATES_DIR, "scratchpad");
-  const dest = join(config.target, ".scratchpad");
+  const dest = join(scaffoldDir(config), ".scratchpad");
   return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
 async function scaffoldHistory(config, extraOpts = {}) {
   const src = join(TEMPLATES_DIR, "history");
-  const dest = join(config.target, ".history");
+  const dest = join(scaffoldDir(config), ".history");
   return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
+}
+
+function createSymlinks(config) {
+  const links = [
+    ["AGENTS.md", ".agentic-scaffold/AGENTS.md"],
+    ["CLAUDE.md", ".agentic-scaffold/CLAUDE.md"],
+  ];
+  const created = [];
+  for (const [name, target] of links) {
+    const linkPath = join(config.target, name);
+    if (existsSync(linkPath)) {
+      created.push("skipped-existing");
+      continue;
+    }
+    try {
+      symlinkSync(target, linkPath);
+      created.push("written");
+    } catch {
+      created.push("skipped-existing");
+    }
+  }
+  return created;
 }
 
 function countTemplateFiles(config) {
@@ -324,6 +353,8 @@ export async function scaffold(argv) {
   results.push(...(await scaffoldScratchpad(config, tickOpts)));
   results.push(...(await scaffoldHistory(config, tickOpts)));
 
+  results.push(...(await createSymlinks(config)));
+
   process.stdout.write("\r".padEnd(60) + "\r");
 
   const written = results.filter((r) => r === "written").length;
@@ -345,7 +376,7 @@ export async function scaffold(argv) {
     }
     if (config.include.has("skills")) {
       console.log(`\n ${style.dim("Agent skill available to help:")}`);
-      console.log(`   .agents/skills/fill-docs/SKILL.md`);
+      console.log(`   .agentic-scaffold/.agents/skills/fill-docs/SKILL.md`);
       console.log(`   ${style.dim("Invoke it with your AI agent to fill in these files conversationally.")}`);
     }
   }

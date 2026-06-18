@@ -13,17 +13,17 @@ Search for these markers across the project:
 | Marker | File |
 |--------|------|
 | `<!-- Replace with... -->` | BUSINESS_LOGIC.md |
-| `<!-- Define your domain terms... -->` | docs/context/glossary.md |
-| `(populate as you...)` | docs/context/INDEX.md |
-| `Placeholder for...` | docs/product/README.md, docs/engineering/README.md |
+| `<!-- Define your domain terms... -->` | .agentic-scaffold/docs/context/glossary.md |
+| `(populate as you...)` | .agentic-scaffold/docs/context/INDEX.md |
+| `Placeholder for...` | .agentic-scaffold/docs/product/README.md, .agentic-scaffold/docs/engineering/README.md |
 
 ### 2. Prioritize
 
-1. **BUSINESS_LOGIC.md** — the project brain, read first by all agents
-2. **docs/context/glossary.md** — ubiquitous language that agents use
-3. **docs/product/README.md** — product spec extensions
-4. **docs/engineering/README.md** — implementation conventions
-5. **docs/context/INDEX.md** — navigation for historical context
+1. **.agentic-scaffold/BUSINESS_LOGIC.md** — the project brain, read first by all agents
+2. **.agentic-scaffold/docs/context/glossary.md** — ubiquitous language that agents use
+3. **.agentic-scaffold/docs/product/README.md** — product spec extensions
+4. **.agentic-scaffold/docs/engineering/README.md** — implementation conventions
+5. **.agentic-scaffold/docs/context/INDEX.md** — navigation for historical context
 
 ### 3. Interview and fill
 

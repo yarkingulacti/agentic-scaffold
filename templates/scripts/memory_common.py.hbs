@@ -11,17 +11,17 @@ import sqlite3
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / ".memory" / "agent-memory.sqlite3"
 VECTOR_DIMS = 64
 
 INCLUDE_PATTERNS = (
-    "BUSINESS_LOGIC.md",
+    ".agentic-scaffold/BUSINESS_LOGIC.md",
     "AGENTS.md",
     "CLAUDE.md",
-    "docs/**/*.md",
-    ".scratchpad/**/*.md",
-    ".history/**/*.md",
+    ".agentic-scaffold/docs/**/*.md",
+    ".agentic-scaffold/.scratchpad/**/*.md",
+    ".agentic-scaffold/.history/**/*.md",
 )
 
 

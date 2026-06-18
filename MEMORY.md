@@ -7,12 +7,10 @@
 1. **Feature branches are mandatory.** Every new feature MUST start by creating a `feature/<short-description>` branch from master. Never commit feature work directly to master.
 2. **Every release gets a version tag.** After merging to master, always create an annotated `git tag v<version>` and push it to origin.
 
-### Release workflow (from `docs/engineering/GIT_FLOW.md`)
+### Release workflow
 
-1. Update `CHANGELOG.md` with new version entry.
-2. Bump `version` in `package.json`.
-3. Commit: `chore(release): bump to v<version>`
-4. Tag: `git tag v<version>` and `git push origin v<version>`
+1. `npm run release` — auto-bumps version, generates changelog, commits, tags
+2. `git push --follow-tags origin master` — triggers CI publish
 
 ### Commit format
 

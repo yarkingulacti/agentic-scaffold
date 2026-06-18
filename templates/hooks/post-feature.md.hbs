@@ -6,10 +6,10 @@ Fires after a feature is delivered by any implementation skill.
 
 1. Run the project's test suite:
    {{#if packageManager}}   `{{packageManager}} test`{{else}}   `npm test`{{/if}}
-2. Run `.agents/hooks/scripts/post-feature.sh` if it exists.
-3. Update `.history/DD.MM.YYYY/README.md` with a summary of shipped work.
-4. Run `scripts/memory_index.py` to keep the vector index current.
-5. Update the related `.scratchpad/` status to mark completion.
+2. Run `.agentic-scaffold/.agents/hooks/scripts/post-feature.sh` if it exists.
+3. Update `.agentic-scaffold/.history/DD.MM.YYYY/README.md` with a summary of shipped work.
+4. Run `.agentic-scaffold/scripts/memory_index.py` to keep the vector index current.
+5. Update the related `.agentic-scaffold/.scratchpad/` status to mark completion.
 6. Create a Conventional Commit under the master work title.
 
 ## When to skip
