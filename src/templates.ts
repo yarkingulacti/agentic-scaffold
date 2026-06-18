@@ -33,6 +33,35 @@ export async function renderDir(
   return results;
 }
 
+export interface DryRunEntry {
+  dest: string;
+  type: "file" | "dir";
+}
+
+export function listDryRunFiles(dir: string, components: string[]): DryRunEntry[] {
+  const dirs: { src: string; destBase: string }[] = [
+    { src: join(dir, "root"), destBase: ".agentic-scaffold" },
+    ...(components.includes("docs") ? [{ src: join(dir, "docs"), destBase: ".agentic-scaffold/docs" }] : []),
+    ...(components.includes("scripts") ? [{ src: join(dir, "scripts"), destBase: ".agentic-scaffold/scripts" }] : []),
+    ...(components.includes("skills")
+      ? [{ src: join(dir, "skills"), destBase: ".agentic-scaffold/.agents/skills" }]
+      : []),
+    ...(components.includes("hooks") ? [{ src: join(dir, "hooks"), destBase: ".agentic-scaffold/.agents/hooks" }] : []),
+    { src: join(dir, "scratchpad"), destBase: ".agentic-scaffold/.scratchpad" },
+    { src: join(dir, "history"), destBase: ".agentic-scaffold/.history" },
+  ];
+  const entries: DryRunEntry[] = [];
+  for (const { src, destBase } of dirs) {
+    if (!existsSync(src)) continue;
+    for (const entry of walkDir(src)) {
+      const isHbs = entry.name.endsWith(".hbs");
+      const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
+      entries.push({ dest: join(destBase, outName), type: "file" });
+    }
+  }
+  return entries;
+}
+
 export function countTemplateFiles(dir: string, components: string[]): number {
   const dirs = [
     join(dir, "root"),

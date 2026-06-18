@@ -18,6 +18,7 @@ export interface ScaffoldArgs {
   scriptLanguage?: string;
   force?: boolean;
   interactive?: boolean;
+  dryRun?: boolean;
   only?: string;
   skipDocs?: boolean;
   skipSkills?: boolean;
@@ -38,6 +39,7 @@ export interface ScaffoldConfig {
   scriptLanguage: string;
   force: boolean;
   interactive: boolean;
+  dryRun: boolean;
   include: Set<string>;
 }
 
@@ -147,6 +149,7 @@ export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
     scriptLanguage: argv.scriptLanguage ?? profile.scriptLanguage ?? DEFAULTS.scriptLanguage,
     force: argv.force ?? false,
     interactive: argv.interactive ?? false,
+    dryRun: argv.dryRun ?? false,
     include: resolveIncludes(argv),
   };
 }
