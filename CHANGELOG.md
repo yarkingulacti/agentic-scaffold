@@ -5,6 +5,24 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.0.0...v1.1.0) (2026-06-18)
+
+
+### Added
+
+* **wiki:** generate GitHub wiki from docs/wiki and sync on release ([c54509a](https://github.com/yarkingulacti/agentic-scaffold/commit/c54509ab556d4ddab59e879550486a265a8ac936))
+
+
+### Fixed
+
+* **cli:** honor --ai-tools filter and reject unimplemented --issue-tracker ([167b92d](https://github.com/yarkingulacti/agentic-scaffold/commit/167b92da8fbe195b2400958edb3451388d80e202))
+
+
+### Changed
+
+* migrate package management from npm to pnpm ([47e6609](https://github.com/yarkingulacti/agentic-scaffold/commit/47e66098c35c49d020dd0dea1464ba3357658bc8))
+* sync wiki on tagged releases instead of local posttag hook ([bf54b4c](https://github.com/yarkingulacti/agentic-scaffold/commit/bf54b4c4e608933a26e6650bb3bd1f650a0bdc61))
+
 ## [1.0.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.15.2...v1.0.0) (2026-06-18)
 
 
