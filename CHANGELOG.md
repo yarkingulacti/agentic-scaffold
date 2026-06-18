@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.3.0...v1.4.0) (2026-06-18)
+
+
+### Added
+
+* **update:** add safe scaffold update command ([274d4e8](https://github.com/yarkingulacti/agentic-scaffold/commit/274d4e838018fa24ae4cf240adc999c78226b141))
+
 ## [1.3.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.2.2...v1.3.0) (2026-06-18)
 
 
