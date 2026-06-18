@@ -12,5 +12,8 @@
     { "type": "ci", "section": "Changed" },
     { "type": "chore", "section": "Changed" }
   ],
-  "tagPrefix": "v"
+  "tagPrefix": "v",
+  "scripts": {
+    "posttag": "node bin/sync-wiki.mjs"
+  }
 }
