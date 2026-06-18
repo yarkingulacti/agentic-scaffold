@@ -172,24 +172,32 @@ Resolution:
 
 ### 8. The product needs a sharper boundary between core scaffold and extras
 
-Status: Open
+Status: Resolved
 
-The component model mixes core `.agentic-scaffold/` assets, target-root files,
+The component model mixed core `.agentic-scaffold/` assets, target-root files,
 CI config, onboarding, contribution templates, and tool config into one include
-set. That makes flag semantics, dry-run, manifest ownership, and unscaffold
-harder than necessary.
+set, and the category knowledge was duplicated between `src/scaffold.ts`
+(`COMPONENTS`) and `src/config.ts` (`EXTRAS_GROUPS` + the hardcoded core set).
 
-Why it matters: the tool will become harder to evolve as more extras are added.
+Why it matters: the tool would become harder to evolve as more extras are added.
 Every new target-root artifact increases the chance of overwriting or orphaning
-user files.
+user files, and the duplicated lists could silently drift apart.
 
-Suggested fix:
+Resolution:
 
-- Split components into `core`, `target-root extras`, and `generated working
-  directories`.
-- Require target-root extras to declare conflict policy, ownership policy,
-  dry-run destination, and unscaffold behavior.
-- Add a table-driven test that every component has those declarations.
+- Extracted a single declarative registry, `src/components.ts`. Each
+  `ComponentSpec` declares `category` (`core` / `extra` / `working-dir`),
+  `destBase` (`scaffold` / `target`), `conflict` policy, and `manifested`
+  (whether `unscaffold` removes it via the v2 manifest).
+- `src/config.ts` now derives the default core set, `EXTRAS_GROUPS`, and the
+  working-dir set from the registry (`componentNamesByCategory`), eliminating the
+  cross-file duplication.
+- Added `tests/components.test.ts`, a table-driven test asserting every component
+  declares complete, internally consistent metadata (target-root writers carry an
+  explicit conflict policy; core components stay under `.agentic-scaffold/`; the
+  derived category groupings match the registry).
+- Ownership/unscaffold behavior is enforced by the existing v2 manifest, which
+  already tracks every written file as a target-relative typed entry.
 
 ## Suggested v1 gate
 

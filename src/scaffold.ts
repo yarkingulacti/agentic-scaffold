@@ -1,13 +1,12 @@
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import type { HandlebarsData, IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
+import { ALWAYS_INCLUDED, COMPONENTS, type ComponentSpec } from "./components.js";
+import type { IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
 import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.js";
 import type { WriteOptions, WrittenEntry } from "./fs-utils.js";
-import { copyStaticDir, createSymlinks, writeManifestForTarget } from "./fs-utils.js";
-import { PACKAGE_JSON, TEMPLATES_DIR } from "./paths.js";
+import { createSymlinks, writeManifestForTarget } from "./fs-utils.js";
+import { PACKAGE_JSON } from "./paths.js";
 import { askAITools, askComponents, askIssueTracker, askProjectName } from "./prompts.js";
 import type { DryRunEntry } from "./templates.js";
-import { listRenderedFiles, renderDir } from "./templates.js";
 import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
 
 const PKG = JSON.parse(readFileSync(PACKAGE_JSON, "utf-8")) as { version: string };
@@ -33,75 +32,8 @@ function showDetectedProfile(config: ScaffoldConfig): void {
   out(config, `\n${infoBox(rows)}`);
 }
 
-interface Component {
-  name: string;
-  render: (config: ScaffoldConfig, hbData: HandlebarsData, opts: WriteOptions) => Promise<string[]>;
-  dryRun: (config: ScaffoldConfig) => DryRunEntry[];
-}
-
-type DestBase = "scaffold" | "target";
-
-function componentRender(
-  srcSubdir: string,
-  destRel: string,
-  destBase: DestBase = "scaffold",
-  staticOnly = false,
-): Pick<Component, "render" | "dryRun"> {
-  const src = join(TEMPLATES_DIR, srcSubdir);
-  const relBase = destBase === "target" ? "." : ".agentic-scaffold";
-  const relDest = destRel ? join(relBase, destRel) : relBase;
-  return {
-    render: async (config, hbData, opts) => {
-      const base = destBase === "target" ? config.target : config.scaffoldDir;
-      const dest = destRel ? join(base, destRel) : base;
-      const writeOpts = { force: config.force, interactive: config.interactive, ...opts };
-      if (staticOnly) return copyStaticDir(src, dest, writeOpts);
-      return renderDir(src, dest, hbData, writeOpts);
-    },
-    dryRun: () => listRenderedFiles(src, relDest),
-  };
-}
-
-function ciComponent(): Pick<Component, "render" | "dryRun"> {
-  const CI_PROVIDER_MAP: Record<string, { src: string; dest: string }> = {
-    github: { src: "github", dest: ".github" },
-    gitlab: { src: "gitlab", dest: "." },
-    circleci: { src: "circleci", dest: ".circleci" },
-  };
-  return {
-    render: async (config, hbData, opts) => {
-      if (!config.ciProvider) return [];
-      const provider = CI_PROVIDER_MAP[config.ciProvider];
-      if (!provider) return [];
-      const src = join(TEMPLATES_DIR, "ci", provider.src);
-      const dest = join(config.target, provider.dest);
-      return renderDir(src, dest, hbData, { force: config.force, interactive: config.interactive, ...opts });
-    },
-    dryRun: (config) => {
-      if (!config.ciProvider) return [];
-      const provider = CI_PROVIDER_MAP[config.ciProvider];
-      if (!provider) return [];
-      return listRenderedFiles(join(TEMPLATES_DIR, "ci", provider.src), provider.dest);
-    },
-  };
-}
-
-const COMPONENTS: Component[] = [
-  { name: "root", ...componentRender("root", "") },
-  { name: "docs", ...componentRender("docs", "docs") },
-  { name: "scripts", ...componentRender("scripts", "scripts") },
-  { name: "skills", ...componentRender("skills", ".agents/skills", "scaffold", true) },
-  { name: "hooks", ...componentRender("hooks", ".agents/hooks") },
-  { name: "ci", ...ciComponent() },
-  { name: "contribute", ...componentRender("contribute", "contribute") },
-  { name: "ai-config", ...componentRender("ai-config", "", "target") },
-  { name: "onboarding", ...componentRender("onboarding", "onboarding") },
-  { name: "history", ...componentRender("history", ".history", "scaffold", true) },
-  { name: "scratchpad", ...componentRender("scratchpad", ".scratchpad", "scaffold", true) },
-];
-
-function selectedComponents(config: ScaffoldConfig): Component[] {
-  return COMPONENTS.filter((comp) => comp.name === "root" || config.include.has(comp.name));
+function selectedComponents(config: ScaffoldConfig): ComponentSpec[] {
+  return COMPONENTS.filter((comp) => comp.name === ALWAYS_INCLUDED || config.include.has(comp.name));
 }
 
 function dryRunEntries(config: ScaffoldConfig): DryRunEntry[] {

@@ -8,6 +8,7 @@ skills, and lifecycle hooks into any software project.
 ```
 bin/index.ts           CLI entry point (yargs)
 src/
+  components.ts        Declarative component registry (category, dest, conflict, ownership)
   config.ts            Config types, defaults, config resolution
   detect.ts            Project detection engine (language, CI, AI tools, …)
   fs-utils.ts          File I/O, symlinks, directory walking
