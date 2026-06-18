@@ -98,7 +98,7 @@ and accessibility.
 
 ### 3.2 Skill frontmatter schema validation ✅ Resolved
 
-The 22 skills are substantive (see e.g. `templates/skills/tdd/SKILL.md` at 109
+The 23 skills are substantive (see e.g. `templates/skills/tdd/SKILL.md` at 109
 lines with real workflow guidance) but their frontmatter has no schema. Over
 time, diverging conventions will make them harder to maintain.
 

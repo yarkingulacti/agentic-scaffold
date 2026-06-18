@@ -18,28 +18,26 @@ unscaffold behavior need to agree with one another.
 
 ### 1. Planning and README drift are now a release risk
 
-Status: Open
+Status: Resolved
 
-The planning set is inconsistent with the implementation:
+The planning set was inconsistent with the implementation:
 
-- `docs/plans/08-v1-release.md` still says `v0.10.0 (current)` even though
-  `package.json` is `0.12.0`.
-- The v1 plan lists template partial extraction and scaffold consolidation as
-  future themes, but `src/templates.ts` already registers root partials and
-  `src/scaffold.ts` already uses a component registry.
-- `README.md` says `skills` contains 21 skills in one table and 22 skills in
-  the file tree.
-- `README.md` "New in v0.9" content is now stale relative to `0.12.0`.
+- The stale v1 release plan was removed after it no longer reflected current
+  implementation.
+- The README had stale release-highlight copy from `v0.9`.
+- README and planning docs had stale skill counts.
 
 Why it matters: contributors and agents will make bad decisions if the planning
 docs are treated as canonical but are behind the code.
 
-Suggested fix:
+Resolution:
 
-- Add a short "Current implementation baseline" section to the v1 plan.
-- Mark already-completed themes as complete or move them to a changelog section.
-- Add a small docs freshness check before release: package version, README
-  "New in" sections, plan status table, and component counts.
+- Replaced the stale README "New in v0.9" block with a current-release summary
+  for `0.13.x`.
+- Corrected README and planning skill counts to match the 23 shipped skills.
+- Added a release docs freshness gate to `docs/plans/README.md`.
+- Updated this critique entry to reflect the current implementation baseline and
+  mark the drift item resolved.
 
 ### 2. Defaults did not match the zero-config story
 

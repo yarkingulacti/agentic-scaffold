@@ -100,7 +100,7 @@ project/
     │   ├── engineering/README.md
     │   └── product/README.md
     ├── .agents/
-    │   ├── skills/               # Agent skill definitions (22 skills)
+    │   ├── skills/               # Agent skill definitions (23 skills)
     │   └── hooks/                # Pre/post lifecycle hooks
     ├── scripts/                  # Markdown memory indexing pipeline
     ├── .scratchpad/              # Local detailed planning
@@ -129,7 +129,7 @@ CLI flags.
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
 | `scripts` | Node.js memory indexing pipeline (flat-file keyword index) | `--skip-scripts` |
-| `skills` | 22 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
+| `skills` | 23 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
 | `hooks` | Pre/post lifecycle hooks for agent workflows (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
 
 Extras are opt-in with `--extras` so zero-config mode stays conservative:
@@ -142,11 +142,14 @@ Extras are opt-in with `--extras` so zero-config mode stays conservative:
 | `onboarding` | Human onboarding guide and setup helper |
 | `all` | Include every extras group |
 
-## New in v0.9
+## Current release
 
-- **Node.js memory pipeline** — Python scripts replaced with zero-dependency Node.js ESM modules (`memory_index.mjs`, `memory_search.mjs`, `memory_bundle.mjs`). No more Python or `sqlite-vec` requirement.
-- **Flat-file keyword index** — SQLite/vector search replaced with a JSON flat-file keyword index. Search works with just `node:fs`, `node:crypto`, and `node:path`.
-- **101 tests** — all tests pass.
+Version `0.13.x` focuses on making scaffold output predictable:
+
+- **Conservative zero-config defaults** — extras are opt-in, so running with no flags writes the core scaffold, `.scratchpad/`, and `.history/` without adding CI, onboarding, contribution, or AI tool config files.
+- **Registry-driven dry-run preview** — `--dry-run` now uses the same component decisions as real scaffolding, including provider-specific CI output and `--skip-history` / `--skip-scratchpad`.
+- **Shared root template partials** — `AGENTS.md` and `CLAUDE.md` share common Handlebars partials, reducing drift between agent entry points.
+- **Component registry rendering** — scaffold groups are rendered through a single component registry rather than repeated per-group control flow.
 
 ## New in v0.7
 

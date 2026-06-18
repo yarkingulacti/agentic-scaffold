@@ -28,3 +28,15 @@ tool itself.
 - Hardening v1.0:                           All phases resolved (self-host, manifest, Node scripts, NO_COLOR, --json, skill validation, --skip-history/scratchpad)
 - Created: 2026-06-17
 - Updated: 2026-06-18
+
+## Release Docs Freshness Gate
+
+Before tagging a release, update or verify:
+
+- `package.json` version matches the intended release tag.
+- `CHANGELOG.md` has a top entry for the release.
+- README "Current release" bullets describe the current behavior, not an older
+  milestone.
+- README component counts match `templates/` contents.
+- Plan status sections do not describe already-shipped work as future work.
+- `docs/plans/09-project-critique.md` statuses match the implemented fixes.
