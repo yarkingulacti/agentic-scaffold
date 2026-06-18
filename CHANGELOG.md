@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.13.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.1...v0.13.2) (2026-06-18)
+
+
+### Fixed
+
+* **unscaffold:** track root-owned scaffold files ([9fb0ae6](https://github.com/yarkingulacti/agentic-scaffold/commit/9fb0ae62d30a25b02604ac3f9d423feb06c013c2))
+
 ## [0.13.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.0...v0.13.1) (2026-06-18)
 
 
