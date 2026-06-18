@@ -136,6 +136,13 @@ CLI flags.
 - **`--skip-hooks` flag** — skip the hooks component group.
 - **98 tests** — detection, scaffolding, CLI, and hooks tested end-to-end.
 
+## New in v0.7.1
+
+- **`unscaffold` command** — `npx @yarkingulacti/agentic-scaffold un` removes all scaffolded files and symlinks interactively; `--force` skips confirmation.
+- **`next` skill** — new agent skill for planning and executing the next development step.
+- **Template refinements** — improved task/issue descriptions, clearer checklists, refined AGENTS.md/CLAUDE.md formatting across all templates.
+- **164 tests** — detection, scaffolding, CLI, unscaffold, and all hooks tested end-to-end.
+
 ## New in v0.6
 
 - **Interactive mode redesign** — shows detected project profile before prompts, pre-fills prompts with detected values, and per-file conflict resolver that asks before overwriting existing files.

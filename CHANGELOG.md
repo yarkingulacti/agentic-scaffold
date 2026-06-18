@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.7.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.7.0...v0.7.1) (2026-06-18)
 
+### Added
+
+- `unscaffold` command (`agentic-scaffold un`) — removes all scaffolded files and symlinks interactively; `--force` skips confirmation. (`src/unscaffold.js`)
+- `next` skill — new agent skill for planning and executing the next development step. (`templates/skills/next/`)
 
 ### Changed
 
-* prepare v0.7.1 release ([26690a2](https://github.com/yarkingulacti/agentic-scaffold/commit/26690a2db0779e614e694c2dbc4190791b1c96ce))
+- Template refinements across all skills, hooks, and docs — improved task/issue descriptions, clearer checklists, refined AGENTS.md/CLAUDE.md formatting.
+- Test suite expanded to 164 tests covering detection, scaffolding, CLI, unscaffold, and all hooks.
 
 ## [0.7.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.6.0...v0.7.0) (2026-06-18)
 
