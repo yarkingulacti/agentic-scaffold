@@ -128,43 +128,47 @@ Resolution:
 
 ### 6. Unscaffold still cannot protect all scaffold-related files
 
-Status: Open
+Status: Resolved
 
-The manifest only tracks files under `.agentic-scaffold/`. Root-level files
-created by extras, such as `.github/` workflows or AI config files, are not
-manifested as scaffold-owned files. Windows fallback copies of `AGENTS.md` and
-`CLAUDE.md` are also not found by symlink detection.
+The manifest previously only tracked files under `.agentic-scaffold/`. Root-level
+files created by extras (`.github/` workflows, AI config files) and Windows
+fallback copies of the entry points were not manifested as scaffold-owned.
 
 Why it matters: "Remove all scaffolded files" is a stronger promise than the
 implementation can keep for root-level extras and copied entry points.
 
-Suggested fix:
+Resolution (v0.13.2–v0.13.3):
 
-- Store manifest paths relative to the target root, not only to
-  `.agentic-scaffold/`.
-- Track root symlinks, Windows copied entry points, and extras outputs.
-- During unscaffold, distinguish "owned and unchanged", "owned and modified",
-  and "unknown new file under scaffold directories".
+- The manifest is now v2 and stores paths relative to the target root, not only
+  to `.agentic-scaffold/`.
+- Root symlinks, copied entry points, and extras outputs are tracked as owned
+  entries.
+- Unscaffold distinguishes "owned and unchanged", "owned and modified", and
+  "unknown new file under scaffold directories" (`findUnknownScaffoldFiles`).
 
 ### 7. Template safety is still mostly convention-based
 
-Status: Open
+Status: Resolved
 
-There is skill frontmatter validation, but template variables and rendered
-output contracts are not validated. A typo in a Handlebars variable can silently
-produce weak docs, and there is no golden snapshot for representative rendered
-projects.
+There was skill frontmatter validation, but template variables and rendered
+output contracts were not validated. A typo in a Handlebars variable could
+silently produce weak docs, and there was no golden snapshot for representative
+rendered projects. This also surfaced two latent bugs: `renderTemplate` compiled
+without `noEscape` (so `<`/`>`/`&` in Markdown values were HTML-escaped), and
+`{{languages}}` was referenced by two templates but never passed in
+`HandlebarsData`.
 
 Why it matters: this repo's main product is generated text. TypeScript coverage
 does not protect most of that surface.
 
-Suggested fix:
+Resolution:
 
-- Implement the planned template variable checker from the v1 plan.
-- Add golden-output tests for a small set of representative projects:
-  TypeScript/GitHub, Python/no-CI, and multi-language with selected extras.
-- Fail CI if generated output references missing files or mismatched script
-  languages.
+- Fixed the `noEscape` and missing-`languages` bugs.
+- Added `bin/validate-templates.ts`: an AST-based checker that fails on unknown
+  variables/partials and on HTML-escape leakage in rendered output. Wired into
+  CI and `prepublishOnly`.
+- Added three golden-output fixtures (`tests/fixtures/{ts-github,python-no-ci,multilang-extras}/`)
+  compared byte-for-byte, regenerated via `UPDATE_GOLDEN=1 npm test`.
 
 ### 8. The product needs a sharper boundary between core scaffold and extras
 

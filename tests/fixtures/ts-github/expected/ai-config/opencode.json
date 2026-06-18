@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/opencode.json",
+  "agents": {
+    "skills": [".agentic-scaffold/.agents/skills/**/SKILL.md"],
+    "hooks": [".agentic-scaffold/.agents/hooks/*.md"]
+  },
+  "context": {
+    "include": [
+      ".agentic-scaffold/AGENTS.md",
+      ".agentic-scaffold/CLAUDE.md",
+      ".agentic-scaffold/BUSINESS_LOGIC.md",
+      ".agentic-scaffold/docs"
+    ]
+  }
+}
