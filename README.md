@@ -48,7 +48,10 @@ npx @yarkingulacti/agentic-scaffold --force
 npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
 
 # Generate AI tool configs
-npx @yarkingulacti/agentic-scaffold --ai-tools opencode,cursor
+npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools opencode,cursor
+
+# Generate extras such as CI, contribution docs, AI config, or onboarding
+npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding
 
 # Choose script language for memory pipeline
 npx @yarkingulacti/agentic-scaffold --script-language node
@@ -126,8 +129,18 @@ CLI flags.
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
 | `scripts` | Node.js memory indexing pipeline (flat-file keyword index) | `--skip-scripts` |
-| `skills` | 21 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
+| `skills` | 22 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
 | `hooks` | Pre/post lifecycle hooks for agent workflows (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
+
+Extras are opt-in with `--extras` so zero-config mode stays conservative:
+
+| Extra | Description |
+|-------|-------------|
+| `ci` | CI/CD templates for the detected or requested provider |
+| `contribute` | Contribution guide, PR template, and review guidance |
+| `ai-config` | AI tool config files such as `opencode.json`, `.cursorrules`, and Copilot instructions |
+| `onboarding` | Human onboarding guide and setup helper |
+| `all` | Include every extras group |
 
 ## New in v0.9
 

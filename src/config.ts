@@ -138,9 +138,10 @@ function resolveIncludes(argv: ScaffoldArgs): Set<string> {
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean)
-    : EXTRAS_GROUPS;
-  for (const e of extras) {
-    if (e !== "all") set.add(e);
+    : [];
+  const extrasToAdd = extras.includes("all") ? EXTRAS_GROUPS : extras;
+  for (const e of extrasToAdd) {
+    if (EXTRAS_GROUPS.includes(e)) set.add(e);
   }
   set.add("history");
   set.add("scratchpad");

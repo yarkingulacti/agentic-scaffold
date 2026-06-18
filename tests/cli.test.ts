@@ -72,6 +72,31 @@ describe("CLI", () => {
       assert.ok(existsSync(p(dir, "AGENTS.md")));
       assert.ok(existsSync(p(dir, S, "BUSINESS_LOGIC.md")));
       assert.ok(existsSync(p(dir, S, ".gitignore")));
+      assert.equal(existsSync(p(dir, "opencode.json")), false);
+      assert.equal(existsSync(p(dir, S, "contribute")), false);
+      assert.equal(existsSync(p(dir, S, "onboarding")), false);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("scaffolds requested extras only", () => {
+      const dir = tempDir();
+      run(`--target ${dir} --force --extras ai-config --skip-docs --skip-skills --skip-scripts --skip-hooks`);
+      assert.ok(existsSync(p(dir, "opencode.json")));
+      assert.equal(existsSync(p(dir, S, "contribute")), false);
+      assert.equal(existsSync(p(dir, S, "onboarding")), false);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("scaffolds all extras when --extras all is set", () => {
+      const dir = tempDir();
+      run(
+        `--target ${dir} --force --extras all --ci-provider github --skip-docs --skip-skills --skip-scripts --skip-hooks`,
+      );
+      assert.ok(existsSync(p(dir, ".github", "workflows", "ci.yml")));
+      assert.ok(existsSync(p(dir, ".github", "dependabot.yml")));
+      assert.ok(existsSync(p(dir, "opencode.json")));
+      assert.ok(existsSync(p(dir, S, "contribute", "CONTRIBUTING.md")));
+      assert.ok(existsSync(p(dir, S, "onboarding", "ONBOARDING.md")));
       rmSync(dir, { recursive: true });
     });
 

@@ -41,13 +41,13 @@ Suggested fix:
 - Add a small docs freshness check before release: package version, README
   "New in" sections, plan status table, and component counts.
 
-### 2. Defaults do not match the zero-config story
+### 2. Defaults did not match the zero-config story
 
-Status: Open
+Status: Resolved
 
 The README promises "auto-detect and scaffold only what's missing", but
-`resolveIncludes()` currently includes every extras group by default when
-`--extras` is omitted. That means zero-config scaffolding can write CI,
+`resolveIncludes()` previously included every extras group by default when
+`--extras` was omitted. That meant zero-config scaffolding could write CI,
 contribution, AI config, and onboarding artifacts, subject to provider/template
 availability, rather than staying focused on the core scaffold.
 
@@ -55,13 +55,14 @@ Why it matters: a tool that claims conservative zero-config behavior should not
 surprise users by writing root-level project files such as `.github/` or AI tool
 config unless those are clearly requested or detected as safe.
 
-Suggested fix:
+Resolution:
 
-- Define a strict contract for `--extras`: opt-in only, detected-only, or
-  scaffold-all-by-default.
-- Update both code and README to match that contract.
-- Add tests for zero-config output with no flags, `--extras ci`, `--extras all`,
-  and each `--skip-*` interaction.
+- Defined `--extras` as opt-in; zero-config now includes only core scaffold
+  groups plus `.history/` and `.scratchpad/`.
+- Added explicit `--extras all` expansion.
+- Updated README examples and component docs to describe extras behavior.
+- Added CLI tests for default output, a single requested extra, and
+  `--extras all`.
 
 ### 3. Runtime default pointed at Python while shipped scripts are Node
 
