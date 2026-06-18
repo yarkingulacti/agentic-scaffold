@@ -1,6 +1,6 @@
 {
   "name": "@yarkingulacti/agentic-scaffold",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Scaffold agentic development documentation & configuration into any project",
   "type": "module",
   "bin": {
@@ -15,7 +15,9 @@
   ],
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test",
+    "release": "commit-and-tag-version",
+    "release:dry": "commit-and-tag-version --dry-run"
   },
   "dependencies": {
     "handlebars": "^4.7.8",
@@ -29,5 +31,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yarkingulacti/agentic-scaffold.git"
+  },
+  "devDependencies": {
+    "commit-and-tag-version": "^12.7.3"
   }
 }
