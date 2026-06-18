@@ -1,39 +1,75 @@
-# MEMORY
+# Git Rules — follow EVERY session
 
-## Git flow — follow this every time
+## 1. Master is production — NEVER push directly
 
-### Golden rules
+Master is the production branch. Every change must flow through a PR. No
+exceptions. No force-push. No direct commits.
 
-1. **Feature branches are mandatory.** Every new feature MUST start by creating a `feature/<short-description>` branch from master. Never commit feature work directly to master.
-2. **Every release gets a version tag.** After merging to master, always create an annotated `git tag v<version>` and push it to origin.
+## 2. Temporary branches for EVERYTHING
 
-### Release workflow
+Every piece of work gets its own branch. Branch from master, never from another
+feature branch. Use Conventional Branch naming:
 
-1. `npm run release` — auto-bumps version, generates changelog, commits, tags
-2. `git push --follow-tags origin master` — triggers CI publish
+- `feat/<short-description>` — new features
+- `fix/<short-description>` — bug fixes
+- `docs/<short-description>` — documentation
+- `refactor/<short-description>` — refactoring
+- `chore/<short-description>` — maintenance, tooling, CI
 
-### Commit format
+## 3. Small branches — no mega-PRs
+
+Break work into small, logical chunks. If a feature touches 5 concerns, it
+should be 5 branches. A PR should be reviewable in under 10 minutes. If you
+find yourself writing a huge diff, stop and split.
+
+## 4. Conventional Commits with a clear title
+
+Every commit starts with a short, descriptive title line:
 
 ```
 <type>(<scope>): <short imperative summary>
 ```
 
-Allowed types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`.
+Allowed types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`,
+`chore`. The title must be readable at a glance — "feat(cli): add --dry-run
+flag", not "wip".
 
-### Before every commit
+## 5. PRs are the delivery mechanism
 
-Check `git status` and `git diff` — stage only intended files.
+Code reaches master exclusively through GitHub PRs. After creating a PR:
 
-### Branch naming
+- Re-read the diff in full
+- Analyse whether each change is correct, tested, and necessary
+- Run the test suite (`npm test`)
+- Run lint + typecheck (`npm run lint && npm run typecheck`)
+- Only then merge
 
-- `feature/<short-description>` — new features
-- `bugfix/<short-description>` — bug fixes
-- `docs/<short-description>` — documentation changes
-- `chore/<short-description>` — maintenance, tooling, CI
+If you find issues during review, fix them in the same branch and push again.
 
-### PR workflow
+## 6. PRs must be complete
 
-1. Create branch from master.
-2. Update `README.md` if change affects user-facing interface.
-3. Commit with conventional format.
-4. Push, create PR, review, merge, delete branch, release.
+Every PR requires:
+
+- A **title** that matches the Conventional Commit format
+- A **description** explaining what changed and why
+- **Comments** showing PR activity (questions, decisions, review notes)
+
+A PR with no description or no activity is not ready to merge.
+
+## 7. Every master PR gets a SemVer tag
+
+Every PR merged to master must result in a SemVer-compliant version tag
+(`v<major>.<minor>.<patch>`). The tag must be pushed to origin.
+
+- Use `npm run release` for automatic version bump, changelog generation,
+  commit, and tag
+- Or manually: `git tag v<version> && git push origin v<version>`
+- The version bump must reflect the PR's scope (patch for fixes, minor for
+  features, major for breaking changes)
+
+## 8. Cleanup after every PR
+
+After merging:
+
+1. Delete the branch (remote and local)
+2. Pull master locally to stay in sync
