@@ -41,8 +41,8 @@ docs/plans/            Design documents and roadmaps
 | `pnpm run validate-skills` | Validate skill frontmatter against schema |
 | `pnpm run validate-templates` | Validate template variables/partials + no HTML-escape leaks |
 | `UPDATE_GOLDEN=1 pnpm test` | Regenerate `tests/fixtures/*/expected/` golden output |
-| `pnpm run release` | Bump version, generate changelog, commit, tag, sync wiki |
-| `pnpm run sync-wiki` | Render `docs/wiki/` and push to the GitHub wiki |
+| `pnpm run release` | Bump version, generate changelog, commit, tag (CI publishes + syncs wiki) |
+| `pnpm run sync-wiki` | Manually render `docs/wiki/` and push to the GitHub wiki |
 | `rtk gain` | Show token savings from RTK-filtered command output |
 | `rtk verify` | Verify RTK hook and project-local `.rtk/filters.toml` |
 

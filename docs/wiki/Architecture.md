@@ -42,13 +42,14 @@ docs/wiki/             Source for this wiki (rendered + pushed on every release)
 | `pnpm run validate-skills` | Validate skill frontmatter against schema |
 | `pnpm run validate-templates` | Validate template variables/partials + no HTML-escape leaks |
 | `UPDATE_GOLDEN=1 pnpm test` | Regenerate `tests/fixtures/*/expected/` golden output |
-| `pnpm run release` | Bump version, generate changelog, commit, tag, sync wiki |
+| `pnpm run release` | Bump version, generate changelog, commit, tag |
 | `pnpm run sync-wiki` | Render `docs/wiki/` and push to the GitHub wiki manually |
 
 ## How this wiki stays current
 
 The wiki is generated, not hand-edited. Page sources live in `docs/wiki/` with a
 `{{VERSION}}` token, and `bin/sync-wiki.mjs` renders them (plus a `Changelog`
-page mirrored from `CHANGELOG.md`) and pushes to `*.wiki.git`. The release
-tooling runs it automatically on the `posttag` hook, so every version bump
-refreshes the wiki. Edit `docs/wiki/` — never the wiki pages directly.
+page mirrored from `CHANGELOG.md`) and pushes to `*.wiki.git`. CI runs it
+automatically on tagged releases (the `wiki` job in
+`.github/workflows/publish.yml`), so every published version refreshes the wiki.
+Edit `docs/wiki/` — never the wiki pages directly.

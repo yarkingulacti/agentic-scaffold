@@ -3,9 +3,9 @@
 //
 // The wiki is generated, never hand-edited: page sources live in docs/wiki/
 // with a {{VERSION}} token, and a Changelog page is mirrored from CHANGELOG.md.
-// This script is invoked automatically by commit-and-tag-version's `posttag`
-// hook (see .versionrc.json) so every version bump refreshes the wiki, and can
-// be run manually via `pnpm run sync-wiki`.
+// This script runs automatically in CI on tagged releases (the `wiki` job in
+// .github/workflows/publish.yml) so every published version refreshes the wiki,
+// and can be run manually via `pnpm run sync-wiki`.
 //
 // Flags:
 //   --strict   Exit non-zero on failure (default: warn and exit 0 so a release

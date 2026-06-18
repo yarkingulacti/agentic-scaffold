@@ -14,8 +14,5 @@
   ],
   "tagPrefix": "v",
   "packageFiles": ["package.json"],
-  "bumpFiles": ["package.json"],
-  "scripts": {
-    "posttag": "node bin/sync-wiki.mjs"
-  }
+  "bumpFiles": ["package.json"]
 }

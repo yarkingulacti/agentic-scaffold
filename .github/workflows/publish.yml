@@ -78,3 +78,24 @@ jobs:
           pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  wiki:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Renders docs/wiki/ (+ a Changelog mirror) and pushes to the project wiki.
+      # The script needs only Node built-ins, so no dependency install is needed.
+      # Non-strict by default: until the wiki's first page is created once via the
+      # GitHub UI, the push is a logged no-op instead of a failed release.
+      - name: Sync wiki
+        run: node bin/sync-wiki.mjs
+        env:
+          AGENTIC_WIKI_REMOTE: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
