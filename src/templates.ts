@@ -53,67 +53,15 @@ export interface DryRunEntry {
   type: "file" | "dir";
 }
 
-export function listDryRunFiles(dir: string, components: string[]): DryRunEntry[] {
-  const dirs: { src: string; destBase: string }[] = [
-    { src: join(dir, "root"), destBase: ".agentic-scaffold" },
-    ...(components.includes("docs") ? [{ src: join(dir, "docs"), destBase: ".agentic-scaffold/docs" }] : []),
-    ...(components.includes("scripts") ? [{ src: join(dir, "scripts"), destBase: ".agentic-scaffold/scripts" }] : []),
-    ...(components.includes("skills")
-      ? [{ src: join(dir, "skills"), destBase: ".agentic-scaffold/.agents/skills" }]
-      : []),
-    ...(components.includes("hooks") ? [{ src: join(dir, "hooks"), destBase: ".agentic-scaffold/.agents/hooks" }] : []),
-    ...(components.includes("ci")
-      ? [
-          { src: join(dir, "ci", "github"), destBase: ".github" },
-          { src: join(dir, "ci", "gitlab"), destBase: "." },
-        ]
-      : []),
-    ...(components.includes("contribute")
-      ? [{ src: join(dir, "contribute"), destBase: ".agentic-scaffold/contribute" }]
-      : []),
-    ...(components.includes("ai-config") ? [{ src: join(dir, "ai-config"), destBase: "." }] : []),
-    ...(components.includes("onboarding")
-      ? [{ src: join(dir, "onboarding"), destBase: ".agentic-scaffold/onboarding" }]
-      : []),
-    { src: join(dir, "scratchpad"), destBase: ".agentic-scaffold/.scratchpad" },
-    { src: join(dir, "history"), destBase: ".agentic-scaffold/.history" },
-  ];
+export function listRenderedFiles(srcDir: string, destDir: string): DryRunEntry[] {
   const entries: DryRunEntry[] = [];
-  for (const { src, destBase } of dirs) {
-    if (!existsSync(src)) continue;
-    for (const entry of walkDir(src)) {
-      const basename = entry.name.split("/").pop() ?? entry.name;
-      if (basename.startsWith("_")) continue;
-      const isHbs = entry.name.endsWith(".hbs");
-      const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
-      entries.push({ dest: join(destBase, outName), type: "file" });
-    }
+  if (!existsSync(srcDir)) return entries;
+  for (const entry of walkDir(srcDir)) {
+    const basename = entry.name.split("/").pop() ?? entry.name;
+    if (basename.startsWith("_")) continue;
+    const isHbs = entry.name.endsWith(".hbs");
+    const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
+    entries.push({ dest: join(destDir, outName), type: "file" });
   }
   return entries;
-}
-
-export function countTemplateFiles(dir: string, components: string[]): number {
-  const dirs = [
-    join(dir, "root"),
-    ...(components.includes("docs") ? [join(dir, "docs")] : []),
-    ...(components.includes("scripts") ? [join(dir, "scripts")] : []),
-    ...(components.includes("skills") ? [join(dir, "skills")] : []),
-    ...(components.includes("hooks") ? [join(dir, "hooks")] : []),
-    ...(components.includes("ci") ? [join(dir, "ci")] : []),
-    ...(components.includes("contribute") ? [join(dir, "contribute")] : []),
-    ...(components.includes("ai-config") ? [join(dir, "ai-config")] : []),
-    ...(components.includes("onboarding") ? [join(dir, "onboarding")] : []),
-    join(dir, "scratchpad"),
-    join(dir, "history"),
-  ];
-  return dirs.reduce((sum, d) => {
-    if (!existsSync(d)) return sum;
-    return (
-      sum +
-      walkDir(d).filter((e) => {
-        const basename = e.name.split("/").pop() ?? e.name;
-        return !basename.startsWith("_");
-      }).length
-    );
-  }, 0);
 }

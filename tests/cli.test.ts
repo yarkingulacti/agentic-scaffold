@@ -100,6 +100,39 @@ describe("CLI", () => {
       rmSync(dir, { recursive: true });
     });
 
+    it("dry-run previews without writing files", () => {
+      const dir = tempDir();
+      const out = run(`--target ${dir} --dry-run --skip-skills --skip-scripts`);
+      assert.ok(out.includes("Dry run"));
+      assert.ok(out.includes(".agentic-scaffold/AGENTS.md"));
+      assert.equal(existsSync(p(dir, "AGENTS.md")), false);
+      assert.equal(existsSync(p(dir, S)), false);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("dry-run respects skipped working directories", () => {
+      const dir = tempDir();
+      const out = run(
+        `--target ${dir} --dry-run --skip-history --skip-scratchpad --skip-docs --skip-skills --skip-scripts --skip-hooks`,
+      );
+      assert.equal(out.includes(".agentic-scaffold/.history"), false);
+      assert.equal(out.includes(".agentic-scaffold/.scratchpad"), false);
+      assert.ok(out.includes(".agentic-scaffold/AGENTS.md"));
+      rmSync(dir, { recursive: true });
+    });
+
+    it("dry-run previews only the selected CI provider", () => {
+      const dir = tempDir();
+      const out = run(
+        `--target ${dir} --dry-run --extras ci --ci-provider github --skip-docs --skip-skills --skip-scripts --skip-hooks --skip-history --skip-scratchpad`,
+      );
+      assert.ok(out.includes(".github/workflows/ci.yml"));
+      assert.ok(out.includes(".github/dependabot.yml"));
+      assert.equal(out.includes(".gitlab-ci.yml"), false);
+      assert.equal(out.includes(".circleci/config.yml"), false);
+      rmSync(dir, { recursive: true });
+    });
+
     it("prints summary with file counts", () => {
       const dir = tempDir();
       const out = run(`--target ${dir} --force --skip-skills --skip-scripts`);

@@ -87,26 +87,27 @@ Remaining follow-up:
 - Decide whether `python` and `docker` should remain accepted CLI choices before
   matching template output modes exist.
 
-### 4. Dry-run is not the same plan the scaffold will execute
+### 4. Dry-run was not the same plan the scaffold would execute
 
-Status: Open
+Status: Resolved
 
-`listDryRunFiles()` is a separate hard-coded mapping from the real component
-registry. It includes both GitHub and GitLab CI files whenever `ci` is selected,
-while `ciRender()` only renders the detected or requested provider. It also
-unconditionally includes scratchpad and history, even when skipped.
+`listDryRunFiles()` was a separate hard-coded mapping from the real component
+registry. It could drift from actual provider-specific and skip-specific
+rendering decisions, which made the preview less trustworthy than the write
+path.
 
 Why it matters: `--dry-run` is a safety feature. If its output is inaccurate,
 users cannot trust it before running a file-writing command.
 
-Suggested fix:
+Resolution:
 
-- Derive dry-run entries from the same `COMPONENTS` registry used for actual
-  writes, or make component metadata explicit enough to share.
-- Pass full `ScaffoldConfig` into dry-run listing so provider-specific and
-  skip-specific decisions are identical.
-- Add tests for dry-run with `--ci-provider github`, `--skip-history`, and
-  `--skip-scratchpad`.
+- Added component-level dry-run planning to the same `COMPONENTS` registry used
+  for real writes.
+- Made CI dry-run output provider-specific and skip-aware through
+  `ScaffoldConfig`.
+- Reused the component dry-run plan for progress totals.
+- Added CLI tests for dry-run no-write behavior, skipped `.history/` and
+  `.scratchpad/`, and provider-specific GitHub CI output.
 
 ### 5. Detection collects richer facts than rendering uses
 

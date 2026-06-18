@@ -6,7 +6,8 @@ import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.j
 import type { WriteOptions } from "./fs-utils.js";
 import { copyStaticDir, createSymlinks, writeManifest } from "./fs-utils.js";
 import { askAITools, askComponents, askIssueTracker, askProjectName } from "./prompts.js";
-import { countTemplateFiles, listDryRunFiles, renderDir } from "./templates.js";
+import type { DryRunEntry } from "./templates.js";
+import { listRenderedFiles, renderDir } from "./templates.js";
 import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -37,6 +38,7 @@ function showDetectedProfile(config: ScaffoldConfig): void {
 interface Component {
   name: string;
   render: (config: ScaffoldConfig, hbData: HandlebarsData, opts: WriteOptions) => Promise<string[]>;
+  dryRun: (config: ScaffoldConfig) => DryRunEntry[];
 }
 
 type DestBase = "scaffold" | "target";
@@ -46,46 +48,67 @@ function componentRender(
   destRel: string,
   destBase: DestBase = "scaffold",
   staticOnly = false,
-): Component["render"] {
-  return async (config, hbData, opts) => {
-    const src = join(TEMPLATES_DIR, srcSubdir);
-    const base = destBase === "target" ? config.target : config.scaffoldDir;
-    const dest = destRel ? join(base, destRel) : base;
-    const writeOpts = { force: config.force, interactive: config.interactive, ...opts };
-    if (staticOnly) return copyStaticDir(src, dest, writeOpts);
-    return renderDir(src, dest, hbData, writeOpts);
+): Pick<Component, "render" | "dryRun"> {
+  const src = join(TEMPLATES_DIR, srcSubdir);
+  const relBase = destBase === "target" ? "." : ".agentic-scaffold";
+  const relDest = destRel ? join(relBase, destRel) : relBase;
+  return {
+    render: async (config, hbData, opts) => {
+      const base = destBase === "target" ? config.target : config.scaffoldDir;
+      const dest = destRel ? join(base, destRel) : base;
+      const writeOpts = { force: config.force, interactive: config.interactive, ...opts };
+      if (staticOnly) return copyStaticDir(src, dest, writeOpts);
+      return renderDir(src, dest, hbData, writeOpts);
+    },
+    dryRun: () => listRenderedFiles(src, relDest),
   };
 }
 
-function ciRender(): Component["render"] {
+function ciComponent(): Pick<Component, "render" | "dryRun"> {
   const CI_PROVIDER_MAP: Record<string, { src: string; dest: string }> = {
     github: { src: "github", dest: ".github" },
     gitlab: { src: "gitlab", dest: "." },
     circleci: { src: "circleci", dest: ".circleci" },
   };
-  return async (config, hbData, opts) => {
-    if (!config.ciProvider) return [];
-    const provider = CI_PROVIDER_MAP[config.ciProvider];
-    if (!provider) return [];
-    const src = join(TEMPLATES_DIR, "ci", provider.src);
-    const dest = join(config.target, provider.dest);
-    return renderDir(src, dest, hbData, { force: config.force, interactive: config.interactive, ...opts });
+  return {
+    render: async (config, hbData, opts) => {
+      if (!config.ciProvider) return [];
+      const provider = CI_PROVIDER_MAP[config.ciProvider];
+      if (!provider) return [];
+      const src = join(TEMPLATES_DIR, "ci", provider.src);
+      const dest = join(config.target, provider.dest);
+      return renderDir(src, dest, hbData, { force: config.force, interactive: config.interactive, ...opts });
+    },
+    dryRun: (config) => {
+      if (!config.ciProvider) return [];
+      const provider = CI_PROVIDER_MAP[config.ciProvider];
+      if (!provider) return [];
+      return listRenderedFiles(join(TEMPLATES_DIR, "ci", provider.src), provider.dest);
+    },
   };
 }
 
 const COMPONENTS: Component[] = [
-  { name: "root", render: componentRender("root", "") },
-  { name: "docs", render: componentRender("docs", "docs") },
-  { name: "scripts", render: componentRender("scripts", "scripts") },
-  { name: "skills", render: componentRender("skills", ".agents/skills", "scaffold", true) },
-  { name: "hooks", render: componentRender("hooks", ".agents/hooks") },
-  { name: "ci", render: ciRender() },
-  { name: "contribute", render: componentRender("contribute", "contribute") },
-  { name: "ai-config", render: componentRender("ai-config", "", "target") },
-  { name: "onboarding", render: componentRender("onboarding", "onboarding") },
-  { name: "history", render: componentRender("history", ".history", "scaffold", true) },
-  { name: "scratchpad", render: componentRender("scratchpad", ".scratchpad", "scaffold", true) },
+  { name: "root", ...componentRender("root", "") },
+  { name: "docs", ...componentRender("docs", "docs") },
+  { name: "scripts", ...componentRender("scripts", "scripts") },
+  { name: "skills", ...componentRender("skills", ".agents/skills", "scaffold", true) },
+  { name: "hooks", ...componentRender("hooks", ".agents/hooks") },
+  { name: "ci", ...ciComponent() },
+  { name: "contribute", ...componentRender("contribute", "contribute") },
+  { name: "ai-config", ...componentRender("ai-config", "", "target") },
+  { name: "onboarding", ...componentRender("onboarding", "onboarding") },
+  { name: "history", ...componentRender("history", ".history", "scaffold", true) },
+  { name: "scratchpad", ...componentRender("scratchpad", ".scratchpad", "scaffold", true) },
 ];
+
+function selectedComponents(config: ScaffoldConfig): Component[] {
+  return COMPONENTS.filter((comp) => comp.name === "root" || config.include.has(comp.name));
+}
+
+function dryRunEntries(config: ScaffoldConfig): DryRunEntry[] {
+  return selectedComponents(config).flatMap((comp) => comp.dryRun(config));
+}
 
 interface JsonResult {
   written: number;
@@ -125,7 +148,7 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
   out(config, `\n${infoBox(rows)}`);
 
   if (config.dryRun) {
-    const entries = listDryRunFiles(TEMPLATES_DIR, [...config.include]);
+    const entries = dryRunEntries(config);
     out(config, `\n ${style.bold("Dry run — no files will be written:")}`);
     out(config, `   ${style.cyan(String(entries.length))} files would be created\n`);
     for (const entry of entries) {
@@ -139,7 +162,7 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
     return;
   }
 
-  const total = countTemplateFiles(TEMPLATES_DIR, [...config.include]);
+  const total = dryRunEntries(config).length;
   let done = 0;
   const tickOpts: WriteOptions = {
     onProgress: () => {
@@ -153,10 +176,8 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
   };
 
   const results: string[] = [];
-  for (const comp of COMPONENTS) {
-    if (comp.name === "root" || config.include.has(comp.name)) {
-      results.push(...(await comp.render(config, hbData, tickOpts)));
-    }
+  for (const comp of selectedComponents(config)) {
+    results.push(...(await comp.render(config, hbData, tickOpts)));
   }
 
   results.push(...(await createSymlinks(config.target, config.scaffoldDir)));
