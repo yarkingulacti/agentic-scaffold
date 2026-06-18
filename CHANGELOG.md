@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.1.1...v1.1.2) (2026-06-18)
+
+
+### Fixed
+
+* **ci:** push only the new version tag in release:push ([#23](https://github.com/yarkingulacti/agentic-scaffold/issues/23)) ([dbd3cb0](https://github.com/yarkingulacti/agentic-scaffold/commit/dbd3cb0034059081da6a4a886d3a7a8f20c889db))
+
 ## [1.1.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.1.0...v1.1.1) (2026-06-18)
 
 
