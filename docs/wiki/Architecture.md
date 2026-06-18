@@ -28,6 +28,43 @@ docs/plans/            Design documents and roadmaps
 docs/wiki/             Source for this wiki (rendered + pushed on every release)
 ```
 
+## Module dependencies
+
+`bin/index.ts` parses CLI args and calls `scaffold` / `unscaffold`. `scaffold.ts`
+is the orchestrator hub; `detect.ts`, `paths.ts`, `prompts.ts`, and `ui.ts` are
+leaves (only `node:` built-ins). The two runtime dependencies are isolated:
+`yargs` lives only in `bin/index.ts`, `handlebars` only in `templates.ts`.
+
+```mermaid
+graph TD
+  bin["bin/index.ts (yargs)"] --> scaffold
+  bin --> unscaffold
+  bin --> config
+  scaffold["scaffold.ts (orchestrator)"] --> components
+  scaffold --> config
+  scaffold --> fsutils["fs-utils.ts"]
+  scaffold --> prompts
+  scaffold --> templates
+  scaffold --> ui
+  scaffold --> paths
+  components["components.ts"] --> config
+  components --> fsutils
+  components --> templates
+  components --> paths
+  config["config.ts"] --> components
+  config --> detect["detect.ts"]
+  templates["templates.ts (handlebars)"] --> fsutils
+  templates --> paths
+  fsutils --> prompts["prompts.ts"]
+  unscaffold["unscaffold.ts"] --> fsutils
+  unscaffold --> ui["ui.ts"]
+```
+
+> Note the `config.ts` ↔ `components.ts` back-edge: `config.ts` imports
+> `componentNamesByCategory` / `AI_CONFIG_TOOLS` at runtime, while `components.ts`
+> imports only **types** from `config.ts`. The type-only direction means there is
+> no runtime import cycle.
+
 ## Maintainer commands
 
 | Command | What it does |
