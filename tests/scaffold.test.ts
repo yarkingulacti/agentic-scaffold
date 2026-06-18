@@ -325,7 +325,7 @@ describe("scaffold", () => {
     await scaffold({
       target: dir,
       force: true,
-      extras: "ai-config,ci",
+      extras: "ai-config,ci,rtk",
       ciProvider: "github",
       skipDocs: true,
       skipScripts: true,
@@ -343,6 +343,7 @@ describe("scaffold", () => {
     assert.ok(paths.has("opencode.json"));
     assert.ok(paths.has(".github/workflows/ci.yml"));
     assert.ok(paths.has(".github/dependabot.yml"));
+    assert.ok(paths.has(".rtk/filters.toml"));
     assert.ok(paths.has("AGENTS.md"));
     assert.ok(paths.has(".agentic-scaffold/AGENTS.md"));
     assert.equal(manifest.files.find((entry) => entry.path === "AGENTS.md")?.type, "symlink");

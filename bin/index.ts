@@ -18,7 +18,7 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     .example("$0", "Zero-config: auto-detect and scaffold missing files")
     .example("$0 --force", "Force overwrite existing files")
     .example("$0 --ci-provider github", "Override auto-detected CI provider")
-    .example("$0 --extras ci,onboarding", "Only scaffold CI and onboarding extras")
+    .example("$0 --extras ci,onboarding,rtk", "Scaffold CI, onboarding, and RTK token filters")
     .example("$0 --ai-tools all", "Generate configs for all known AI tools")
     .example("$0 --ai-tools opencode,cursor", "Generate configs for specific AI tools")
     .example("$0 -i", "Interactive mode with prompts")
@@ -54,7 +54,7 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     })
     .option("extras", {
       type: "string",
-      description: "Comma-separated extras groups: ci,contribute,ai-config,onboarding,all",
+      description: "Comma-separated extras groups: ci,contribute,ai-config,onboarding,rtk,all",
     })
     .option("skip-skills", {
       type: "boolean",
@@ -89,6 +89,10 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     .option("skip-onboarding", {
       type: "boolean",
       description: "Skip onboarding guide templates",
+    })
+    .option("skip-rtk", {
+      type: "boolean",
+      description: "Skip RTK token-cost filter templates",
     })
     .option("skip-history", {
       type: "boolean",

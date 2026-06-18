@@ -5,6 +5,17 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.14.2...v0.15.0) (2026-06-18)
+
+### Added
+
+* **rtk:** ship RTK token-cost filters as an opt-in scaffold extra
+
+
+### Changed
+
+* **release:** harden scaffold release contract ([696b05b](https://github.com/yarkingulacti/agentic-scaffold/commit/696b05bb18eaec79cc19caf66ee5b67bb82ace28))
+
 ## [0.14.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.14.1...v0.14.2) (2026-06-18)
 
 

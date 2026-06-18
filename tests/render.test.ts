@@ -27,6 +27,7 @@ function sampleData(overrides: Partial<HandlebarsData> = {}): HandlebarsData {
     incompleteFiles: [],
     includeScripts: true,
     includeHooks: true,
+    includeRtk: true,
     ...overrides,
   };
 }
@@ -45,6 +46,14 @@ describe("template rendering", () => {
 
     const onboarding = renderTemplate(join(TEMPLATES, "onboarding", "ONBOARDING.md.hbs"), sampleData());
     assert.ok(onboarding.includes("Languages needed: TypeScript, Python."));
+  });
+
+  it("renders RTK guidance only when the RTK extra is included", () => {
+    const withRtk = renderTemplate(join(TEMPLATES, "root", "AGENTS.md.hbs"), sampleData({ includeRtk: true }));
+    assert.ok(withRtk.includes(".rtk/filters.toml"));
+
+    const withoutRtk = renderTemplate(join(TEMPLATES, "root", "AGENTS.md.hbs"), sampleData({ includeRtk: false }));
+    assert.ok(!withoutRtk.includes(".rtk/filters.toml"));
   });
 
   it("omits the languages line when none are detected", () => {

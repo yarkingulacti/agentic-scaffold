@@ -34,6 +34,7 @@ export interface ScaffoldArgs {
   skipContribute?: boolean;
   skipAiConfig?: boolean;
   skipOnboarding?: boolean;
+  skipRtk?: boolean;
   skipHistory?: boolean;
   skipScratchpad?: boolean;
 }
@@ -86,6 +87,7 @@ export interface HandlebarsData {
   incompleteFiles: IncompleteFile[];
   includeScripts: boolean;
   includeHooks: boolean;
+  includeRtk: boolean;
 }
 
 export interface IncompleteFile {
@@ -160,6 +162,7 @@ function resolveIncludes(argv: ScaffoldArgs): Set<string> {
   if (argv.skipContribute) set.delete("contribute");
   if (argv.skipAiConfig) set.delete("ai-config");
   if (argv.skipOnboarding) set.delete("onboarding");
+  if (argv.skipRtk) set.delete("rtk");
   if (argv.skipHistory) set.delete("history");
   if (argv.skipScratchpad) set.delete("scratchpad");
   return set;
@@ -230,6 +233,7 @@ export function buildHandlebars(config: ScaffoldConfig, version: string): Handle
     incompleteFiles: buildIncompleteFiles(config),
     includeScripts: config.include.has("scripts"),
     includeHooks: config.include.has("hooks"),
+    includeRtk: config.include.has("rtk"),
   };
 }
 

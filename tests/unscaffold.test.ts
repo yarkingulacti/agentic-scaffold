@@ -60,7 +60,7 @@ describe("unscaffold", () => {
     await scaffold({
       target: dir,
       force: true,
-      extras: "ai-config,ci",
+      extras: "ai-config,ci,rtk",
       ciProvider: "github",
       skipDocs: true,
       skipScripts: true,
@@ -71,6 +71,7 @@ describe("unscaffold", () => {
     assert.ok(existsSync(p(dir, "opencode.json")));
     assert.ok(existsSync(p(dir, ".github", "workflows", "ci.yml")));
     assert.ok(existsSync(p(dir, ".github", "dependabot.yml")));
+    assert.ok(existsSync(p(dir, ".rtk", "filters.toml")));
     assert.ok(existsSync(p(dir, "AGENTS.md")));
 
     await unscaffold({ target: dir, force: true, quiet: true });
@@ -78,6 +79,7 @@ describe("unscaffold", () => {
     assert.equal(existsSync(p(dir, "opencode.json")), false);
     assert.equal(existsSync(p(dir, ".github", "workflows", "ci.yml")), false);
     assert.equal(existsSync(p(dir, ".github", "dependabot.yml")), false);
+    assert.equal(existsSync(p(dir, ".rtk", "filters.toml")), false);
     assert.equal(existsSync(p(dir, "AGENTS.md")), false);
     assert.equal(existsSync(p(dir, "CLAUDE.md")), false);
     assert.equal(existsSync(p(dir, S)), false);

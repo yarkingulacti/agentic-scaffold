@@ -37,11 +37,11 @@ export async function askOverwrite(filePath: string): Promise<boolean> {
 export async function askComponents(): Promise<string[]> {
   const r = rl();
   console.log("\nComponent groups to include (comma-separated):");
-  console.log("  docs, scripts, skills, hooks, ci, ai-config, contribute, onboarding");
+  console.log("  docs, scripts, skills, hooks, ci, ai-config, contribute, onboarding, rtk");
   const answer = await r.question("All [default]: ");
   r.close();
   const trimmed = answer.trim().toLowerCase();
-  if (!trimmed) return ["docs", "scripts", "skills", "hooks", "ci", "ai-config", "contribute", "onboarding"];
+  if (!trimmed) return ["docs", "scripts", "skills", "hooks", "ci", "ai-config", "contribute", "onboarding", "rtk"];
   return trimmed
     .split(",")
     .map((s) => s.trim())

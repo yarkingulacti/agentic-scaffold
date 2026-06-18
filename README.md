@@ -50,8 +50,8 @@ npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
 # Generate AI tool configs
 npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools opencode,cursor
 
-# Generate extras such as CI, contribution docs, AI config, or onboarding
-npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding
+# Generate extras such as CI, contribution docs, AI config, RTK filters, or onboarding
+npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding,rtk
 
 # Memory pipeline runtime (currently fixed to the shipped Node.js .mjs scripts)
 npx @yarkingulacti/agentic-scaffold --script-language node
@@ -141,15 +141,17 @@ Extras are opt-in with `--extras` so zero-config mode stays conservative:
 | `contribute` | Contribution guide, PR template, and review guidance |
 | `ai-config` | AI tool config files such as `opencode.json`, `.cursorrules`, and Copilot instructions |
 | `onboarding` | Human onboarding guide and setup helper |
+| `rtk` | Project-local RTK token-cost filters in `.rtk/filters.toml` |
 | `all` | Include every extras group |
 
 ## Current release
 
 Version `0.14.x` focuses on making scaffold output predictable and releasable:
 
-- **Conservative zero-config defaults** — extras are opt-in, so running with no flags writes the core scaffold, `.scratchpad/`, and `.history/` without adding CI, onboarding, contribution, or AI tool config files.
+- **Conservative zero-config defaults** — extras are opt-in, so running with no flags writes the core scaffold, `.scratchpad/`, and `.history/` without adding CI, onboarding, contribution, AI tool config, or RTK filter files.
 - **Registry-driven dry-run preview** — `--dry-run` now uses the same component decisions as real scaffolding, including provider-specific CI output and `--skip-history` / `--skip-scratchpad`.
 - **Template and golden-output validation** — template variables, Markdown escaping, and representative rendered projects are validated before publish.
+- **RTK filter extra** — generated projects can opt into `.rtk/filters.toml` with `--extras rtk` or `--extras all` to reduce agent token cost from noisy shell output.
 - **Component registry rendering** — scaffold groups are rendered through a single component registry rather than repeated per-group control flow.
 
 ## New in v0.7

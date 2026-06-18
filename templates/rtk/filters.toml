@@ -1,0 +1,32 @@
+# Project-local RTK filters. Commit this file with your repo and run
+# `rtk trust` from the project root to enable compact output for agent sessions.
+# Docs: https://github.com/rtk-ai/rtk#custom-filters
+schema_version = 1
+
+[filters.project-node-checks]
+description = "Compact common Node.js project checks"
+match_command = "^(npm|pnpm|yarn) (test|run (test|lint|format:check|typecheck|build|validate.*|prepublishOnly))"
+strip_ansi = true
+strip_lines_matching = [
+  "^\\s*$",
+  "^\\s*> .*@.*$",
+  "^\\s*> (biome|eslint|prettier|tsc|vitest|jest|node --test|node --import).*$",
+  "^\\s*duration_ms:",
+  "^\\s*type: 'test'",
+  "^\\s*type: 'suite'",
+  "^\\s*\\.\\.\\.$",
+  "^\\s*---$",
+]
+max_lines = 180
+on_empty = "project checks: ok"
+
+[filters.project-git-noise]
+description = "Compact verbose git and GitHub CLI output"
+match_command = "^(git|gh) "
+strip_ansi = true
+strip_lines_matching = [
+  "^remote: ",
+  "^From https?://",
+  "^To https?://",
+]
+max_lines = 120
