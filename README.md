@@ -107,6 +107,9 @@ npx @yarkingulacti/agentic-scaffold --force
 # Override auto-detection
 npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
 
+# Override detected languages (comma-separated; useful for monorepos and C++/Godot/mobile stacks)
+npx @yarkingulacti/agentic-scaffold --languages ts,cpp,godot,swift
+
 # Generate AI tool configs
 npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools opencode,cursor
 

@@ -19,6 +19,9 @@ npx @yarkingulacti/agentic-scaffold --force
 # Override auto-detection
 npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
 
+# Override detected languages (comma-separated)
+npx @yarkingulacti/agentic-scaffold --languages ts,cpp,godot,swift
+
 # Generate AI tool configs
 npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools opencode,cursor
 
@@ -74,6 +77,7 @@ npx @yarkingulacti/agentic-scaffold un --force
 | `--package-manager` | `npm` \| `yarn` \| `pnpm` \| `pip` \| `poetry` \| `go-mod` \| `cargo` | Package manager (overrides auto-detection) |
 | `--ci-provider` | `github` \| `gitlab` \| `circleci` | CI provider (overrides auto-detection) |
 | `--ai-tools` | string | Comma-separated AI tools to configure: `opencode,cursor,copilot` |
+| `--languages` | string | Comma-separated languages, overrides auto-detection: `ts,js,python,go,rust,cpp,godot,swift,kotlin,java,dart` |
 | `--script-language` | `node` | Memory script runtime. Only `node` is supported because the shipped scripts are `.mjs` files. |
 
 See **[Components & Extras](Components-and-Extras)** for what each group writes.
