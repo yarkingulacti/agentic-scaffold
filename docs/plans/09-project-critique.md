@@ -1,0 +1,199 @@
+# Project Critique Backlog
+
+Audit from 2026-06-18. This is intentionally critical: it captures product,
+architecture, and maintenance risks that are not fully covered by the earlier
+roadmaps.
+
+Status legend: Open / In progress / Resolved
+
+## Executive critique
+
+`agentic-scaffold` has crossed from "useful generator" into "small product",
+but the planning docs still describe earlier milestones as future work while
+the code has already moved on. The main risk is no longer missing templates.
+It is product coherence: defaults, documentation, dry-run output, detection, and
+unscaffold behavior need to agree with one another.
+
+## Priority critiques
+
+### 1. Planning and README drift are now a release risk
+
+Status: Open
+
+The planning set is inconsistent with the implementation:
+
+- `docs/plans/08-v1-release.md` still says `v0.10.0 (current)` even though
+  `package.json` is `0.12.0`.
+- The v1 plan lists template partial extraction and scaffold consolidation as
+  future themes, but `src/templates.ts` already registers root partials and
+  `src/scaffold.ts` already uses a component registry.
+- `README.md` says `skills` contains 21 skills in one table and 22 skills in
+  the file tree.
+- `README.md` "New in v0.9" content is now stale relative to `0.12.0`.
+
+Why it matters: contributors and agents will make bad decisions if the planning
+docs are treated as canonical but are behind the code.
+
+Suggested fix:
+
+- Add a short "Current implementation baseline" section to the v1 plan.
+- Mark already-completed themes as complete or move them to a changelog section.
+- Add a small docs freshness check before release: package version, README
+  "New in" sections, plan status table, and component counts.
+
+### 2. Defaults do not match the zero-config story
+
+Status: Open
+
+The README promises "auto-detect and scaffold only what's missing", but
+`resolveIncludes()` currently includes every extras group by default when
+`--extras` is omitted. That means zero-config scaffolding can write CI,
+contribution, AI config, and onboarding artifacts, subject to provider/template
+availability, rather than staying focused on the core scaffold.
+
+Why it matters: a tool that claims conservative zero-config behavior should not
+surprise users by writing root-level project files such as `.github/` or AI tool
+config unless those are clearly requested or detected as safe.
+
+Suggested fix:
+
+- Define a strict contract for `--extras`: opt-in only, detected-only, or
+  scaffold-all-by-default.
+- Update both code and README to match that contract.
+- Add tests for zero-config output with no flags, `--extras ci`, `--extras all`,
+  and each `--skip-*` interaction.
+
+### 3. Runtime default pointed at Python while shipped scripts are Node
+
+Status: Resolved
+
+`DEFAULTS.scriptLanguage` previously used `python`, and tests asserted that
+default in rendered `AGENTS.md`. The generated memory scripts are Node.js
+`.mjs` files, so a target project with no detectable language could be told
+"Memory and utility scripts use python" while only Node scripts existed.
+
+Why it matters: this creates immediate post-scaffold confusion in exactly the
+zero-config case where the user has provided the least context.
+
+Resolution:
+
+- Changed the default script language to `node`.
+- Added a regression test that generated `AGENTS.md` agrees with the generated
+  `.agentic-scaffold/scripts/memory_*.mjs` files.
+
+Remaining follow-up:
+
+- Decide whether `python` and `docker` should remain accepted CLI choices before
+  matching template output modes exist.
+
+### 4. Dry-run is not the same plan the scaffold will execute
+
+Status: Open
+
+`listDryRunFiles()` is a separate hard-coded mapping from the real component
+registry. It includes both GitHub and GitLab CI files whenever `ci` is selected,
+while `ciRender()` only renders the detected or requested provider. It also
+unconditionally includes scratchpad and history, even when skipped.
+
+Why it matters: `--dry-run` is a safety feature. If its output is inaccurate,
+users cannot trust it before running a file-writing command.
+
+Suggested fix:
+
+- Derive dry-run entries from the same `COMPONENTS` registry used for actual
+  writes, or make component metadata explicit enough to share.
+- Pass full `ScaffoldConfig` into dry-run listing so provider-specific and
+  skip-specific decisions are identical.
+- Add tests for dry-run with `--ci-provider github`, `--skip-history`, and
+  `--skip-scratchpad`.
+
+### 5. Detection collects richer facts than rendering uses
+
+Status: Open
+
+`detectProjectProfile()` detects Dockerfile, `.env.example`, contributing docs,
+changelog, API docs, and migrations. Most of those facts do not currently affect
+selection, output, or completion guidance.
+
+Why it matters: unused detection adds maintenance cost and implies intelligence
+the tool does not actually provide.
+
+Suggested fix:
+
+- Either remove unused fields until a feature needs them, or use them to drive
+  extras selection and "already present" guidance.
+- Add a detection-to-rendering matrix in the docs so each detected field has an
+  owner and purpose.
+
+### 6. Unscaffold still cannot protect all scaffold-related files
+
+Status: Open
+
+The manifest only tracks files under `.agentic-scaffold/`. Root-level files
+created by extras, such as `.github/` workflows or AI config files, are not
+manifested as scaffold-owned files. Windows fallback copies of `AGENTS.md` and
+`CLAUDE.md` are also not found by symlink detection.
+
+Why it matters: "Remove all scaffolded files" is a stronger promise than the
+implementation can keep for root-level extras and copied entry points.
+
+Suggested fix:
+
+- Store manifest paths relative to the target root, not only to
+  `.agentic-scaffold/`.
+- Track root symlinks, Windows copied entry points, and extras outputs.
+- During unscaffold, distinguish "owned and unchanged", "owned and modified",
+  and "unknown new file under scaffold directories".
+
+### 7. Template safety is still mostly convention-based
+
+Status: Open
+
+There is skill frontmatter validation, but template variables and rendered
+output contracts are not validated. A typo in a Handlebars variable can silently
+produce weak docs, and there is no golden snapshot for representative rendered
+projects.
+
+Why it matters: this repo's main product is generated text. TypeScript coverage
+does not protect most of that surface.
+
+Suggested fix:
+
+- Implement the planned template variable checker from the v1 plan.
+- Add golden-output tests for a small set of representative projects:
+  TypeScript/GitHub, Python/no-CI, and multi-language with selected extras.
+- Fail CI if generated output references missing files or mismatched script
+  languages.
+
+### 8. The product needs a sharper boundary between core scaffold and extras
+
+Status: Open
+
+The component model mixes core `.agentic-scaffold/` assets, target-root files,
+CI config, onboarding, contribution templates, and tool config into one include
+set. That makes flag semantics, dry-run, manifest ownership, and unscaffold
+harder than necessary.
+
+Why it matters: the tool will become harder to evolve as more extras are added.
+Every new target-root artifact increases the chance of overwriting or orphaning
+user files.
+
+Suggested fix:
+
+- Split components into `core`, `target-root extras`, and `generated working
+  directories`.
+- Require target-root extras to declare conflict policy, ownership policy,
+  dry-run destination, and unscaffold behavior.
+- Add a table-driven test that every component has those declarations.
+
+## Suggested v1 gate
+
+Before tagging v1.0.0, require:
+
+- README and plans updated to match `package.json` and current behavior.
+- Zero-config output contract made explicit and tested.
+- `scriptLanguage` default aligned with actual generated scripts. (Resolved)
+- Dry-run generated from the same decisions as real scaffolding.
+- Manifest/unscaffold ownership model covers root-level extras or documents that
+  extras are intentionally not removed.
+- At least three golden-output fixtures for generated scaffold content.
