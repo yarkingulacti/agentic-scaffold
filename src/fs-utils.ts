@@ -1,5 +1,15 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync, symlinkSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { createHash } from "node:crypto";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join, relative } from "node:path";
 import { askOverwrite } from "./prompts.js";
 
 export interface WriteOptions {
@@ -109,4 +119,74 @@ export function walkDir(dir: string): DirEntry[] {
     }
   }
   return entries;
+}
+
+export interface ManifestEntry {
+  path: string;
+  contentHash: string;
+}
+
+export interface Manifest {
+  version: number;
+  scaffoldVersion: string;
+  createdAt: string;
+  files: ManifestEntry[];
+}
+
+function fileHash(filePath: string): string {
+  const content = readFileSync(filePath);
+  return createHash("sha256").update(content).digest("hex");
+}
+
+export function generateManifest(scaffoldDir: string, scaffoldVersion: string): Manifest {
+  const files: ManifestEntry[] = [];
+  for (const entry of walkDir(scaffoldDir)) {
+    if (entry.name === ".manifest.json") continue;
+    const relPath = relative(scaffoldDir, entry.full);
+    files.push({ path: relPath, contentHash: fileHash(entry.full) });
+  }
+  files.sort((a, b) => a.path.localeCompare(b.path));
+  return {
+    version: 1,
+    scaffoldVersion,
+    createdAt: new Date().toISOString(),
+    files,
+  };
+}
+
+export function writeManifest(scaffoldDir: string, scaffoldVersion: string): void {
+  const manifest = generateManifest(scaffoldDir, scaffoldVersion);
+  writeFileSync(join(scaffoldDir, ".manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
+}
+
+export function readManifest(scaffoldDir: string): Manifest | null {
+  const manifestPath = join(scaffoldDir, ".manifest.json");
+  if (!existsSync(manifestPath)) return null;
+  try {
+    return JSON.parse(readFileSync(manifestPath, "utf-8")) as Manifest;
+  } catch {
+    return null;
+  }
+}
+
+export interface ModifiedFile {
+  path: string;
+  currentHash: string;
+  expectedHash: string;
+}
+
+export function verifyManifest(scaffoldDir: string, manifest: Manifest): ModifiedFile[] {
+  const modified: ModifiedFile[] = [];
+  for (const entry of manifest.files) {
+    const fullPath = join(scaffoldDir, entry.path);
+    if (!existsSync(fullPath)) {
+      modified.push({ path: entry.path, currentHash: "(deleted)", expectedHash: entry.contentHash });
+      continue;
+    }
+    const currentHash = fileHash(fullPath);
+    if (currentHash !== entry.contentHash) {
+      modified.push({ path: entry.path, currentHash, expectedHash: entry.contentHash });
+    }
+  }
+  return modified;
 }

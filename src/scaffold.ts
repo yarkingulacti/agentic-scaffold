@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import type { HandlebarsData, ScaffoldArgs, ScaffoldConfig } from "./config.js";
 import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.js";
 import type { WriteOptions } from "./fs-utils.js";
-import { copyStaticDir, createSymlinks } from "./fs-utils.js";
+import { copyStaticDir, createSymlinks, writeManifest } from "./fs-utils.js";
 import { askComponents, askIssueTracker, askProjectName } from "./prompts.js";
 import { countTemplateFiles, listDryRunFiles, renderDir } from "./templates.js";
 import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
@@ -156,6 +156,8 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
   results.push(...(await scaffoldHistory(config, tickOpts)));
 
   results.push(...(await createSymlinks(config.target, config.scaffoldDir)));
+
+  writeManifest(config.scaffoldDir, PKG.version);
 
   process.stdout.write(`${"\r".padEnd(60)}\r`);
 
