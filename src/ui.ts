@@ -1,6 +1,6 @@
 const reset = "\x1b[0m";
 
-const c = {
+const c: Record<string, (s: string) => string> = {
   cyan: (s) => `\x1b[36m${s}${reset}`,
   green: (s) => `\x1b[32m${s}${reset}`,
   yellow: (s) => `\x1b[33m${s}${reset}`,
@@ -9,26 +9,26 @@ const c = {
   gray: (s) => `\x1b[90m${s}${reset}`,
 };
 
-export function infoBox(rows) {
+export type StyleFn = (s: string) => string;
+
+export function infoBox(rows: [string, string][]): string {
   const labelWidth = Math.max(...rows.map((r) => r[0].length));
   const sep = c.dim("│");
-  const inner = rows.map(
-    ([label, value]) => ` ${sep} ${c.bold(label.padEnd(labelWidth))} ${sep}  ${value}`
-  );
+  const inner = rows.map(([label, value]) => ` ${sep} ${c.bold(label.padEnd(labelWidth))} ${sep}  ${value}`);
   const title = c.cyan("agentic-scaffold");
   const w = Math.max(...inner.map((l) => l.length), title.length + 8);
-  const top = ` ${c.dim("┌─ " + title + " " + "─".repeat(Math.max(0, w - title.length - 4)) + "┐")}`;
-  const bottom = ` ${c.dim("└" + "─".repeat(w) + "┘")}`;
+  const top = ` ${c.dim(`┌─ ${title} ${"─".repeat(Math.max(0, w - title.length - 4))}┐`)}`;
+  const bottom = ` ${c.dim(`└${"─".repeat(w)}┘`)}`;
   return [top, ...inner, bottom].join("\n");
 }
 
 const spinnerFrames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
-export function spinner(frame) {
+export function spinner(frame: number): string {
   return c.cyan(spinnerFrames[frame % spinnerFrames.length]);
 }
 
-export function progressBar(current, total, width = 20) {
+export function progressBar(current: number, total: number, width = 20): string {
   if (total === 0) return "";
   let filled = Math.round((current / total) * width);
   if (current > 0 && filled === 0) filled = 1;
@@ -36,7 +36,7 @@ export function progressBar(current, total, width = 20) {
   return `${bar} ${c.dim(`${current}/${total}`)}`;
 }
 
-export function summaryLine(text, type = "done") {
+export function summaryLine(text: string, type: "done" | "warn" | "info" = "done"): string {
   const icon = type === "done" ? c.green("✔") : type === "warn" ? c.yellow("⚠") : c.dim("·");
   return ` ${icon}  ${text}`;
 }

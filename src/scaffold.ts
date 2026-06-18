@@ -1,15 +1,23 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync, symlinkSync } from "node:fs";
-import { readdirSync, statSync, copyFileSync } from "node:fs";
-import { join, dirname } from "node:path";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Handlebars from "handlebars";
-import { askProjectName, askIssueTracker, askComponents, askOverwrite } from "./prompts.js";
 import { detectProjectProfile } from "./detect.js";
-import { infoBox, progressBar, spinner, summaryLine, style } from "./ui.js";
+import { askComponents, askIssueTracker, askOverwrite, askProjectName } from "./prompts.js";
+import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "..", "templates");
-const PKG = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf-8"));
+const PKG = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf-8")) as { version: string };
 
 const DEFAULTS = {
   projectDescription: "A project.",
@@ -17,20 +25,105 @@ const DEFAULTS = {
   scriptLanguage: "python",
 };
 
-function resolveConfig(argv) {
+export interface ScaffoldArgs {
+  target?: string;
+  projectName?: string;
+  projectDescription?: string;
+  issueTracker?: string;
+  packageManager?: string;
+  ciProvider?: string;
+  aiTools?: string;
+  scriptLanguage?: string;
+  force?: boolean;
+  interactive?: boolean;
+  only?: string;
+  skipDocs?: boolean;
+  skipSkills?: boolean;
+  skipScripts?: boolean;
+  skipHooks?: boolean;
+}
+
+interface ScaffoldConfig {
+  target: string;
+  scaffoldDir: string;
+  projectName: string;
+  projectDescription: string;
+  languages: string[];
+  issueTracker: string;
+  packageManager: string | null;
+  ciProvider: string | null;
+  aiTools: string[];
+  scriptLanguage: string;
+  force: boolean;
+  interactive: boolean;
+  include: Set<string>;
+}
+
+interface TrackerDoc {
+  name: string;
+  description: string;
+  trackerDoc: string;
+  short: string;
+  statusTable: string;
+  envFile: string;
+  envTemplate: string;
+}
+
+interface HandlebarsData {
+  projectName: string;
+  projectDescription: string;
+  scriptsDir: string;
+  issueTrackerName: string;
+  issueTrackerDescription: string;
+  issueTrackerShort: string;
+  statusTable: string;
+  trackerDoc: string;
+  envFile: string;
+  envTemplate: string;
+  packageManager: string | null;
+  ciProvider: string | null;
+  scriptLanguage: string;
+  scaffoldVersion: string;
+  incompleteFiles: IncompleteFile[];
+}
+
+interface IncompleteFile {
+  file: string;
+  sections: string;
+}
+
+interface DirEntry {
+  name: string;
+  full: string;
+}
+
+interface WriteOptions {
+  interactive?: boolean;
+  force?: boolean;
+  onProgress?: () => void;
+}
+
+const SCAFFOLD_DIR_NAME = ".agentic-scaffold";
+
+function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
   const target = argv.target || process.cwd();
   const profile = detectProjectProfile(target);
 
-  const config = {
+  const config: ScaffoldConfig = {
     target,
-    scaffoldDir: join(target, ".agentic-scaffold"),
-    projectName: argv.projectName ?? profile.projectName ?? (target.split("/").filter(Boolean).pop() ?? "project"),
-    projectDescription: argv.projectDescription ?? profile.projectDescription ?? DEFAULTS.projectDescription,
+    scaffoldDir: join(target, SCAFFOLD_DIR_NAME),
+    projectName: argv.projectName ?? profile.projectName ?? target.split("/").filter(Boolean).pop() ?? "project",
+    projectDescription: argv.projectDescription ?? DEFAULTS.projectDescription,
     languages: profile.languages,
     issueTracker: argv.issueTracker ?? profile.issueTracker ?? DEFAULTS.issueTracker,
     packageManager: argv.packageManager ?? profile.packageManager ?? null,
     ciProvider: argv.ciProvider ?? profile.ciProvider ?? null,
-    aiTools: argv.aiTools ? argv.aiTools.split(",").map((s) => s.trim()).filter(Boolean) : profile.aiTools,
+    aiTools: argv.aiTools
+      ? argv.aiTools
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : profile.aiTools,
     scriptLanguage: argv.scriptLanguage ?? profile.scriptLanguage ?? DEFAULTS.scriptLanguage,
     force: argv.force ?? false,
     interactive: argv.interactive ?? false,
@@ -40,7 +133,7 @@ function resolveConfig(argv) {
   return config;
 }
 
-function resolveIncludes(argv) {
+function resolveIncludes(argv: ScaffoldArgs): Set<string> {
   if (argv.only && argv.only !== "all") {
     return new Set(argv.only.split(",").map((s) => s.trim()));
   }
@@ -52,10 +145,11 @@ function resolveIncludes(argv) {
   return set;
 }
 
-const ISSUE_TRACKER_DOCS = {
+const ISSUE_TRACKER_DOCS: Record<string, TrackerDoc> = {
   linear: {
     name: "Linear",
-    description: "Short implementation records live in Linear. Local, detailed planning lives in `.agentic-scaffold/.scratchpad/<feature>/`. See `.agentic-scaffold/docs/agents/issue-tracker.md`.",
+    description:
+      "Short implementation records live in Linear. Local, detailed planning lives in `.agentic-scaffold/.scratchpad/<feature>/`. See `.agentic-scaffold/docs/agents/issue-tracker.md`.",
     trackerDoc: "Linear",
     short: "Short issue records live in Linear. Local detailed planning lives in `.agentic-scaffold/.scratchpad/`.",
     statusTable: `| Label | Status string | Meaning |
@@ -71,7 +165,8 @@ LINEAR_PROJECT_ID=`,
   },
   github: {
     name: "GitHub Issues",
-    description: "Short implementation records live in GitHub Issues. Local, detailed planning lives in `.agentic-scaffold/.scratchpad/<feature>/`. See `.agentic-scaffold/docs/agents/issue-tracker.md`.",
+    description:
+      "Short implementation records live in GitHub Issues. Local, detailed planning lives in `.agentic-scaffold/.scratchpad/<feature>/`. See `.agentic-scaffold/docs/agents/issue-tracker.md`.",
     trackerDoc: "GitHub Issues",
     short: "Short issue records live in GitHub Issues. Local detailed planning lives in `.scratchpad/`.",
     statusTable: `| Label | Meaning |
@@ -86,9 +181,12 @@ LINEAR_PROJECT_ID=`,
   },
 };
 
-function buildIncompleteFiles(config) {
-  const files = [
-    { file: ".agentic-scaffold/BUSINESS_LOGIC.md", sections: "Core Domain Concepts, Non-Negotiable Rules, Architecture Decisions" },
+function buildIncompleteFiles(config: ScaffoldConfig): IncompleteFile[] {
+  const files: IncompleteFile[] = [
+    {
+      file: ".agentic-scaffold/BUSINESS_LOGIC.md",
+      sections: "Core Domain Concepts, Non-Negotiable Rules, Architecture Decisions",
+    },
   ];
   if (config.include.has("docs")) {
     files.push(
@@ -100,8 +198,8 @@ function buildIncompleteFiles(config) {
   return files;
 }
 
-function showDetectedProfile(config) {
-  const rows = [
+function showDetectedProfile(config: ScaffoldConfig): void {
+  const rows: [string, string][] = [
     ["Project", style.cyan(config.projectName)],
     ["Languages", config.languages.length > 0 ? config.languages.join(", ") : style.dim("none")],
     ["Package", config.packageManager ? style.cyan(config.packageManager) : style.dim("none")],
@@ -113,7 +211,7 @@ function showDetectedProfile(config) {
   console.log(`\n${infoBox(rows)}`);
 }
 
-function buildHandlebars(config) {
+function buildHandlebars(config: ScaffoldConfig): HandlebarsData {
   const tracker = ISSUE_TRACKER_DOCS[config.issueTracker] || ISSUE_TRACKER_DOCS.linear;
   return {
     projectName: config.projectName,
@@ -134,13 +232,13 @@ function buildHandlebars(config) {
   };
 }
 
-function renderTemplate(sourcePath, hbData) {
+function renderTemplate(sourcePath: string, hbData: HandlebarsData): string {
   const raw = readFileSync(sourcePath, "utf-8");
-  const template = Handlebars.compile(raw, { noEscape: true });
+  const template = Handlebars.compile(raw);
   return template(hbData);
 }
 
-async function write(targetPath, content, options = {}) {
+async function write(targetPath: string, content: string, options: WriteOptions = {}): Promise<string> {
   const dir = dirname(targetPath);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
@@ -158,7 +256,7 @@ async function write(targetPath, content, options = {}) {
   return "written";
 }
 
-async function copyFile(src, dest, options = {}) {
+async function copyFile(src: string, dest: string, options: WriteOptions = {}): Promise<string> {
   const dir = dirname(dest);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
@@ -176,8 +274,8 @@ async function copyFile(src, dest, options = {}) {
   return "written";
 }
 
-function walkDir(dir) {
-  const entries = [];
+function walkDir(dir: string): DirEntry[] {
+  const entries: DirEntry[] = [];
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     const stat = statSync(full);
@@ -190,9 +288,9 @@ function walkDir(dir) {
   return entries;
 }
 
-async function copyStaticDir(srcDir, destDir, options = {}) {
+async function copyStaticDir(srcDir: string, destDir: string, options: WriteOptions = {}): Promise<string[]> {
   if (!existsSync(srcDir)) return [];
-  const results = [];
+  const results: string[] = [];
   for (const entry of walkDir(srcDir)) {
     const dest = join(destDir, entry.name);
     results.push(await copyFile(entry.full, dest, options));
@@ -200,9 +298,14 @@ async function copyStaticDir(srcDir, destDir, options = {}) {
   return results;
 }
 
-async function renderDir(srcDir, destDir, data, options = {}) {
+async function renderDir(
+  srcDir: string,
+  destDir: string,
+  data: HandlebarsData,
+  options: WriteOptions = {},
+): Promise<string[]> {
   if (!existsSync(srcDir)) return [];
-  const results = [];
+  const results: string[] = [];
   for (const entry of walkDir(srcDir)) {
     const isHbs = entry.name.endsWith(".hbs");
     const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
@@ -217,60 +320,78 @@ async function renderDir(srcDir, destDir, data, options = {}) {
   return results;
 }
 
-const SCAFFOLD_DIR_NAME = ".agentic-scaffold";
-
-function scaffoldDir(config) {
+function scaffoldDir(config: ScaffoldConfig): string {
   return config.scaffoldDir;
 }
 
-async function scaffoldRoot(config, hbData, extraOpts = {}) {
+async function scaffoldRoot(
+  config: ScaffoldConfig,
+  hbData: HandlebarsData,
+  extraOpts: WriteOptions = {},
+): Promise<string[]> {
   const rootSrc = join(TEMPLATES_DIR, "root");
   const rootDest = scaffoldDir(config);
   return renderDir(rootSrc, rootDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-async function scaffoldDocs(config, hbData, extraOpts = {}) {
+async function scaffoldDocs(
+  config: ScaffoldConfig,
+  hbData: HandlebarsData,
+  extraOpts: WriteOptions = {},
+): Promise<string[]> {
   const docsSrc = join(TEMPLATES_DIR, "docs");
   const docsDest = join(scaffoldDir(config), "docs");
   return renderDir(docsSrc, docsDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-async function scaffoldScripts(config, hbData, extraOpts = {}) {
+async function scaffoldScripts(
+  config: ScaffoldConfig,
+  hbData: HandlebarsData,
+  extraOpts: WriteOptions = {},
+): Promise<string[]> {
   const scriptsSrc = join(TEMPLATES_DIR, "scripts");
   const scriptsDest = join(scaffoldDir(config), "scripts");
-  return renderDir(scriptsSrc, scriptsDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
+  return renderDir(scriptsSrc, scriptsDest, hbData, {
+    force: config.force,
+    interactive: config.interactive,
+    ...extraOpts,
+  });
 }
 
-async function scaffoldSkills(config, extraOpts = {}) {
+async function scaffoldSkills(config: ScaffoldConfig, extraOpts: WriteOptions = {}): Promise<string[]> {
   const skillsSrc = join(TEMPLATES_DIR, "skills");
   const skillsDest = join(scaffoldDir(config), ".agents", "skills");
   return copyStaticDir(skillsSrc, skillsDest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-async function scaffoldHooks(config, hbData, extraOpts = {}) {
+async function scaffoldHooks(
+  config: ScaffoldConfig,
+  hbData: HandlebarsData,
+  extraOpts: WriteOptions = {},
+): Promise<string[]> {
   const hooksSrc = join(TEMPLATES_DIR, "hooks");
   const hooksDest = join(scaffoldDir(config), ".agents", "hooks");
   return renderDir(hooksSrc, hooksDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-async function scaffoldScratchpad(config, extraOpts = {}) {
+async function scaffoldScratchpad(config: ScaffoldConfig, extraOpts: WriteOptions = {}): Promise<string[]> {
   const src = join(TEMPLATES_DIR, "scratchpad");
   const dest = join(scaffoldDir(config), ".scratchpad");
   return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-async function scaffoldHistory(config, extraOpts = {}) {
+async function scaffoldHistory(config: ScaffoldConfig, extraOpts: WriteOptions = {}): Promise<string[]> {
   const src = join(TEMPLATES_DIR, "history");
   const dest = join(scaffoldDir(config), ".history");
   return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
-function createSymlinks(config) {
-  const links = [
+function createSymlinks(config: ScaffoldConfig): string[] {
+  const links: [string, string][] = [
     ["AGENTS.md", ".agentic-scaffold/AGENTS.md"],
     ["CLAUDE.md", ".agentic-scaffold/CLAUDE.md"],
   ];
-  const created = [];
+  const created: string[] = [];
   for (const [name, target] of links) {
     const linkPath = join(config.target, name);
     if (existsSync(linkPath)) {
@@ -287,7 +408,7 @@ function createSymlinks(config) {
   return created;
 }
 
-function countTemplateFiles(config) {
+function countTemplateFiles(config: ScaffoldConfig): number {
   const dirs = [
     join(TEMPLATES_DIR, "root"),
     ...(config.include.has("docs") ? [join(TEMPLATES_DIR, "docs")] : []),
@@ -303,10 +424,10 @@ function countTemplateFiles(config) {
   }, 0);
 }
 
-export async function scaffold(argv) {
-  let config = resolveConfig(argv);
+export async function scaffold(argv: ScaffoldArgs): Promise<void> {
+  const config = resolveConfig(argv);
 
-  if (argv.interactive) {
+  if (config.interactive) {
     console.log(`\n ${style.bold("Detected project profile:")}`);
     showDetectedProfile(config);
 
@@ -318,13 +439,13 @@ export async function scaffold(argv) {
 
   const hbData = buildHandlebars(config);
 
-  const detected = [];
+  const detected: string[] = [];
   if (config.languages.length > 0) detected.push(config.languages.join(", "));
   if (config.packageManager) detected.push(style.cyan(config.packageManager));
   if (config.ciProvider) detected.push(style.cyan(config.ciProvider));
   const detectedStr = detected.length > 0 ? detected.join(" · ") : style.dim("none");
 
-  const rows = [
+  const rows: [string, string][] = [
     ["Project", style.cyan(config.projectName)],
     ["Detected", detectedStr],
     ["Tracker", style.dim(config.issueTracker)],
@@ -334,16 +455,14 @@ export async function scaffold(argv) {
 
   const total = countTemplateFiles(config);
   let done = 0;
-  const tickOpts = {
+  const tickOpts: WriteOptions = {
     onProgress: () => {
       done++;
       process.stdout.write(`\r  ${spinner(done)} ${progressBar(done, total)}`);
     },
   };
 
-  const results = [
-    ...(await scaffoldRoot(config, hbData, tickOpts)),
-  ];
+  const results: string[] = [...(await scaffoldRoot(config, hbData, tickOpts))];
 
   if (config.include.has("docs")) results.push(...(await scaffoldDocs(config, hbData, tickOpts)));
   if (config.include.has("scripts")) results.push(...(await scaffoldScripts(config, hbData, tickOpts)));
@@ -355,7 +474,7 @@ export async function scaffold(argv) {
 
   results.push(...(await createSymlinks(config)));
 
-  process.stdout.write("\r".padEnd(60) + "\r");
+  process.stdout.write(`${"\r".padEnd(60)}\r`);
 
   const written = results.filter((r) => r === "written").length;
   const skipped = results.filter((r) => r === "skipped-existing").length;

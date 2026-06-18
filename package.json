@@ -4,20 +4,26 @@
   "description": "Scaffold agentic development documentation & configuration into any project",
   "type": "module",
   "bin": {
-    "agentic-scaffold": "bin/index.js"
+    "agentic-scaffold": "dist/bin/index.js"
   },
   "files": [
     "README.md",
     "LICENSE",
-    "bin/",
-    "src/",
+    "dist/",
     "templates/"
   ],
   "scripts": {
-    "test": "node --test tests/*.test.js",
-    "prepublishOnly": "npm test",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "lint": "biome lint src/ bin/ tests/",
+    "lint:fix": "biome lint --fix src/ bin/ tests/",
+    "format": "biome format --write src/ bin/ tests/",
+    "format:check": "biome format --check src/ bin/ tests/",
+    "prepublishOnly": "npm run build && npm run typecheck && npm test",
     "release": "commit-and-tag-version",
-    "release:dry": "commit-and-tag-version --dry-run"
+    "release:dry": "commit-and-tag-version --dry-run",
+    "prepare": "husky"
   },
   "dependencies": {
     "handlebars": "^4.7.8",
@@ -27,12 +33,24 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
+  "lint-staged": {
+    "*.ts": [
+      "biome check --fix --no-errors-on-unmatched"
+    ]
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yarkingulacti/agentic-scaffold.git"
   },
   "devDependencies": {
-    "commit-and-tag-version": "^12.7.3"
+    "@biomejs/biome": "^2.5.0",
+    "@types/node": "^25.9.3",
+    "@types/yargs": "^17.0.35",
+    "commit-and-tag-version": "^12.7.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
   }
 }

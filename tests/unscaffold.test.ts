@@ -1,14 +1,14 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, it } from "node:test";
 import { scaffold } from "../src/scaffold.js";
 import { unscaffold } from "../src/unscaffold.js";
 
 const S = ".agentic-scaffold";
 
-function p(dir, ...parts) {
+function p(dir: string, ...parts: string[]): string {
   return join(dir, ...parts);
 }
 
