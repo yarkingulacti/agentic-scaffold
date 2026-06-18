@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.14.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.14.1...v0.14.2) (2026-06-18)
+
+
+### Changed
+
+* **components:** extract declarative component registry ([46f45ca](https://github.com/yarkingulacti/agentic-scaffold/commit/46f45cab1ca81faadff69477fa5541697db684dd)), closes [#8](https://github.com/yarkingulacti/agentic-scaffold/issues/8)
+
 ## [0.14.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.14.0...v0.14.1) (2026-06-18)
 
 
