@@ -30,6 +30,7 @@ const SAMPLE: HandlebarsData = {
   incompleteFiles: [{ file: "BUSINESS_LOGIC.md", sections: "a, b" }],
   includeScripts: true,
   includeHooks: true,
+  includeRtk: true,
 };
 
 const ALLOWED_VARS = new Set(Object.keys(SAMPLE));

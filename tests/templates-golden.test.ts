@@ -39,6 +39,7 @@ function makeConfig(overrides: Partial<ScaffoldConfig>): ScaffoldConfig {
     interactive: false,
     dryRun: false,
     json: false,
+    quiet: true,
     include: new Set<string>(),
     ...overrides,
   };

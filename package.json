@@ -1,6 +1,6 @@
 {
   "name": "@yarkingulacti/agentic-scaffold",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "description": "Scaffold agentic development documentation & configuration into any project",
   "type": "module",
   "bin": {
@@ -24,7 +24,7 @@
     "validate-templates": "node --import tsx bin/validate-templates.ts",
     "fallow": "npx fallow",
     "fallow:ci": "npx fallow --ci",
-    "prepublishOnly": "npm run validate-skills && npm run validate-templates && npm run build && npm run typecheck && npm test",
+    "prepublishOnly": "npm run lint && npm run format:check && npm run validate-skills && npm run validate-templates && npm run build && npm run typecheck && npm test",
     "release": "commit-and-tag-version",
     "release:dry": "commit-and-tag-version --dry-run",
     "prepare": "husky"

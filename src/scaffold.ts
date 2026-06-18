@@ -12,6 +12,7 @@ import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
 const PKG = JSON.parse(readFileSync(PACKAGE_JSON, "utf-8")) as { version: string };
 
 function out(config: ScaffoldConfig, ...args: unknown[]): void {
+  if (config.quiet) return;
   if (config.json) {
     process.stderr.write(`${args.join(" ")}\n`);
   } else {
@@ -97,7 +98,7 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
   const writtenEntries: WrittenEntry[] = [];
   const tickOpts: WriteOptions = {
     onProgress: () => {
-      if (!config.json) {
+      if (!config.json && !config.quiet) {
         done++;
         process.stdout.write(`\r  ${spinner(done)} ${progressBar(done, total)}`);
       } else {
@@ -118,7 +119,7 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
 
   writeManifestForTarget(config.target, config.scaffoldDir, PKG.version, writtenEntries);
 
-  if (!config.json) {
+  if (!config.json && !config.quiet) {
     process.stdout.write(`${"\r".padEnd(60)}\r`);
   }
 

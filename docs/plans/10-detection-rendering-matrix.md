@@ -14,7 +14,7 @@ CLI display, component selection, or tests that protect user-visible behavior.
 | `ciProvider` | Existing CI config | Config resolution, root docs, CI component | Selects provider-specific CI templates and renders CI guidance |
 | `aiTools` | Existing AI tool config files | Config resolution, interactive prompts | Seeds interactive AI-tool selection |
 | `issueTracker` | `.github/` directory | Config resolution, issue-tracker docs | Selects tracker terminology and generated issue guidance |
-| `scriptLanguage` | Runtime manifest files | Config resolution, root docs, hook scripts | Documents script runtime in generated agent config and hook comments |
+| `scriptLanguage` | `package.json` only; otherwise config defaults to Node.js | Config resolution, root docs, hook scripts | Documents the shipped Node.js `.mjs` script runtime in generated agent config and hook comments |
 
 ## Non-Goals
 

@@ -28,5 +28,12 @@ Use repo automation from `.agentic-scaffold/scripts/`:
 
 Generated memory files live under `.memory/` and are gitignored.
 {{/if}}
+{{#if includeRtk}}
 
+### Token-cost controls
+
+Project-local RTK filters live in `.rtk/filters.toml`. If RTK is installed, run
+`rtk trust` from the repo root once, then use `rtk gain` to inspect savings.
+Use RTK for high-volume shell output when a dedicated agent tool is not required.
+{{/if}}
 {{> agentConfigTail }}

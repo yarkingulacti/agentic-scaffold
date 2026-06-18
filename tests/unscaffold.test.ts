@@ -20,11 +20,11 @@ function tempDir() {
 describe("unscaffold", () => {
   it("removes .agentic-scaffold/ and symlinks", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true });
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true, quiet: true });
     assert.ok(existsSync(p(dir, S)));
     assert.ok(existsSync(p(dir, "AGENTS.md")));
 
-    await unscaffold({ target: dir, force: true });
+    await unscaffold({ target: dir, force: true, quiet: true });
 
     assert.equal(existsSync(p(dir, S)), false);
     assert.equal(existsSync(p(dir, "AGENTS.md")), false);
@@ -35,20 +35,20 @@ describe("unscaffold", () => {
   it("reports nothing to do when .agentic-scaffold/ is absent", async () => {
     const dir = tempDir();
     // No scaffold, just run unscaffold
-    await unscaffold({ target: dir, force: true });
+    await unscaffold({ target: dir, force: true, quiet: true });
     // Should not throw
     rmSync(dir, { recursive: true });
   });
 
   it("removes all scaffolded components", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, force: true });
+    await scaffold({ target: dir, force: true, quiet: true });
     assert.ok(existsSync(p(dir, S, "docs")));
     assert.ok(existsSync(p(dir, S, "scripts")));
     assert.ok(existsSync(p(dir, S, ".agents", "skills")));
     assert.ok(existsSync(p(dir, S, ".agents", "hooks")));
 
-    await unscaffold({ target: dir, force: true });
+    await unscaffold({ target: dir, force: true, quiet: true });
 
     assert.equal(existsSync(p(dir, S)), false);
     assert.equal(existsSync(p(dir, "AGENTS.md")), false);
@@ -60,23 +60,26 @@ describe("unscaffold", () => {
     await scaffold({
       target: dir,
       force: true,
-      extras: "ai-config,ci",
+      extras: "ai-config,ci,rtk",
       ciProvider: "github",
       skipDocs: true,
       skipScripts: true,
       skipSkills: true,
+      quiet: true,
     });
 
     assert.ok(existsSync(p(dir, "opencode.json")));
     assert.ok(existsSync(p(dir, ".github", "workflows", "ci.yml")));
     assert.ok(existsSync(p(dir, ".github", "dependabot.yml")));
+    assert.ok(existsSync(p(dir, ".rtk", "filters.toml")));
     assert.ok(existsSync(p(dir, "AGENTS.md")));
 
-    await unscaffold({ target: dir, force: true });
+    await unscaffold({ target: dir, force: true, quiet: true });
 
     assert.equal(existsSync(p(dir, "opencode.json")), false);
     assert.equal(existsSync(p(dir, ".github", "workflows", "ci.yml")), false);
     assert.equal(existsSync(p(dir, ".github", "dependabot.yml")), false);
+    assert.equal(existsSync(p(dir, ".rtk", "filters.toml")), false);
     assert.equal(existsSync(p(dir, "AGENTS.md")), false);
     assert.equal(existsSync(p(dir, "CLAUDE.md")), false);
     assert.equal(existsSync(p(dir, S)), false);
@@ -93,11 +96,12 @@ describe("unscaffold", () => {
       skipDocs: true,
       skipScripts: true,
       skipSkills: true,
+      quiet: true,
     });
     mkdirSync(p(dir, ".github", "ISSUE_TEMPLATE"), { recursive: true });
     writeFileSync(p(dir, ".github", "ISSUE_TEMPLATE", "bug.md"), "user-owned\n", "utf-8");
 
-    await unscaffold({ target: dir, force: true });
+    await unscaffold({ target: dir, force: true, quiet: true });
 
     assert.equal(readFileSync(p(dir, ".github", "ISSUE_TEMPLATE", "bug.md"), "utf-8"), "user-owned\n");
     assert.equal(existsSync(p(dir, ".github", "workflows", "ci.yml")), false);
@@ -114,6 +118,7 @@ describe("unscaffold", () => {
       skipDocs: true,
       skipScripts: true,
       skipSkills: true,
+      quiet: true,
     });
     writeFileSync(p(dir, "opencode.json"), "{}\n", "utf-8");
 

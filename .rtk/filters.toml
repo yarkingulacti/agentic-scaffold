@@ -1,0 +1,36 @@
+# Project-local RTK filters. Commit this file so agent sessions get compact,
+# repo-specific command output in addition to RTK's built-in npm/git filters.
+# Docs: https://github.com/rtk-ai/rtk#custom-filters
+schema_version = 1
+
+[filters.agentic-scaffold-tests]
+description = "Compact agentic-scaffold test and validation output"
+match_command = "^(npm run (lint|format:check|typecheck|validate-skills|validate-templates)|npm test|npm run prepublishOnly)"
+strip_ansi = true
+strip_lines_matching = [
+  "^\\s*$",
+  "^\\s*> @yarkingulacti/agentic-scaffold@",
+  "^\\s*> (biome|tsc|node --import tsx)",
+  "^\\s*duration_ms:",
+  "^\\s*type: 'test'",
+  "^\\s*type: 'suite'",
+  "^\\s*\\.\\.\\.$",
+  "^\\s*---$",
+]
+max_lines = 160
+on_empty = "agentic-scaffold checks: ok"
+
+[filters.agentic-scaffold-cli-help]
+description = "Collapse repeated CLI help dumps emitted by negative CLI tests"
+match_command = "node --import tsx .*bin/index\\.ts.*--script-language"
+strip_ansi = true
+strip_lines_matching = [
+  "^Commands:$",
+  "^Options:$",
+  "^Examples:$",
+  "^Tiers:$",
+  "^\\s+index\\.ts",
+  "^\\s+--",
+  "^\\s+-[a-z],",
+]
+max_lines = 40

@@ -62,6 +62,7 @@ describe("CLI", () => {
       assert.ok(out.includes("--skip-scripts"));
       assert.ok(out.includes("--skip-docs"));
       assert.ok(out.includes("--skip-hooks"));
+      assert.ok(out.includes("--skip-rtk"));
     });
 
     it("shows force short flag -f", () => {
@@ -80,6 +81,7 @@ describe("CLI", () => {
       assert.equal(existsSync(p(dir, "opencode.json")), false);
       assert.equal(existsSync(p(dir, S, "contribute")), false);
       assert.equal(existsSync(p(dir, S, "onboarding")), false);
+      assert.equal(existsSync(p(dir, ".rtk", "filters.toml")), false);
       rmSync(dir, { recursive: true });
     });
 
@@ -89,6 +91,7 @@ describe("CLI", () => {
       assert.ok(existsSync(p(dir, "opencode.json")));
       assert.equal(existsSync(p(dir, S, "contribute")), false);
       assert.equal(existsSync(p(dir, S, "onboarding")), false);
+      assert.equal(existsSync(p(dir, ".rtk", "filters.toml")), false);
       rmSync(dir, { recursive: true });
     });
 
@@ -101,6 +104,17 @@ describe("CLI", () => {
       assert.ok(existsSync(p(dir, ".github", "dependabot.yml")));
       assert.ok(existsSync(p(dir, "opencode.json")));
       assert.ok(existsSync(p(dir, S, "contribute", "CONTRIBUTING.md")));
+      assert.ok(existsSync(p(dir, S, "onboarding", "ONBOARDING.md")));
+      assert.ok(existsSync(p(dir, ".rtk", "filters.toml")));
+      rmSync(dir, { recursive: true });
+    });
+
+    it("skips RTK filters when --skip-rtk is set", () => {
+      const dir = tempDir();
+      run(
+        `--target ${dir} --force --extras all --skip-rtk --skip-docs --skip-skills --skip-scripts --skip-hooks --skip-ci`,
+      );
+      assert.equal(existsSync(p(dir, ".rtk", "filters.toml")), false);
       assert.ok(existsSync(p(dir, S, "onboarding", "ONBOARDING.md")));
       rmSync(dir, { recursive: true });
     });
@@ -215,11 +229,17 @@ describe("CLI", () => {
       rmSync(dir, { recursive: true });
     });
 
-    it("accepts --script-language override", () => {
+    it("accepts the supported --script-language override", () => {
       const dir = tempDir();
-      run(`--target ${dir} --force --script-language docker --skip-skills --skip-scripts`);
+      run(`--target ${dir} --force --script-language node --skip-skills --skip-scripts`);
       const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
-      assert.ok(content.includes("**docker**"));
+      assert.ok(content.includes("**node**"));
+      rmSync(dir, { recursive: true });
+    });
+
+    it("rejects unsupported --script-language values", () => {
+      const dir = tempDir();
+      assert.throws(() => run(`--target ${dir} --force --script-language python --skip-skills --skip-scripts`));
       rmSync(dir, { recursive: true });
     });
 

@@ -8,6 +8,8 @@ export const DEFAULTS = {
   scriptLanguage: "node",
 };
 
+const SUPPORTED_SCRIPT_LANGUAGES = [DEFAULTS.scriptLanguage];
+
 export interface ScaffoldArgs {
   target?: string;
   projectName?: string;
@@ -22,6 +24,7 @@ export interface ScaffoldArgs {
   interactive?: boolean;
   dryRun?: boolean;
   json?: boolean;
+  quiet?: boolean;
   only?: string;
   skipDocs?: boolean;
   skipSkills?: boolean;
@@ -31,6 +34,7 @@ export interface ScaffoldArgs {
   skipContribute?: boolean;
   skipAiConfig?: boolean;
   skipOnboarding?: boolean;
+  skipRtk?: boolean;
   skipHistory?: boolean;
   skipScratchpad?: boolean;
 }
@@ -50,6 +54,7 @@ export interface ScaffoldConfig {
   interactive: boolean;
   dryRun: boolean;
   json: boolean;
+  quiet: boolean;
   include: Set<string>;
 }
 
@@ -82,6 +87,7 @@ export interface HandlebarsData {
   incompleteFiles: IncompleteFile[];
   includeScripts: boolean;
   includeHooks: boolean;
+  includeRtk: boolean;
 }
 
 export interface IncompleteFile {
@@ -156,6 +162,7 @@ function resolveIncludes(argv: ScaffoldArgs): Set<string> {
   if (argv.skipContribute) set.delete("contribute");
   if (argv.skipAiConfig) set.delete("ai-config");
   if (argv.skipOnboarding) set.delete("onboarding");
+  if (argv.skipRtk) set.delete("rtk");
   if (argv.skipHistory) set.delete("history");
   if (argv.skipScratchpad) set.delete("scratchpad");
   return set;
@@ -170,6 +177,15 @@ function resolveAiTools(value: string): string[] {
     .filter(Boolean);
   if (tools.includes("all")) return [...ALL_AI_TOOLS];
   return tools;
+}
+function resolveScriptLanguage(value: string | null | undefined): string {
+  const resolved = value ?? DEFAULTS.scriptLanguage;
+  if (!SUPPORTED_SCRIPT_LANGUAGES.includes(resolved)) {
+    throw new Error(
+      `Unsupported scriptLanguage "${resolved}". Only node is supported because shipped scripts are .mjs files.`,
+    );
+  }
+  return resolved;
 }
 
 export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
@@ -186,11 +202,12 @@ export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
     packageManager: argv.packageManager ?? profile.packageManager ?? null,
     ciProvider: argv.ciProvider ?? profile.ciProvider ?? null,
     aiTools: argv.aiTools ? resolveAiTools(argv.aiTools) : profile.aiTools,
-    scriptLanguage: argv.scriptLanguage ?? profile.scriptLanguage ?? DEFAULTS.scriptLanguage,
+    scriptLanguage: resolveScriptLanguage(argv.scriptLanguage ?? profile.scriptLanguage),
     force: argv.force ?? false,
     interactive: argv.interactive ?? false,
     dryRun: argv.dryRun ?? false,
     json: argv.json ?? false,
+    quiet: argv.quiet ?? false,
     include: resolveIncludes(argv),
   };
 }
@@ -216,6 +233,7 @@ export function buildHandlebars(config: ScaffoldConfig, version: string): Handle
     incompleteFiles: buildIncompleteFiles(config),
     includeScripts: config.include.has("scripts"),
     includeHooks: config.include.has("hooks"),
+    includeRtk: config.include.has("rtk"),
   };
 }
 

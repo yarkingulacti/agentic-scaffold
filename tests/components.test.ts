@@ -29,8 +29,8 @@ describe("component registry declarations", () => {
     const targetWriters = COMPONENTS.filter((c) => c.destBase === "target");
     assert.deepEqual(
       targetWriters.map((c) => c.name).sort(),
-      ["ai-config", "ci"],
-      "expected ci and ai-config to be the only target-root writers",
+      ["ai-config", "ci", "rtk"],
+      "expected ci, ai-config, and rtk to be the only target-root writers",
     );
     for (const c of targetWriters) {
       assert.ok(c.conflict, `${c.name}: target-root writer must declare a conflict policy`);
@@ -46,7 +46,7 @@ describe("component registry declarations", () => {
   it("derives category groupings consistent with the registry", () => {
     // Guards the cross-file drift critique #8 warns about: config.ts derives its
     // include/extras/working-dir sets from these helpers.
-    assert.deepEqual(componentNamesByCategory("extra").sort(), ["ai-config", "ci", "contribute", "onboarding"]);
+    assert.deepEqual(componentNamesByCategory("extra").sort(), ["ai-config", "ci", "contribute", "onboarding", "rtk"]);
     assert.deepEqual(componentNamesByCategory("working-dir").sort(), ["history", "scratchpad"]);
     assert.deepEqual(componentNamesByCategory("core").sort(), ["docs", "hooks", "scripts", "skills"]);
 

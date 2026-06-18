@@ -67,7 +67,6 @@ Use repo automation from `.agentic-scaffold/scripts/`:
 - `.agentic-scaffold/scripts/sync-context.sh` syncs the generated historical `CONTEXT.md`.
 
 Generated memory files live under `.memory/` and are gitignored.
-
 ## Scaffold information
 
 This project was bootstrapped with `@yarkingulacti/agentic-scaffold` v0.0.0-test.

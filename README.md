@@ -6,8 +6,8 @@
 
 Scaffold agentic development documentation and configuration into any project.
 Run with zero flags and it auto-detects your project's language, package manager,
-CI provider, and AI tools — scaffolding only what's missing. Or use flags and
-interactive mode for full control.
+and existing CI/AI-tool context for generated docs — while writing only the
+conservative core scaffold unless extras are requested.
 
 Inspired by the methodology evolved in the [haprec.com](https://haprec.com) project — extracts the reusable patterns (agent config, domain docs, ADR system, memory scripts, skill system, scratchpad conventions) so every project can start with an AI-native foundation.
 
@@ -50,10 +50,10 @@ npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
 # Generate AI tool configs
 npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools opencode,cursor
 
-# Generate extras such as CI, contribution docs, AI config, or onboarding
-npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding
+# Generate extras such as CI, contribution docs, AI config, RTK filters, or onboarding
+npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding,rtk
 
-# Choose script language for memory pipeline
+# Memory pipeline runtime (currently fixed to the shipped Node.js .mjs scripts)
 npx @yarkingulacti/agentic-scaffold --script-language node
 
 # Interactive mode — prompts with detected defaults pre-filled
@@ -118,10 +118,11 @@ The scaffold scans your project and detects:
 | **CI provider** | GitHub Actions, GitLab CI, CircleCI (from config files) |
 | **AI tools** | opencode, Cursor, Copilot, Windsurf, Cline (from config files) |
 | **Issue tracker** | GitHub Issues (from .github/ directory) |
-| **Script language** | Node.js, Python (from manifest files) |
+| **Script runtime** | Node.js when package.json is present; otherwise the scaffold still defaults to Node.js because the shipped memory scripts are `.mjs` files |
 
-Detected values are rendered into `AGENTS.md` / `CLAUDE.md`. Override any with
-CLI flags.
+Detected values are rendered into `AGENTS.md` / `CLAUDE.md` and seed interactive
+defaults. Root-level extras such as CI and AI-tool config are written only when
+requested with `--extras`.
 
 ## Components
 
@@ -140,15 +141,17 @@ Extras are opt-in with `--extras` so zero-config mode stays conservative:
 | `contribute` | Contribution guide, PR template, and review guidance |
 | `ai-config` | AI tool config files such as `opencode.json`, `.cursorrules`, and Copilot instructions |
 | `onboarding` | Human onboarding guide and setup helper |
+| `rtk` | Project-local RTK token-cost filters in `.rtk/filters.toml` |
 | `all` | Include every extras group |
 
 ## Current release
 
-Version `0.13.x` focuses on making scaffold output predictable:
+Version `0.14.x` focuses on making scaffold output predictable and releasable:
 
-- **Conservative zero-config defaults** — extras are opt-in, so running with no flags writes the core scaffold, `.scratchpad/`, and `.history/` without adding CI, onboarding, contribution, or AI tool config files.
+- **Conservative zero-config defaults** — extras are opt-in, so running with no flags writes the core scaffold, `.scratchpad/`, and `.history/` without adding CI, onboarding, contribution, AI tool config, or RTK filter files.
 - **Registry-driven dry-run preview** — `--dry-run` now uses the same component decisions as real scaffolding, including provider-specific CI output and `--skip-history` / `--skip-scratchpad`.
-- **Shared root template partials** — `AGENTS.md` and `CLAUDE.md` share common Handlebars partials, reducing drift between agent entry points.
+- **Template and golden-output validation** — template variables, Markdown escaping, and representative rendered projects are validated before publish.
+- **RTK filter extra** — generated projects can opt into `.rtk/filters.toml` with `--extras rtk` or `--extras all` to reduce agent token cost from noisy shell output.
 - **Component registry rendering** — scaffold groups are rendered through a single component registry rather than repeated per-group control flow.
 
 ## New in v0.7
@@ -219,6 +222,12 @@ npx @yarkingulacti/agentic-scaffold un --force
 ```
 
 This removes the entire `.agentic-scaffold/` directory and the root-level symlinks (AGENTS.md, CLAUDE.md). Your project files are left untouched.
+
+## Development token-cost controls
+
+This repository includes project-local [RTK](https://github.com/rtk-ai/rtk)
+filters in `.rtk/filters.toml`. Install RTK and run `rtk trust` from the repo
+root to apply compact output filters for local test and validation commands.
 
 ## Open source
 

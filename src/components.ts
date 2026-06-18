@@ -125,6 +125,14 @@ export const COMPONENTS: ComponentSpec[] = [
     ...componentRender("ai-config", "", "target"),
   },
   {
+    name: "rtk",
+    category: "extra",
+    destBase: "target",
+    conflict: "skip-existing",
+    manifested: true,
+    ...componentRender("rtk", ".rtk", "target"),
+  },
+  {
     name: "onboarding",
     category: "extra",
     destBase: "scaffold",

@@ -270,21 +270,19 @@ describe("detectProjectProfile", () => {
       rmSync(dir, { recursive: true });
     });
 
-    it("detects python from requirements.txt", () => {
-      const dir = tempDir();
-      write(dir, "requirements.txt");
-      assert.equal(detectProjectProfile(dir).scriptLanguage, "python");
-      rmSync(dir, { recursive: true });
+    it("does not report python as a script runtime without python script templates", () => {
+      const requirementsDir = tempDir();
+      write(requirementsDir, "requirements.txt");
+      assert.equal(detectProjectProfile(requirementsDir).scriptLanguage, null);
+      rmSync(requirementsDir, { recursive: true });
+
+      const pyprojectDir = tempDir();
+      write(pyprojectDir, "pyproject.toml");
+      assert.equal(detectProjectProfile(pyprojectDir).scriptLanguage, null);
+      rmSync(pyprojectDir, { recursive: true });
     });
 
-    it("detects python from pyproject.toml", () => {
-      const dir = tempDir();
-      write(dir, "pyproject.toml");
-      assert.equal(detectProjectProfile(dir).scriptLanguage, "python");
-      rmSync(dir, { recursive: true });
-    });
-
-    it("prefers node over python when both markers exist", () => {
+    it("keeps node when python language markers also exist", () => {
       const dir = tempDir();
       write(dir, "package.json");
       write(dir, "requirements.txt");
