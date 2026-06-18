@@ -1,4 +1,13 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { askOverwrite } from "./prompts.js";
 
@@ -54,23 +63,39 @@ export async function copyStaticDir(srcDir: string, destDir: string, options: Wr
   return results;
 }
 
-export function createSymlinks(target: string, _scaffoldDir: string): string[] {
-  const links: [string, string][] = [
-    ["AGENTS.md", ".agentic-scaffold/AGENTS.md"],
-    ["CLAUDE.md", ".agentic-scaffold/CLAUDE.md"],
-  ];
+export function createSymlinks(target: string, scaffoldDir: string): string[] {
+  const names = ["AGENTS.md", "CLAUDE.md"];
   const created: string[] = [];
-  for (const [name, linkTarget] of links) {
+  for (const name of names) {
     const linkPath = join(target, name);
     if (existsSync(linkPath)) {
       created.push("skipped-existing");
       continue;
     }
+    const linkTarget = join(".agentic-scaffold", name);
+    const sourcePath = join(scaffoldDir, name);
+    if (!existsSync(sourcePath)) {
+      created.push("skipped-existing");
+      continue;
+    }
+    if (process.platform === "win32") {
+      copyFileSync(sourcePath, linkPath);
+      console.warn(`  Symlinks not supported on Windows; copied ${name} instead.`);
+      created.push("written");
+      continue;
+    }
     try {
       symlinkSync(linkTarget, linkPath);
       created.push("written");
-    } catch {
-      created.push("skipped-existing");
+    } catch (err: unknown) {
+      const nodeErr = err as NodeJS.ErrnoException;
+      if (nodeErr.code === "ENOSYS" || nodeErr.code === "EPERM" || nodeErr.code === "EACCES") {
+        copyFileSync(sourcePath, linkPath);
+        console.warn(`  Symlinks not supported on this system; copied ${name} instead.`);
+        created.push("written");
+      } else {
+        created.push("skipped-existing");
+      }
     }
   }
   return created;
