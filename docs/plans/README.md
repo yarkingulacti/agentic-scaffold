@@ -16,6 +16,7 @@ tool itself.
 | [07-hardening-roadmap.md](07-hardening-roadmap.md) | Hardening roadmap: v0.8 → v1.0 (dry-run, self-host, dirty check, etc.) |
 | [09-project-critique.md](09-project-critique.md) | Critical backlog from implementation and planning review |
 | [10-detection-rendering-matrix.md](10-detection-rendering-matrix.md) | Ownership matrix for detected project facts |
+| [11-update-strategy.md](11-update-strategy.md) | Manifest-based safe update design |
 
 ## Status
 

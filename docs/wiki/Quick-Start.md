@@ -15,13 +15,17 @@ npx @yarkingulacti/agentic-scaffold
 # Not sure? Preview every file first, write nothing
 npx @yarkingulacti/agentic-scaffold --dry-run
 
+# Already scaffolded? Update generated files without clobbering local edits
+npx @yarkingulacti/agentic-scaffold update
+
 # Changed your mind? Undo the whole thing
 npx @yarkingulacti/agentic-scaffold un
 ```
 
-That's the entire loop. The scaffold detects your project (language, package
+That's the core loop. The scaffold detects your project (language, package
 manager, CI, AI tools), seeds the generated docs with what it found, and writes
-only the files that don't already exist.
+only the files that don't already exist. Later, `update` refreshes generated
+templates while preserving local edits.
 
 ## Three ways to run it
 
@@ -41,6 +45,7 @@ Pick the level of control you want — all three produce the same scaffold shape
 4. Install the skills in your AI tool (e.g. opencode) — each `.agentic-scaffold/.agents/skills/*/SKILL.md` is self-contained.
 5. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
 6. Use the `fill-docs` skill (`.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.
+7. After upgrading this package, run `npx @yarkingulacti/agentic-scaffold update --dry-run` to preview generated-template changes before applying them.
 
 ## What you get
 

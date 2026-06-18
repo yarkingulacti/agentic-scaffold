@@ -6,6 +6,7 @@
 |---------|--------------|
 | `agentic-scaffold` | Scaffold agentic configuration into a project (default command) |
 | `agentic-scaffold un` | Remove scaffolded files from a project |
+| `agentic-scaffold update` | Update an existing scaffold without clobbering user edits |
 
 ## Common invocations
 
@@ -43,6 +44,12 @@ npx @yarkingulacti/agentic-scaffold --skip-skills --skip-scripts --skip-hooks
 # Pre-configure values
 npx @yarkingulacti/agentic-scaffold --project-name "my-app" --issue-tracker github
 
+# Update an existing scaffold; conflicts are kept in-place and written to <path>.new
+npx @yarkingulacti/agentic-scaffold update
+
+# Preview an update as JSON without writing files
+npx @yarkingulacti/agentic-scaffold update --dry-run --json
+
 # Remove all scaffolded files (asks for confirmation)
 npx @yarkingulacti/agentic-scaffold un
 
@@ -55,7 +62,7 @@ npx @yarkingulacti/agentic-scaffold un --force
 | Flag | Type | Description |
 |------|------|-------------|
 | `--json` | boolean | Output results as JSON to stdout, progress to stderr |
-| `-n, --dry-run` | boolean | Preview files that would be created without writing anything |
+| `-n, --dry-run` | boolean | Preview scaffold or update changes without writing anything |
 | `-i, --interactive` | boolean | Run in interactive mode with prompts |
 | `-t, --target` | string | Target directory (default: current working directory) |
 | `--only` | string | Comma-separated core groups to include: `docs,scripts,skills,hooks,all` |

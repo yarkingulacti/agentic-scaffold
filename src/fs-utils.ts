@@ -163,7 +163,7 @@ export interface Manifest {
   files: ManifestEntry[];
 }
 
-function fileHash(filePath: string): string {
+export function fileHash(filePath: string): string {
   const content = readFileSync(filePath);
   return createHash("sha256").update(content).digest("hex");
 }
