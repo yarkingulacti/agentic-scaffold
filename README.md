@@ -1,41 +1,101 @@
-# @yarkingulacti/agentic-scaffold
+<div align="center">
+
+# 🛰️ agentic-scaffold
+
+**Give any repository an AI-native foundation in a single command.**
+
+Agent config · domain docs · an ADR system · a memory pipeline · 23 reusable skills · lifecycle hooks — all dropped into one tidy directory, none of your files touched.
 
 [![npm version](https://img.shields.io/npm/v/%40yarkingulacti%2Fagentic-scaffold?logo=npm&label=version)](https://www.npmjs.com/package/@yarkingulacti/agentic-scaffold)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/yarkingulacti/agentic-scaffold?style=flat&logo=github)](https://github.com/yarkingulacti/agentic-scaffold)
 
-Scaffold agentic development documentation and configuration into any project.
-Run with zero flags and it auto-detects your project's language, package manager,
-and existing CI/AI-tool context for generated docs — while writing only the
-conservative core scaffold unless extras are requested.
-
-Inspired by the methodology evolved in the [haprec.com](https://haprec.com) project — extracts the reusable patterns (agent config, domain docs, ADR system, memory scripts, skill system, scratchpad conventions) so every project can start with an AI-native foundation.
-
-## Quick start
-
 ```bash
 npx @yarkingulacti/agentic-scaffold
 ```
 
-Auto-detects your project (language, package manager, CI, AI tools) and
-scaffolds only what's missing. Never overwrites existing files.
+</div>
 
-## Tiers
+---
 
-The scaffold works in three tiers depending on how much control you need:
+Your AI coding agent is only as good as the context it can see. `agentic-scaffold`
+ships that context as a reusable, opinionated baseline — so every repo starts
+AI-native instead of you hand-rolling the same structure over and over.
 
+It drops a single **`.agentic-scaffold/`** directory (plus `AGENTS.md` /
+`CLAUDE.md` entry-point symlinks) into your project. Run it with zero flags: it
+auto-detects your language, package manager, CI, and AI-tool context, then writes
+**only the conservative core scaffold** — never overwriting what you already have.
+
+> Inspired by the methodology evolved in the [haprec.com](https://haprec.com)
+> project. The reusable patterns — agent config, domain docs, ADR system, memory
+> scripts, skill system, scratchpad conventions — are extracted here so every
+> project can start AI-native.
+
+---
+
+## Contents
+
+- [Why bother?](#-why-bother)
+- [60-second tour](#-60-second-tour)
+- [Three ways to run it](#-three-ways-to-run-it)
+- [CLI reference](#-cli-reference)
+- [What you get](#-what-you-get)
+- [Auto-detection](#-auto-detection)
+- [Components & extras](#-components--extras)
+- [After scaffolding](#-after-scaffolding)
+- [Unscaffold](#-unscaffold)
+- [Token-cost controls](#-token-cost-controls)
+- [Contributing](#-contributing)
+- [Credits](#-credits)
+
+---
+
+## 🤔 Why bother?
+
+Working with AI agents goes better when the repository carries its own context:
+how the domain works, where decisions are recorded, what conventions hold, and
+which workflows agents should follow. Doing that by hand for every project is
+repetitive and easy to get wrong.
+
+|  | What you get |
+|---|---|
+| 🟢 **Zero-config & safe** | Auto-detects your stack and writes only what's missing. Existing files are never overwritten unless you pass `--force`. |
+| 🪶 **Conservative by default** | The no-flag run writes the core scaffold plus working dirs. CI, onboarding, contribution docs, AI-tool config, and token filters are all opt-in. |
+| ↩️ **Reversible** | One `un` command removes everything it created and leaves your project untouched. |
+| ✅ **Validated before publish** | Template variables, Markdown escaping, and representative rendered projects are all checked against golden output. |
+
+## ⚡ 60-second tour
+
+```bash
+# Scaffold the current project — auto-detect, write what's missing
+npx @yarkingulacti/agentic-scaffold
+
+# Not sure? Preview every file first, write nothing
+npx @yarkingulacti/agentic-scaffold --dry-run
+
+# Changed your mind? Undo the whole thing
+npx @yarkingulacti/agentic-scaffold un
 ```
-Zero-config   npx @yarkingulacti/agentic-scaffold
-              Auto-detect and scaffold. No flags, no prompts.
 
-Flag mode     npx ... --force --ci-provider github
-              Override auto-detection with CLI flags. Add --force to overwrite.
+That's the entire loop. The scaffold detects your project (language, package
+manager, CI, AI tools), seeds the generated docs with what it found, and writes
+only the files that don't already exist.
 
-Interactive   npx ... -i
-              Step-by-step prompts with detected defaults pre-filled.
-```
+## 🎛️ Three ways to run it
 
-## CLI
+Pick the level of control you want — all three produce the same scaffold shape.
+
+| Mode | Command | When to use |
+|------|---------|-------------|
+| 🤖 **Zero-config** | `npx @yarkingulacti/agentic-scaffold` | Auto-detect and scaffold. No flags, no prompts. |
+| 🚩 **Flag mode** | `npx ... --force --ci-provider github` | Override auto-detection from the CLI; `--force` overwrites. |
+| 💬 **Interactive** | `npx ... -i` | Step-by-step prompts with detected defaults pre-filled. |
+
+## 📟 CLI reference
+
+<details>
+<summary><strong>Click to expand — common invocations</strong></summary>
 
 ```bash
 # Zero-config — auto-detect and scaffold what's missing
@@ -75,7 +135,9 @@ npx @yarkingulacti/agentic-scaffold un
 npx @yarkingulacti/agentic-scaffold un --force
 ```
 
-## What you get
+</details>
+
+## 📦 What you get
 
 ```
 project/
@@ -107,33 +169,38 @@ project/
     └── .history/                 # Shipped work summaries
 ```
 
-## Auto-detection
+Everything lives under one wrapper directory, so it's easy to find, easy to
+`.gitignore` selectively, and trivial to remove.
 
-The scaffold scans your project and detects:
+## 🔍 Auto-detection
 
-| What | How |
-|------|-----|
-| **Languages** | JavaScript/TypeScript, Python, Go, Rust (from manifest files) |
-| **Package manager** | npm, yarn, pnpm, pip, poetry (from lockfiles) |
-| **CI provider** | GitHub Actions, GitLab CI, CircleCI (from config files) |
-| **AI tools** | opencode, Cursor, Copilot, Windsurf, Cline (from config files) |
-| **Issue tracker** | GitHub Issues (from .github/ directory) |
-| **Script runtime** | Node.js when package.json is present; otherwise the scaffold still defaults to Node.js because the shipped memory scripts are `.mjs` files |
+The scaffold scans your project and seeds the generated docs and interactive
+defaults from what it finds:
 
-Detected values are rendered into `AGENTS.md` / `CLAUDE.md` and seed interactive
-defaults. Root-level extras such as CI and AI-tool config are written only when
-requested with `--extras`.
+| What | Detected from |
+|------|---------------|
+| 🧬 **Languages** | JavaScript/TypeScript, Python, Go, Rust (manifest files) |
+| 📦 **Package manager** | npm, yarn, pnpm, pip, poetry (lockfiles) |
+| 🔧 **CI provider** | GitHub Actions, GitLab CI, CircleCI (config files) |
+| 🤝 **AI tools** | opencode, Cursor, Copilot, Windsurf, Cline (config files) |
+| 🎫 **Issue tracker** | GitHub Issues (`.github/` directory) |
+| ⚙️ **Script runtime** | Node.js when `package.json` is present; otherwise still defaults to Node.js because the shipped memory scripts are `.mjs` files |
 
-## Components
+Detected values render into `AGENTS.md` / `CLAUDE.md`. Root-level extras such as
+CI and AI-tool config are written only when requested with `--extras`.
+
+## 🧩 Components & extras
+
+**Core components** are written by default. Skip any of them with its flag:
 
 | Group | Description | Flag |
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
 | `scripts` | Node.js memory indexing pipeline (flat-file keyword index) | `--skip-scripts` |
-| `skills` | 23 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
-| `hooks` | Pre/post lifecycle hooks for agent workflows (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
+| `skills` | 23 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, …) | `--skip-skills` |
+| `hooks` | Pre/post lifecycle hooks (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
 
-Extras are opt-in with `--extras` so zero-config mode stays conservative:
+**Extras** are opt-in via `--extras` so zero-config mode stays conservative:
 
 | Extra | Description |
 |-------|-------------|
@@ -144,18 +211,7 @@ Extras are opt-in with `--extras` so zero-config mode stays conservative:
 | `rtk` | Project-local RTK token-cost filters in `.rtk/filters.toml` |
 | `all` | Include every extras group |
 
-## Current release
-
-Version `0.15.x` focuses on making scaffold output predictable and releasable:
-
-- **Conservative zero-config defaults** — extras are opt-in, so running with no flags writes the core scaffold, `.scratchpad/`, and `.history/` without adding CI, onboarding, contribution, AI tool config, or RTK filter files.
-- **Registry-driven dry-run preview** — `--dry-run` now uses the same component decisions as real scaffolding, including provider-specific CI output and `--skip-history` / `--skip-scratchpad`.
-- **Template and golden-output validation** — template variables, Markdown escaping, and representative rendered projects are validated before publish.
-- **RTK filter extra** — generated projects can opt into `.rtk/filters.toml` with `--extras rtk` or `--extras all` to reduce agent token cost from noisy shell output.
-- **Locked script runtime** — `--script-language` accepts only `node`, matching the shipped `.mjs` memory scripts, so generated docs never claim an unavailable runtime.
-- **Component registry rendering** — scaffold groups are rendered through a single component registry rather than repeated per-group control flow.
-
-## After scaffolding
+## 🚀 After scaffolding
 
 1. Fill in `.agentic-scaffold/BUSINESS_LOGIC.md` with your product domain.
 2. Run `npm install` / `pnpm install` for your project's actual dependencies.
@@ -164,9 +220,9 @@ Version `0.15.x` focuses on making scaffold output predictable and releasable:
 5. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
 6. Use the `fill-docs` skill (`.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.
 
-## Unscaffold
+## 🧹 Unscaffold
 
-Remove all scaffolded files in one command:
+Changed your mind? Remove everything the scaffold created in one command:
 
 ```bash
 # Interactive (asks for confirmation)
@@ -176,26 +232,31 @@ npx @yarkingulacti/agentic-scaffold un
 npx @yarkingulacti/agentic-scaffold un --force
 ```
 
-This removes the entire `.agentic-scaffold/` directory and the root-level symlinks (AGENTS.md, CLAUDE.md). Your project files are left untouched.
+This removes the entire `.agentic-scaffold/` directory and the root-level
+symlinks (`AGENTS.md`, `CLAUDE.md`). Your project files are left untouched.
 
-## Development token-cost controls
+## 💸 Token-cost controls
 
 This repository includes project-local [RTK](https://github.com/rtk-ai/rtk)
 filters in `.rtk/filters.toml`. Install RTK and run `rtk trust` from the repo
 root to apply compact output filters for local test and validation commands.
 
-## Open source
+Generated projects can adopt the same workflow with `--extras rtk` (or
+`--extras all`), which writes an opt-in `.rtk/filters.toml` to cut agent token
+usage from noisy shell output.
 
-- [LICENSE](LICENSE) — MIT
+## 🛠️ Contributing
+
 - [CONTRIBUTING.md](CONTRIBUTING.md) — contribution guidelines
 - [SECURITY.md](SECURITY.md) — security policy
 - [Issues](https://github.com/yarkingulacti/agentic-scaffold/issues) — bug reports and feature requests
+- [LICENSE](LICENSE) — MIT
 
-## Credits & acknowledgements
+## 🙏 Credits
 
 Token-cost controls in this project are powered by [RTK](https://github.com/rtk-ai/rtk)
 (Rust Token Killer) by the [rtk-ai](https://github.com/rtk-ai) team. RTK filters
-high-volume command output to cut agent token usage, and agentic-scaffold both
-uses it locally (`.rtk/filters.toml`) and ships an opt-in RTK extra
-(`--extras rtk`) so generated projects can adopt the same workflow. Thanks to the
-RTK maintainers for the tooling.
+high-volume command output to cut agent token usage; `agentic-scaffold` uses it
+locally (`.rtk/filters.toml`) and ships an opt-in RTK extra (`--extras rtk`) so
+generated projects can adopt the same workflow. Thanks to the RTK maintainers
+for the tooling.

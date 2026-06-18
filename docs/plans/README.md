@@ -36,8 +36,8 @@ Before tagging a release, update or verify:
 
 - `package.json` version matches the intended release tag.
 - `CHANGELOG.md` has a top entry for the release.
-- README "Current release" bullets describe the current behavior, not an older
-  milestone.
+- README intro and "Why" bullets describe current behavior, not an older
+  milestone; per-version history stays in `CHANGELOG.md` only.
 - README component counts match `templates/` contents.
 - Plan status sections do not describe already-shipped work as future work.
 - `docs/plans/09-project-critique.md` statuses match the implemented fixes.
