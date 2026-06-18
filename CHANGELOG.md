@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.13.4](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.3...v0.13.4) (2026-06-18)
+
+
+### Fixed
+
+* **templates:** stop HTML-escaping Markdown and render languages var ([c29a119](https://github.com/yarkingulacti/agentic-scaffold/commit/c29a119679d8c46f9d6264e3c90c718c10a2514f))
+
 ## [0.13.3](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.2...v0.13.3) (2026-06-18)
 
 
