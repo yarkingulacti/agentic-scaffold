@@ -51,6 +51,7 @@ describe("CLI", () => {
       assert.ok(out.includes("--skip-skills"));
       assert.ok(out.includes("--skip-scripts"));
       assert.ok(out.includes("--skip-docs"));
+      assert.ok(out.includes("--skip-hooks"));
     });
 
     it("shows force short flag -f", () => {
@@ -96,7 +97,7 @@ describe("CLI", () => {
 
     it("respects --skip-skills", () => {
       const dir = tempDir();
-      run(`--target ${dir} --force --skip-skills --skip-scripts`);
+      run(`--target ${dir} --force --skip-skills --skip-hooks --skip-scripts`);
       assert.equal(existsSync(join(dir, ".agents")), false);
       rmSync(dir, { recursive: true });
     });
@@ -105,6 +106,20 @@ describe("CLI", () => {
       const dir = tempDir();
       run(`--target ${dir} --force --skip-docs --skip-skills --skip-scripts`);
       assert.equal(existsSync(join(dir, "docs")), false);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("creates hooks by default", () => {
+      const dir = tempDir();
+      run(`--target ${dir} --force --skip-docs --skip-skills --skip-scripts`);
+      assert.ok(existsSync(join(dir, ".agents", "hooks", "post-feature.md")));
+      rmSync(dir, { recursive: true });
+    });
+
+    it("respects --skip-hooks", () => {
+      const dir = tempDir();
+      run(`--target ${dir} --force --skip-hooks --skip-docs --skip-skills --skip-scripts`);
+      assert.equal(existsSync(join(dir, ".agents", "hooks")), false);
       rmSync(dir, { recursive: true });
     });
 

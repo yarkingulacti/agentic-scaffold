@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Post-feature hook — runs after a feature is delivered.
+# Customize this file with project-specific post-delivery tasks.
+#
+# Available context variables:
+#   projectName    = "{{projectName}}"
+#   packageManager = "{{packageManager}}"
+#   scriptLanguage = "{{scriptLanguage}}"
+
+set -euo pipefail
+
+echo "Running post-feature tasks for {{projectName}}..."
+{{#if packageManager}}
+{{packageManager}} run lint 2>/dev/null || true
+{{/if}}

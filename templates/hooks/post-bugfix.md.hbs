@@ -1,0 +1,17 @@
+# Post-Bugfix Hook
+
+Fires after a bugfix is delivered.
+
+## Steps
+
+1. Run the project's test suite to confirm the fix does not regress:
+   {{#if packageManager}}   `{{packageManager}} test`{{else}}   `npm test`{{/if}}
+2. Run `.agents/hooks/scripts/post-bugfix.sh` if it exists.
+3. Update `.history/DD.MM.YYYY/README.md` with a summary of the fix.
+4. Update the related `.scratchpad/` status to mark completion.
+5. Create a Conventional Commit under the master work title.
+
+## When to skip
+
+If the project has no tests or no history directory, skip the unavailable
+steps silently. Do not pretend they succeeded.
