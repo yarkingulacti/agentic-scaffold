@@ -19,7 +19,9 @@ registerPartial("agentConfigTail", "_AGENT_CONFIG_TAIL.md.hbs");
 
 export function renderTemplate(sourcePath: string, hbData: HandlebarsData): string {
   const raw = readFileSync(sourcePath, "utf-8");
-  const template = Handlebars.compile(raw);
+  // noEscape: templates render Markdown, never HTML. Default escaping would
+  // corrupt values containing <, >, & — e.g. ".scratchpad/<feature>/".
+  const template = Handlebars.compile(raw, { noEscape: true });
   return template(hbData);
 }
 

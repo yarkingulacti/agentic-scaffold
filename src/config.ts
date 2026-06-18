@@ -65,6 +65,7 @@ export interface TrackerDoc {
 export interface HandlebarsData {
   projectName: string;
   projectDescription: string;
+  languages: string;
   scriptsDir: string;
   issueTrackerName: string;
   issueTrackerDescription: string;
@@ -197,6 +198,7 @@ export function buildHandlebars(config: ScaffoldConfig, version: string): Handle
   return {
     projectName: config.projectName,
     projectDescription: config.projectDescription,
+    languages: config.languages.join(", "),
     scriptsDir: ".agentic-scaffold/scripts",
     issueTrackerName: tracker.name,
     issueTrackerDescription: tracker.description,
