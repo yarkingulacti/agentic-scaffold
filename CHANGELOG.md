@@ -5,6 +5,27 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.10.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.9.0...v0.10.0) (2026-06-18)
+
+
+### Added
+
+* complete sprints 4, 6, 7 and hardening v1.0 ([3ed3237](https://github.com/yarkingulacti/agentic-scaffold/commit/3ed32376ee409b616038a190fc7b3ecf57feee1d))
+
+## [0.10.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.9.0...v0.10.0) (2026-06-18)
+
+
+### Added
+
+* complete sprints 4, 6, 7 and hardening v1.0 ([3ed3237](https://github.com/yarkingulacti/agentic-scaffold/commit/3ed32376ee409b616038a190fc7b3ecf57feee1d))
+
+## [0.12.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.9.0...v0.12.0) (2026-06-18)
+
+
+### Added
+
+* complete sprints 4, 6, 7 and hardening v1.0 ([3ed3237](https://github.com/yarkingulacti/agentic-scaffold/commit/3ed32376ee409b616038a190fc7b3ecf57feee1d))
+
 ## [0.7.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.7.0...v0.7.1) (2026-06-18)
 
 ### Added
