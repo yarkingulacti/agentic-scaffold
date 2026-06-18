@@ -13,6 +13,7 @@ tool itself.
 | [04-zero-config-tiered-design.md](04-zero-config-tiered-design.md) | Architecture for zero-config ↔ high-tier |
 | [05-sprint-1-detailed-spec.md](05-sprint-1-detailed-spec.md) | Sprint 1 implementation spec |
 | [06-fill-docs-skill-design.md](06-fill-docs-skill-design.md) | fill-docs skill + agent notification design |
+| [07-hardening-roadmap.md](07-hardening-roadmap.md) | Hardening roadmap: v0.8 → v1.0 (dry-run, self-host, dirty check, etc.) |
 
 ## Status
 
@@ -24,3 +25,4 @@ tool itself.
 - Sprint 6 (migrations + contribution):     Not started
 - Sprint 7 (extras + cleanup):              Not started
 - Created: 2026-06-17
+- Updated: 2026-06-18 (added 07-hardening-roadmap.md)
