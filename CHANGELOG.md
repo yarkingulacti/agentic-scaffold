@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.15.1...v0.15.2) (2026-06-18)
+
+
+### Fixed
+
+* **ci:** scope publish concurrency per ref so tag runs aren't cancelled ([9a47ab9](https://github.com/yarkingulacti/agentic-scaffold/commit/9a47ab98898ebe0e5bd11f6f92d553ca5657679a))
+
 ## [0.15.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.15.0...v0.15.1) (2026-06-18)
 
 
