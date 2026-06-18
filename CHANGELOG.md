@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.15.2...v1.0.0) (2026-06-18)
+
+
+### Changed
+
+* redesign README and reconcile release freshness gate ([3bb2641](https://github.com/yarkingulacti/agentic-scaffold/commit/3bb26418810ddcea8377ede926d2f46cdaa1b94b))
+
 ## [0.15.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.15.1...v0.15.2) (2026-06-18)
 
 
