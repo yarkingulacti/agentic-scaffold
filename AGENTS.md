@@ -36,6 +36,9 @@ docs/plans/            Design documents and roadmaps
 | `npm run lint` | Biome lint check |
 | `npm run format` | Biome format + write |
 | `npm run format:check` | Biome CI format check |
+| `npm run validate-skills` | Validate skill frontmatter against schema |
+| `npm run validate-templates` | Validate template variables/partials + no HTML-escape leaks |
+| `UPDATE_GOLDEN=1 npm test` | Regenerate `tests/fixtures/*/expected/` golden output |
 | `npm run release` | Bump version, generate changelog, commit, tag |
 
 ## Quick start

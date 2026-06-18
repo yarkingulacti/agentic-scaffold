@@ -1,0 +1,34 @@
+# Post-Session Hook
+
+Fires after every successful coding session, regardless of the skill used.
+Replaces the legacy session-close workflow.
+
+## Steps
+
+1. Run `.agentic-scaffold/.agents/hooks/scripts/post-session.sh` if it exists.
+2. Run all applicable post-* hooks that match the work done:
+   - After feature work: `.agentic-scaffold/.agents/hooks/post-feature.md`
+   - After bugfix work: `.agentic-scaffold/.agents/hooks/post-bugfix.md`
+3. Build every touched project when a build command exists.
+4. Run `.agentic-scaffold/scripts/memory_index.mjs` so `.agentic-scaffold/.history/` is in the keyword index.
+5. Update all affected `.agentic-scaffold/.scratchpad/` status lines.
+6. Push the feature/bugfix branch to the remote.
+7. Create a PR, review it, merge it, then delete the PR branch.
+
+## Commit Message Format
+
+Use the master work title as the first line, then the Conventional Commit:
+
+```
+<Master work title>
+
+<type>(<scope>): <short imperative summary>
+```
+
+Allowed types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`.
+
+## Blockers
+
+If a step cannot run because the repo has no command, no remote, invalid
+auth, or missing external service, record that in `.agentic-scaffold/.history/` and the final
+response. Do not pretend the step succeeded.

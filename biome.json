@@ -23,6 +23,6 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/dist/", "!**/templates/", "!**/coverage/"]
+    "includes": ["**", "!**/dist/", "!**/templates/", "!**/coverage/", "!**/tests/fixtures/**"]
   }
 }

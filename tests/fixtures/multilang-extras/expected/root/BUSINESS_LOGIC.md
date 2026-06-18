@@ -1,0 +1,35 @@
+# poly-app Business Logic
+
+This is the project brain. It captures the stable product rules agents should
+read before planning or coding.
+
+## Product Fundamentals
+
+A demo project.
+
+## Core Domain Concepts
+
+<!-- Replace with your domain concepts. Each concept gets a name and description. -->
+
+- **ConceptName** — description of the concept.
+
+## Non-Negotiable Rules
+
+<!-- Immutable constraints every agent must follow. -->
+
+## Architecture Decisions
+
+<!-- Reference accepted ADRs. -->
+
+- Monorepo: ADR-XXXX.
+- ...
+
+## Task Planning Rule
+
+Every future implementation plan must cite:
+
+- the relevant `BUSINESS_LOGIC.md` section;
+- any relevant ADR;
+- any relevant `.agentic-scaffold/docs/` file;
+- the issue and matching `.agentic-scaffold/.scratchpad/` detail file when the work is
+  issue-backed.

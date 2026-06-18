@@ -1,0 +1,32 @@
+# Observability
+
+Monitoring, logging, and observability conventions for ts-app.
+
+## Logging
+
+- Use structured logging (JSON) in production.
+- Log levels: `error`, `warn`, `info`, `debug`.
+- Include correlation IDs in request-scoped logs.
+- Never log sensitive data (passwords, tokens, PII).
+
+## Metrics
+
+- Track key metrics: request latency, error rate, throughput.
+- Use the project's chosen metrics system (Prometheus, OpenTelemetry, etc.).
+- Every new feature should include relevant metrics.
+
+## Tracing
+
+- Use distributed tracing for request flows that span multiple services.
+- Include trace IDs in log entries for correlation.
+
+## Alerting
+
+- Define alerts for error budget burn, paging events, and SLO violations.
+- Alerts should be actionable — if an alert fires, someone should know what to do.
+
+## Agent rules
+
+- Add logging when introducing new code paths.
+- Use the project's existing logger — don't add a new one.
+- When debugging, start with the logs and metrics before diving into code.
