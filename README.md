@@ -60,7 +60,7 @@ npx @yarkingulacti/agentic-scaffold --interactive
 npx @yarkingulacti/agentic-scaffold --target ../my-project
 
 # Skip specific groups
-npx @yarkingulacti/agentic-scaffold --skip-skills --skip-scripts
+npx @yarkingulacti/agentic-scaffold --skip-skills --skip-scripts --skip-hooks
 
 # Pre-configure values
 npx @yarkingulacti/agentic-scaffold --project-name "my-app" --issue-tracker github
@@ -87,7 +87,8 @@ project/
 │   │   └── glossary.md       # Ubiquitous language glossary
 │   ├── engineering/README.md
 │   └── product/README.md
-├── .agents/skills/           # Agent skill definitions (20 skills)
+├── .agents/skills/           # Agent skill definitions (21 skills)
+├── .agents/hooks/            # Pre/post lifecycle hooks for agent workflows
 ├── scripts/                  # Markdown memory indexing pipeline
 ├── .scratchpad/              # Local detailed planning
 └── .history/                 # Shipped work summaries
@@ -115,7 +116,15 @@ CLI flags.
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
 | `scripts` | Python memory indexing pipeline (sqlite-vec based RAG) | `--skip-scripts` |
-| `skills` | 20 agent skills (implement, bugfix, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
+| `skills` | 21 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, etc.) | `--skip-skills` |
+| `hooks` | Pre/post lifecycle hooks for agent workflows (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
+
+## New in v0.7
+
+- **Agent lifecycle hooks** — new `.agents/hooks/` component group with 4 hooks (pre-feature, post-feature, post-bugfix, post-session) and executable shell scripts. Skills reference hooks conditionally with graceful fallback.
+- **`create-hook` skill** — new agent skill that guides you through adding custom hooks for any lifecycle point.
+- **`--skip-hooks` flag** — skip the hooks component group.
+- **98 tests** — detection, scaffolding, CLI, and hooks tested end-to-end.
 
 ## New in v0.5
 
