@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.14.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.14.0...v0.14.1) (2026-06-18)
+
+
+### Changed
+
+* **templates:** add golden-output fixtures for three profiles ([64fa5c4](https://github.com/yarkingulacti/agentic-scaffold/commit/64fa5c438ae5e81b95ce58cff21bca62938c91fe)), closes [#7](https://github.com/yarkingulacti/agentic-scaffold/issues/7)
+
 ## [0.14.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.4...v0.14.0) (2026-06-18)
 
 
