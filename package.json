@@ -1,6 +1,6 @@
 {
   "name": "@yarkingulacti/agentic-scaffold",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Scaffold agentic development documentation & configuration into any project",
   "type": "module",
   "packageManager": "pnpm@11.7.0",

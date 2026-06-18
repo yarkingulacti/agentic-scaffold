@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.2.0...v1.2.1) (2026-06-18)
+
+
+### Changed
+
+* **cli:** document --languages flag in README and wiki CLI reference ([006432f](https://github.com/yarkingulacti/agentic-scaffold/commit/006432f4e5cd0fd54bfc6791d4c6b94882f6d98b))
+
 ## [1.2.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.1.2...v1.2.0) (2026-06-18)
 
 
