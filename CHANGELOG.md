@@ -5,26 +5,44 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.11.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.11.1...v0.11.2) (2026-06-18)
+
+
+### Added
+
+* add project critique backlog for v1 planning
+
+### Fixed
+
+* default generated script runtime documentation to Node.js to match shipped `.mjs` memory scripts
+
+## [0.11.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.11.0...v0.11.1) (2026-06-18)
+
+
+### Changed
+
+* mark Phase 1 items as resolved in hardening roadmap
+
+## [0.11.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.10.1...v0.11.0) (2026-06-18)
+
+
+### Added
+
+* add scaffold manifest with content hashes for dirty-check on unscaffold
+
+## [0.10.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.10.0...v0.10.1) (2026-06-18)
+
+
+### Changed
+
+* add AGENTS.md and CLAUDE.md for the scaffold repo itself
+
 ## [0.10.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.9.0...v0.10.0) (2026-06-18)
 
 
 ### Added
 
-* complete sprints 4, 6, 7 and hardening v1.0 ([3ed3237](https://github.com/yarkingulacti/agentic-scaffold/commit/3ed32376ee409b616038a190fc7b3ecf57feee1d))
-
-## [0.10.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.9.0...v0.10.0) (2026-06-18)
-
-
-### Added
-
-* complete sprints 4, 6, 7 and hardening v1.0 ([3ed3237](https://github.com/yarkingulacti/agentic-scaffold/commit/3ed32376ee409b616038a190fc7b3ecf57feee1d))
-
-## [0.12.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.9.0...v0.12.0) (2026-06-18)
-
-
-### Added
-
-* complete sprints 4, 6, 7 and hardening v1.0 ([3ed3237](https://github.com/yarkingulacti/agentic-scaffold/commit/3ed32376ee409b616038a190fc7b3ecf57feee1d))
+* complete sprints 4, 6, 7 and hardening v1.0
 
 ## [0.7.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.7.0...v0.7.1) (2026-06-18)
 
