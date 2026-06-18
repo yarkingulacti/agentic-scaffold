@@ -1,13 +1,13 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, symlinkSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, it } from "node:test";
 import { scaffold } from "../src/scaffold.js";
 
 const S = ".agentic-scaffold";
 
-function p(dir, ...parts) {
+function p(dir: string, ...parts: string[]): string {
   return join(dir, ...parts);
 }
 
@@ -117,7 +117,14 @@ describe("scaffold", () => {
 
   it("renders project name in AGENTS.md", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, force: true, projectName: "my-app", skipDocs: true, skipScripts: true, skipSkills: true });
+    await scaffold({
+      target: dir,
+      force: true,
+      projectName: "my-app",
+      skipDocs: true,
+      skipScripts: true,
+      skipSkills: true,
+    });
     const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
     assert.ok(content.includes("# my-app"));
     rmSync(dir, { recursive: true });
@@ -125,7 +132,14 @@ describe("scaffold", () => {
 
   it("renders packageManager section when set", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, force: true, packageManager: "pnpm", skipDocs: true, skipScripts: true, skipSkills: true });
+    await scaffold({
+      target: dir,
+      force: true,
+      packageManager: "pnpm",
+      skipDocs: true,
+      skipScripts: true,
+      skipSkills: true,
+    });
     const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
     assert.ok(content.includes("This project uses **pnpm**"));
     rmSync(dir, { recursive: true });
@@ -141,7 +155,14 @@ describe("scaffold", () => {
 
   it("renders ciProvider section when set", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, force: true, ciProvider: "gitlab", skipDocs: true, skipScripts: true, skipSkills: true });
+    await scaffold({
+      target: dir,
+      force: true,
+      ciProvider: "gitlab",
+      skipDocs: true,
+      skipScripts: true,
+      skipSkills: true,
+    });
     const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
     assert.ok(content.includes("This project uses **gitlab** for CI/CD"));
     rmSync(dir, { recursive: true });
@@ -165,7 +186,14 @@ describe("scaffold", () => {
 
   it("renders scriptLanguage section with override", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, force: true, scriptLanguage: "docker", skipDocs: true, skipScripts: true, skipSkills: true });
+    await scaffold({
+      target: dir,
+      force: true,
+      scriptLanguage: "docker",
+      skipDocs: true,
+      skipScripts: true,
+      skipSkills: true,
+    });
     const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
     assert.ok(content.includes("Memory and utility scripts use **docker**"));
     rmSync(dir, { recursive: true });
@@ -279,7 +307,15 @@ describe("scaffold", () => {
 
   it("renders packageManager and projectName in hook script templates", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, force: true, projectName: "TestApp", packageManager: "pnpm", skipDocs: true, skipScripts: true, skipSkills: true });
+    await scaffold({
+      target: dir,
+      force: true,
+      projectName: "TestApp",
+      packageManager: "pnpm",
+      skipDocs: true,
+      skipScripts: true,
+      skipSkills: true,
+    });
     const content = readFileSync(p(dir, S, ".agents", "hooks", "scripts", "post-feature.sh"), "utf-8");
     assert.ok(content.includes("TestApp"));
     assert.ok(content.includes("pnpm"));

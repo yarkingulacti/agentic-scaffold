@@ -1,14 +1,14 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { execSync } from "node:child_process";
-import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, it } from "node:test";
 
-const CLI = "node " + join(import.meta.dirname, "..", "bin", "index.js");
+const CLI = `node --import tsx ${join(import.meta.dirname, "..", "bin", "index.ts")}`;
 const S = ".agentic-scaffold";
 
-function p(dir, ...parts) {
+function p(dir: string, ...parts: string[]): string {
   return join(dir, ...parts);
 }
 

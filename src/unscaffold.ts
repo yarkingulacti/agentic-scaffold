@@ -1,21 +1,31 @@
-import { existsSync, readdirSync, lstatSync, readlinkSync, rmSync } from "node:fs";
-import { join, relative } from "node:path";
-import readline from "node:readline/promises";
+import { existsSync, lstatSync, readdirSync, readlinkSync, rmSync } from "node:fs";
+import { join } from "node:path";
 import { stdin as input, stdout as output } from "node:process";
-import { infoBox, summaryLine, style } from "./ui.js";
+import readline from "node:readline/promises";
+import { infoBox, style, summaryLine } from "./ui.js";
 
 const SCAFFOLD_DIR = ".agentic-scaffold";
 
-function findScaffoldFiles(target) {
+interface ScaffoldFile {
+  path: string;
+  type: "dir" | "file";
+}
+
+interface ScaffoldData {
+  scaffoldPath: string;
+  files: ScaffoldFile[];
+}
+
+function findScaffoldFiles(target: string): ScaffoldData | null {
   const scaffoldPath = join(target, SCAFFOLD_DIR);
   if (!existsSync(scaffoldPath)) return null;
 
-  const files = [];
+  const files: ScaffoldFile[] = [];
   collectFiles(scaffoldPath, files);
   return { scaffoldPath, files };
 }
 
-function collectFiles(dir, files) {
+function collectFiles(dir: string, files: ScaffoldFile[]): void {
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     const stat = lstatSync(full);
@@ -28,8 +38,8 @@ function collectFiles(dir, files) {
   }
 }
 
-function findSymlinks(target) {
-  const links = [];
+function findSymlinks(target: string): string[] {
+  const links: string[] = [];
   for (const name of ["AGENTS.md", "CLAUDE.md"]) {
     const full = join(target, name);
     if (!existsSync(full)) continue;
@@ -44,7 +54,7 @@ function findSymlinks(target) {
   return links;
 }
 
-export async function unscaffold(argv) {
+export async function unscaffold(argv: { target?: string; force?: boolean }): Promise<void> {
   const target = argv.target || process.cwd();
   const force = argv.force ?? false;
 
@@ -57,7 +67,7 @@ export async function unscaffold(argv) {
   const symlinks = findSymlinks(target);
   const { scaffoldPath, files } = scaffoldData;
 
-  const rows = [
+  const rows: [string, string][] = [
     ["Target", style.cyan(target)],
     ["Files to remove", style.cyan(String(files.length))],
     ["Symlinks to remove", style.cyan(String(symlinks.length))],
@@ -66,7 +76,9 @@ export async function unscaffold(argv) {
 
   if (!force) {
     const rl = readline.createInterface({ input, output });
-    const answer = await rl.question(`  Remove .agentic-scaffold/ (${files.length} files, ${symlinks.length} symlinks)? [y/N]: `);
+    const answer = await rl.question(
+      `  Remove .agentic-scaffold/ (${files.length} files, ${symlinks.length} symlinks)? [y/N]: `,
+    );
     rl.close();
     if (answer.trim().toLowerCase() !== "y") {
       console.log(` ${summaryLine("Unscaffold cancelled.", "warn")}`);

@@ -1,22 +1,22 @@
-import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, it } from "node:test";
 import { detectProjectProfile } from "../src/detect.js";
 
 function tempDir() {
   return mkdtempSync(join(tmpdir(), "detect-test-"));
 }
 
-function write(root, ...parts) {
+function write(root: string, ...parts: string[]): string {
   const filePath = join(root, ...parts);
   mkdirSync(filePath.slice(0, filePath.lastIndexOf("/")), { recursive: true });
   writeFileSync(filePath, "", "utf-8");
   return filePath;
 }
 
-function writeJson(root, path, obj) {
+function writeJson(root: string, path: string, obj: unknown): string {
   const filePath = join(root, path);
   mkdirSync(filePath.slice(0, filePath.lastIndexOf("/")), { recursive: true });
   writeFileSync(filePath, JSON.stringify(obj), "utf-8");
