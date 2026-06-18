@@ -1,0 +1,13 @@
+{{#if scaffoldVersion}}
+## Scaffold information
+
+This project was bootstrapped with `@yarkingulacti/agentic-scaffold` v{{scaffoldVersion}}.
+
+Some files contain placeholder content that must be completed:
+{{#each incompleteFiles}}
+- **{{file}}** — {{sections}}
+{{/each}}
+
+To complete these, invoke the `fill-docs` skill:
+`.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`
+{{/if}}

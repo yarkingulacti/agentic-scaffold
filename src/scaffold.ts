@@ -34,120 +34,58 @@ function showDetectedProfile(config: ScaffoldConfig): void {
   out(config, `\n${infoBox(rows)}`);
 }
 
-function scaffoldDir(config: ScaffoldConfig): string {
-  return config.scaffoldDir;
+interface Component {
+  name: string;
+  render: (config: ScaffoldConfig, hbData: HandlebarsData, opts: WriteOptions) => Promise<string[]>;
 }
 
-async function scaffoldRoot(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  const rootSrc = join(TEMPLATES_DIR, "root");
-  const rootDest = scaffoldDir(config);
-  return renderDir(rootSrc, rootDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
+type DestBase = "scaffold" | "target";
+
+function componentRender(
+  srcSubdir: string,
+  destRel: string,
+  destBase: DestBase = "scaffold",
+  staticOnly = false,
+): Component["render"] {
+  return async (config, hbData, opts) => {
+    const src = join(TEMPLATES_DIR, srcSubdir);
+    const base = destBase === "target" ? config.target : config.scaffoldDir;
+    const dest = destRel ? join(base, destRel) : base;
+    const writeOpts = { force: config.force, interactive: config.interactive, ...opts };
+    if (staticOnly) return copyStaticDir(src, dest, writeOpts);
+    return renderDir(src, dest, hbData, writeOpts);
+  };
 }
 
-async function scaffoldDocs(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  const docsSrc = join(TEMPLATES_DIR, "docs");
-  const docsDest = join(scaffoldDir(config), "docs");
-  return renderDir(docsSrc, docsDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
+function ciRender(): Component["render"] {
+  const CI_PROVIDER_MAP: Record<string, { src: string; dest: string }> = {
+    github: { src: "github", dest: ".github" },
+    gitlab: { src: "gitlab", dest: "." },
+    circleci: { src: "circleci", dest: ".circleci" },
+  };
+  return async (config, hbData, opts) => {
+    if (!config.ciProvider) return [];
+    const provider = CI_PROVIDER_MAP[config.ciProvider];
+    if (!provider) return [];
+    const src = join(TEMPLATES_DIR, "ci", provider.src);
+    const dest = join(config.target, provider.dest);
+    return renderDir(src, dest, hbData, { force: config.force, interactive: config.interactive, ...opts });
+  };
 }
 
-async function scaffoldScripts(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  const scriptsSrc = join(TEMPLATES_DIR, "scripts");
-  const scriptsDest = join(scaffoldDir(config), "scripts");
-  return renderDir(scriptsSrc, scriptsDest, hbData, {
-    force: config.force,
-    interactive: config.interactive,
-    ...extraOpts,
-  });
-}
-
-async function scaffoldSkills(config: ScaffoldConfig, extraOpts: WriteOptions = {}): Promise<string[]> {
-  const skillsSrc = join(TEMPLATES_DIR, "skills");
-  const skillsDest = join(scaffoldDir(config), ".agents", "skills");
-  return copyStaticDir(skillsSrc, skillsDest, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
-
-async function scaffoldHooks(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  const hooksSrc = join(TEMPLATES_DIR, "hooks");
-  const hooksDest = join(scaffoldDir(config), ".agents", "hooks");
-  return renderDir(hooksSrc, hooksDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
-
-const CI_PROVIDER_MAP: Record<string, { src: string; dest: string }> = {
-  github: { src: "github", dest: ".github" },
-  gitlab: { src: "gitlab", dest: "." },
-  circleci: { src: "circleci", dest: ".circleci" },
-};
-
-async function scaffoldCi(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  if (!config.ciProvider) return [];
-  const provider = CI_PROVIDER_MAP[config.ciProvider];
-  if (!provider) return [];
-  const ciSrc = join(TEMPLATES_DIR, "ci", provider.src);
-  const ciDest = join(config.target, provider.dest);
-  return renderDir(ciSrc, ciDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
-
-async function scaffoldContribute(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  const src = join(TEMPLATES_DIR, "contribute");
-  const dest = join(scaffoldDir(config), "contribute");
-  return renderDir(src, dest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
-
-async function scaffoldAiConfig(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  const src = join(TEMPLATES_DIR, "ai-config");
-  const dest = config.target;
-  return renderDir(src, dest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
-
-async function scaffoldOnboarding(
-  config: ScaffoldConfig,
-  hbData: HandlebarsData,
-  extraOpts: WriteOptions = {},
-): Promise<string[]> {
-  const src = join(TEMPLATES_DIR, "onboarding");
-  const dest = join(scaffoldDir(config), "onboarding");
-  return renderDir(src, dest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
-
-async function scaffoldScratchpad(config: ScaffoldConfig, extraOpts: WriteOptions = {}): Promise<string[]> {
-  const src = join(TEMPLATES_DIR, "scratchpad");
-  const dest = join(scaffoldDir(config), ".scratchpad");
-  return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
-
-async function scaffoldHistory(config: ScaffoldConfig, extraOpts: WriteOptions = {}): Promise<string[]> {
-  const src = join(TEMPLATES_DIR, "history");
-  const dest = join(scaffoldDir(config), ".history");
-  return copyStaticDir(src, dest, { force: config.force, interactive: config.interactive, ...extraOpts });
-}
+const COMPONENTS: Component[] = [
+  { name: "root", render: componentRender("root", "") },
+  { name: "docs", render: componentRender("docs", "docs") },
+  { name: "scripts", render: componentRender("scripts", "scripts") },
+  { name: "skills", render: componentRender("skills", ".agents/skills", "scaffold", true) },
+  { name: "hooks", render: componentRender("hooks", ".agents/hooks") },
+  { name: "ci", render: ciRender() },
+  { name: "contribute", render: componentRender("contribute", "contribute") },
+  { name: "ai-config", render: componentRender("ai-config", "", "target") },
+  { name: "onboarding", render: componentRender("onboarding", "onboarding") },
+  { name: "history", render: componentRender("history", ".history", "scaffold", true) },
+  { name: "scratchpad", render: componentRender("scratchpad", ".scratchpad", "scaffold", true) },
+];
 
 interface JsonResult {
   written: number;
@@ -214,18 +152,12 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
     },
   };
 
-  const results: string[] = [...(await scaffoldRoot(config, hbData, tickOpts))];
-
-  if (config.include.has("docs")) results.push(...(await scaffoldDocs(config, hbData, tickOpts)));
-  if (config.include.has("scripts")) results.push(...(await scaffoldScripts(config, hbData, tickOpts)));
-  if (config.include.has("skills")) results.push(...(await scaffoldSkills(config, tickOpts)));
-  if (config.include.has("hooks")) results.push(...(await scaffoldHooks(config, hbData, tickOpts)));
-  if (config.include.has("ci")) results.push(...(await scaffoldCi(config, hbData, tickOpts)));
-  if (config.include.has("contribute")) results.push(...(await scaffoldContribute(config, hbData, tickOpts)));
-  if (config.include.has("ai-config")) results.push(...(await scaffoldAiConfig(config, hbData, tickOpts)));
-  if (config.include.has("onboarding")) results.push(...(await scaffoldOnboarding(config, hbData, tickOpts)));
-  if (config.include.has("history")) results.push(...(await scaffoldHistory(config, tickOpts)));
-  if (config.include.has("scratchpad")) results.push(...(await scaffoldScratchpad(config, tickOpts)));
+  const results: string[] = [];
+  for (const comp of COMPONENTS) {
+    if (comp.name === "root" || config.include.has(comp.name)) {
+      results.push(...(await comp.render(config, hbData, tickOpts)));
+    }
+  }
 
   results.push(...(await createSymlinks(config.target, config.scaffoldDir)));
 

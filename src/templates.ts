@@ -1,9 +1,22 @@
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import Handlebars from "handlebars";
 import type { HandlebarsData } from "./config.js";
 import type { WriteOptions } from "./fs-utils.js";
 import { copyFile, walkDir, write } from "./fs-utils.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT_TEMPLATES = join(__dirname, "..", "templates", "root");
+
+function registerPartial(name: string, filename: string): void {
+  const path = join(ROOT_TEMPLATES, filename);
+  const content = readFileSync(path, "utf-8");
+  Handlebars.registerPartial(name, content);
+}
+
+registerPartial("agentConfigHead", "_AGENT_CONFIG_HEAD.md.hbs");
+registerPartial("agentConfigTail", "_AGENT_CONFIG_TAIL.md.hbs");
 
 export function renderTemplate(sourcePath: string, hbData: HandlebarsData): string {
   const raw = readFileSync(sourcePath, "utf-8");
@@ -20,6 +33,8 @@ export async function renderDir(
   if (!existsSync(srcDir)) return [];
   const results: string[] = [];
   for (const entry of walkDir(srcDir)) {
+    const basename = entry.name.split("/").pop() ?? entry.name;
+    if (basename.startsWith("_")) continue;
     const isHbs = entry.name.endsWith(".hbs");
     const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
     const dest = join(destDir, outName);
@@ -67,6 +82,8 @@ export function listDryRunFiles(dir: string, components: string[]): DryRunEntry[
   for (const { src, destBase } of dirs) {
     if (!existsSync(src)) continue;
     for (const entry of walkDir(src)) {
+      const basename = entry.name.split("/").pop() ?? entry.name;
+      if (basename.startsWith("_")) continue;
       const isHbs = entry.name.endsWith(".hbs");
       const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
       entries.push({ dest: join(destBase, outName), type: "file" });
@@ -90,7 +107,13 @@ export function countTemplateFiles(dir: string, components: string[]): number {
     join(dir, "history"),
   ];
   return dirs.reduce((sum, d) => {
-    if (existsSync(d)) return sum + walkDir(d).length;
-    return sum;
+    if (!existsSync(d)) return sum;
+    return (
+      sum +
+      walkDir(d).filter((e) => {
+        const basename = e.name.split("/").pop() ?? e.name;
+        return !basename.startsWith("_");
+      }).length
+    );
   }, 0);
 }
