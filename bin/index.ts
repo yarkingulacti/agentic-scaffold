@@ -4,6 +4,7 @@ import { hideBin } from "yargs/helpers";
 import type { ScaffoldArgs } from "../src/config.js";
 import { scaffold } from "../src/scaffold.js";
 import { unscaffold } from "../src/unscaffold.js";
+import { update } from "../src/update.js";
 
 function scaffoldBuilder(y: ReturnType<typeof yargs>) {
   return y
@@ -158,6 +159,33 @@ function unBuilder(y: ReturnType<typeof yargs>) {
     });
 }
 
+function updateBuilder(y: ReturnType<typeof yargs>) {
+  return y
+    .option("target", {
+      alias: "t",
+      type: "string",
+      description: "Target directory (default: current working directory)",
+      default: process.cwd(),
+    })
+    .option("dry-run", {
+      alias: "n",
+      type: "boolean",
+      description: "Preview update without writing files",
+      default: false,
+    })
+    .option("json", {
+      type: "boolean",
+      description: "Output update result as JSON",
+      default: false,
+    })
+    .option("quiet", {
+      alias: "q",
+      type: "boolean",
+      description: "Suppress human-readable output",
+      default: false,
+    });
+}
+
 const _argv = yargs(hideBin(process.argv))
   .command(["$0", "scaffold"], "Scaffold agentic configuration into a project", scaffoldBuilder, (argv: ScaffoldArgs) =>
     scaffold(argv),
@@ -165,6 +193,14 @@ const _argv = yargs(hideBin(process.argv))
   .command("un", "Remove scaffolded files from a project", unBuilder, (argv: { target?: string; force?: boolean }) =>
     unscaffold(argv),
   )
+  .command({
+    command: "update",
+    describe: "Update an existing scaffold without clobbering user edits",
+    builder: updateBuilder,
+    handler: async (argv) => {
+      await update(argv as ScaffoldArgs);
+    },
+  })
   .demandCommand(1, "Use --help to see available commands")
   .help()
   .parse();

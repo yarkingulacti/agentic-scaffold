@@ -62,6 +62,7 @@ repetitive and easy to get wrong.
 |---|---|
 | 🟢 **Zero-config & safe** | Auto-detects your stack and writes only what's missing. Existing files are never overwritten unless you pass `--force`. |
 | 🪶 **Conservative by default** | The no-flag run writes the core scaffold plus working dirs. CI, onboarding, contribution docs, AI-tool config, and token filters are all opt-in. |
+| 🔁 **Safe updates** | `update` reconciles new template versions against the manifest, preserves local edits, and writes `<path>.new` for conflicts instead of clobbering. |
 | ↩️ **Reversible** | One `un` command removes everything it created and leaves your project untouched. |
 | ✅ **Validated before publish** | Template variables, Markdown escaping, and representative rendered projects are all checked against golden output. |
 
@@ -74,13 +75,17 @@ npx @yarkingulacti/agentic-scaffold
 # Not sure? Preview every file first, write nothing
 npx @yarkingulacti/agentic-scaffold --dry-run
 
+# Already scaffolded? Update generated files without clobbering local edits
+npx @yarkingulacti/agentic-scaffold update
+
 # Changed your mind? Undo the whole thing
 npx @yarkingulacti/agentic-scaffold un
 ```
 
-That's the entire loop. The scaffold detects your project (language, package
+That's the core loop. The scaffold detects your project (language, package
 manager, CI, AI tools), seeds the generated docs with what it found, and writes
-only the files that don't already exist.
+only the files that don't already exist. Later, `update` refreshes generated
+templates while preserving local edits.
 
 > **Requires Node.js 18+.** Both initial and update runs perform a runtime check
 > and abort before writing if the active Node is older — the generated memory
@@ -134,6 +139,12 @@ npx @yarkingulacti/agentic-scaffold --skip-skills --skip-scripts --skip-hooks
 
 # Pre-configure values
 npx @yarkingulacti/agentic-scaffold --project-name "my-app" --issue-tracker github
+
+# Update an existing scaffold; conflicts are kept in-place and written to <path>.new
+npx @yarkingulacti/agentic-scaffold update
+
+# Preview an update as JSON without writing files
+npx @yarkingulacti/agentic-scaffold update --dry-run --json
 
 # Remove all scaffolded files (asks for confirmation)
 npx @yarkingulacti/agentic-scaffold un
@@ -228,6 +239,31 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 4. Install the skills in your AI tool (e.g. opencode) — each `.agentic-scaffold/.agents/skills/*/SKILL.md` is self-contained.
 5. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
 6. Use the `fill-docs` skill (`.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.
+7. After upgrading this package, run `npx @yarkingulacti/agentic-scaffold update --dry-run` to preview generated-template changes before applying them.
+
+## 🔁 Update strategy
+
+Run `update` after upgrading `@yarkingulacti/agentic-scaffold` to refresh generated files safely:
+
+```bash
+# Preview changed generated files and conflicts
+npx @yarkingulacti/agentic-scaffold update --dry-run
+
+# Apply non-conflicting scaffold updates
+npx @yarkingulacti/agentic-scaffold update
+```
+
+The updater uses `.agentic-scaffold/.manifest.json` as the old baseline, renders
+the current package version into a temporary directory, and compares:
+
+- old manifest content
+- your current working file
+- new canonical template output
+
+It updates files only when you have not edited them. User-edited files are kept
+as-is. If both you and the upstream template changed the same file, your file
+stays untouched and the new canonical version is written beside it as
+`<path>.new` for manual review.
 
 ## 🧹 Unscaffold
 

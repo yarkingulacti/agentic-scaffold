@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { ALWAYS_INCLUDED, COMPONENTS, type ComponentSpec } from "./components.js";
-import type { IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
+import type { HandlebarsData, IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
 import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.js";
 import type { WriteOptions, WrittenEntry } from "./fs-utils.js";
 import { createSymlinks, writeManifestForTarget } from "./fs-utils.js";
@@ -104,7 +104,6 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
 
   const total = dryRunEntries(config).length;
   let done = 0;
-  const writtenEntries: WrittenEntry[] = [];
   const tickOpts: WriteOptions = {
     onProgress: () => {
       if (!config.json && !config.quiet) {
@@ -114,17 +113,9 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
         done++;
       }
     },
-    onWritten: (entry) => {
-      writtenEntries.push(entry);
-    },
   };
 
-  const results: string[] = [];
-  for (const comp of selectedComponents(config)) {
-    results.push(...(await comp.render(config, hbData, tickOpts)));
-  }
-
-  results.push(...createSymlinks(config.target, config.scaffoldDir, tickOpts));
+  const { results, writtenEntries } = await renderScaffoldInto(config, hbData, tickOpts);
 
   writeManifestForTarget(config.target, config.scaffoldDir, PKG.version, writtenEntries);
 
@@ -163,4 +154,31 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
       out(config, `   ${style.dim("Invoke it with your AI agent to fill in these files conversationally.")}`);
     }
   }
+}
+
+// Renders the selected components and entry-point symlinks for `config` into
+// `config.target` / `config.scaffoldDir`, returning the per-file results and the
+// written entries (for manifest generation). Shared by `scaffold` (live run) and
+// `update` (render into a temp dir for reconciliation). Does NOT write a manifest.
+export async function renderScaffoldInto(
+  config: ScaffoldConfig,
+  hbData: HandlebarsData,
+  opts: WriteOptions = {},
+): Promise<{ results: string[]; writtenEntries: WrittenEntry[] }> {
+  const writtenEntries: WrittenEntry[] = [];
+  const renderOpts: WriteOptions = {
+    ...opts,
+    onWritten: (entry) => {
+      writtenEntries.push(entry);
+      opts.onWritten?.(entry);
+    },
+  };
+
+  const results: string[] = [];
+  for (const comp of selectedComponents(config)) {
+    results.push(...(await comp.render(config, hbData, renderOpts)));
+  }
+  results.push(...createSymlinks(config.target, config.scaffoldDir, renderOpts));
+
+  return { results, writtenEntries };
 }
