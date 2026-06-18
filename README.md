@@ -179,15 +179,17 @@ defaults from what it finds:
 
 | What | Detected from |
 |------|---------------|
-| 🧬 **Languages** | JavaScript/TypeScript, Python, Go, Rust (manifest files) |
+| 🧬 **Languages** | JS/TS, Python, Go, Rust, C++ (CMake/meson/conan), Godot, Swift, Kotlin, Java, Dart — recursively across monorepo subpackages |
 | 📦 **Package manager** | npm, yarn, pnpm, pip, poetry (lockfiles) |
 | 🔧 **CI provider** | GitHub Actions, GitLab CI, CircleCI (config files) |
 | 🤝 **AI tools** | opencode, Cursor, Copilot, Windsurf, Cline (config files) |
 | 🎫 **Issue tracker** | GitHub Issues (`.github/` directory) |
 | ⚙️ **Script runtime** | Node.js when `package.json` is present; otherwise still defaults to Node.js because the shipped memory scripts are `.mjs` files |
 
-Detected values render into `AGENTS.md` / `CLAUDE.md`. Root-level extras such as
-CI and AI-tool config are written only when requested with `--extras`.
+Detected values render into `AGENTS.md` / `CLAUDE.md`. Detection walks
+subdirectories (skipping `node_modules`, build output, and VCS dirs) so monorepo
+subpackages are covered; override it with `--languages ts,cpp,godot`. Root-level
+extras such as CI and AI-tool config are written only when requested with `--extras`.
 
 ## 🧩 Components & extras
 

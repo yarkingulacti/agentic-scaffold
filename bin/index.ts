@@ -131,6 +131,10 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
       type: "string",
       description: "Comma-separated AI tools to configure: opencode,cursor,copilot",
     })
+    .option("languages", {
+      type: "string",
+      description: "Comma-separated languages (overrides auto-detection): ts,cpp,godot,swift,kotlin,dart",
+    })
     .option("script-language", {
       type: "string",
       choices: ["node"] as const,

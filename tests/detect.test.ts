@@ -103,6 +103,91 @@ describe("detectProjectProfile", () => {
       assert.deepEqual(profile.languages, ["js", "python"]);
       rmSync(dir, { recursive: true });
     });
+
+    it("detects cpp from CMakeLists.txt", () => {
+      const dir = tempDir();
+      write(dir, "CMakeLists.txt");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["cpp"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects godot from project.godot", () => {
+      const dir = tempDir();
+      write(dir, "project.godot");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["godot"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects godot from a .gdextension file", () => {
+      const dir = tempDir();
+      write(dir, "addon.gdextension");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["godot"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects swift from Package.swift", () => {
+      const dir = tempDir();
+      write(dir, "Package.swift");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["swift"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects swift from an .xcodeproj directory", () => {
+      const dir = tempDir();
+      write(dir, "App.xcodeproj", "project.pbxproj");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["swift"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects kotlin from build.gradle.kts", () => {
+      const dir = tempDir();
+      write(dir, "build.gradle.kts");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["kotlin"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects java from build.gradle", () => {
+      const dir = tempDir();
+      write(dir, "build.gradle");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["java"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects dart from pubspec.yaml", () => {
+      const dir = tempDir();
+      write(dir, "pubspec.yaml");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["dart"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("scans monorepo subpackages and orders results canonically", () => {
+      const dir = tempDir();
+      write(dir, "apps/web/package.json");
+      write(dir, "apps/mobile/pubspec.yaml");
+      write(dir, "native/CMakeLists.txt");
+      write(dir, "game/project.godot");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, ["js", "cpp", "godot", "dart"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("ignores markers inside dependency and build directories", () => {
+      const dir = tempDir();
+      write(dir, "node_modules/dep/Cargo.toml");
+      write(dir, "dist/CMakeLists.txt");
+      write(dir, ".git/pubspec.yaml");
+      const profile = detectProjectProfile(dir);
+      assert.deepEqual(profile.languages, []);
+      rmSync(dir, { recursive: true });
+    });
   });
 
   describe("packageManager", () => {

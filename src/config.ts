@@ -14,6 +14,7 @@ export interface ScaffoldArgs {
   target?: string;
   projectName?: string;
   projectDescription?: string;
+  languages?: string;
   issueTracker?: string;
   packageManager?: string;
   ciProvider?: string;
@@ -176,6 +177,14 @@ function resolveAiTools(value: string): string[] {
   if (tools.includes("all")) return [...AI_CONFIG_TOOLS];
   return tools;
 }
+// Explicit --languages always wins over detection; comma-separated, trimmed.
+function resolveLanguages(value: string | undefined, detected: string[]): string[] {
+  if (value === undefined) return detected;
+  return value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
 function resolveScriptLanguage(value: string | null | undefined): string {
   const resolved = value ?? DEFAULTS.scriptLanguage;
   if (!SUPPORTED_SCRIPT_LANGUAGES.includes(resolved)) {
@@ -204,7 +213,7 @@ export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
     scaffoldDir: join(target, ".agentic-scaffold"),
     projectName: argv.projectName ?? profile.projectName ?? target.split("/").filter(Boolean).pop() ?? "project",
     projectDescription: argv.projectDescription ?? DEFAULTS.projectDescription,
-    languages: profile.languages,
+    languages: resolveLanguages(argv.languages, profile.languages),
     issueTracker: resolveIssueTracker(argv.issueTracker ?? profile.issueTracker),
     packageManager: argv.packageManager ?? profile.packageManager ?? null,
     ciProvider: argv.ciProvider ?? profile.ciProvider ?? null,

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { type Dirent, existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 export interface ProjectProfile {
@@ -25,35 +25,113 @@ export function detectProjectProfile(targetDir: string): ProjectProfile {
   };
 }
 
+// Directories never worth scanning for language markers: dependency caches,
+// build output, and VCS metadata. Keeps monorepo scans fast and noise-free.
+const IGNORED_DIRS = new Set([
+  "node_modules",
+  "dist",
+  "build",
+  "out",
+  "target",
+  "vendor",
+  "venv",
+  "__pycache__",
+  "Pods",
+  "bin",
+  "obj",
+  "coverage",
+]);
+
+// How deep to walk for language markers. Deep enough for conventional monorepo
+// layouts (apps/<name>, packages/<name>, platform dirs) without walking forever.
+const MAX_SCAN_DEPTH = 4;
+
+// Exact marker filenames mapped to the language/ecosystem they imply.
+const FILE_MARKERS: Record<string, string> = {
+  "requirements.txt": "python",
+  "pyproject.toml": "python",
+  Pipfile: "python",
+  "setup.py": "python",
+  "go.mod": "go",
+  "Cargo.toml": "rust",
+  "CMakeLists.txt": "cpp",
+  "meson.build": "cpp",
+  "vcpkg.json": "cpp",
+  "conanfile.txt": "cpp",
+  "conanfile.py": "cpp",
+  "project.godot": "godot",
+  "Package.swift": "swift",
+  Podfile: "swift",
+  "build.gradle.kts": "kotlin",
+  "settings.gradle.kts": "kotlin",
+  "build.gradle": "java",
+  "settings.gradle": "java",
+  "pom.xml": "java",
+  "pubspec.yaml": "dart",
+};
+
+// Name suffixes (files or directories) mapped to the language they imply.
+const SUFFIX_MARKERS: [string, string][] = [
+  [".xcodeproj", "swift"],
+  [".xcworkspace", "swift"],
+  [".gdextension", "godot"],
+];
+
+// Canonical output order so detection is deterministic regardless of walk order.
+const LANGUAGE_ORDER = ["ts", "js", "python", "go", "rust", "cpp", "godot", "swift", "kotlin", "java", "dart"];
+
 function detectLanguages(targetDir: string): string[] {
-  const languages: string[] = [];
-  if (existsSync(join(targetDir, "package.json"))) {
-    try {
-      const pkg: Record<string, unknown> = JSON.parse(readFileSync(join(targetDir, "package.json"), "utf-8"));
-      const deps = pkg.devDependencies as Record<string, string> | undefined;
-      const prodDeps = pkg.dependencies as Record<string, string> | undefined;
-      if (deps?.typescript || prodDeps?.typescript) {
-        languages.push("ts");
-      } else {
-        languages.push("js");
+  const found = new Set<string>();
+  scanForLanguages(targetDir, 0, found);
+  // Keep any detected languages outside the canonical list (none today) appended
+  // after the ordered ones rather than dropped.
+  const ordered = LANGUAGE_ORDER.filter((lang) => found.has(lang));
+  for (const lang of found) {
+    if (!LANGUAGE_ORDER.includes(lang)) ordered.push(lang);
+  }
+  return ordered;
+}
+
+function readEntries(dir: string): Dirent[] {
+  try {
+    return readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+}
+
+function scanForLanguages(dir: string, depth: number, found: Set<string>): void {
+  for (const entry of readEntries(dir)) {
+    const { name } = entry;
+    addSuffixMarkers(name, found);
+    if (entry.isDirectory()) {
+      if (depth < MAX_SCAN_DEPTH && !IGNORED_DIRS.has(name) && !name.startsWith(".")) {
+        scanForLanguages(join(dir, name), depth + 1, found);
       }
-    } catch {
-      languages.push("js");
+      continue;
     }
+    const marker = FILE_MARKERS[name];
+    if (marker) found.add(marker);
+    if (name === "package.json") found.add(detectJsFlavor(join(dir, name)));
   }
-  if (existsSync(join(targetDir, "requirements.txt"))) {
-    languages.push("python");
+}
+
+function addSuffixMarkers(name: string, found: Set<string>): void {
+  for (const [suffix, lang] of SUFFIX_MARKERS) {
+    if (name.endsWith(suffix)) found.add(lang);
   }
-  if (existsSync(join(targetDir, "pyproject.toml"))) {
-    languages.push("python");
+}
+
+// TypeScript when a `typescript` dependency is declared, otherwise plain JS.
+function detectJsFlavor(packageJsonPath: string): string {
+  try {
+    const pkg: Record<string, unknown> = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+    const deps = pkg.devDependencies as Record<string, string> | undefined;
+    const prodDeps = pkg.dependencies as Record<string, string> | undefined;
+    return deps?.typescript || prodDeps?.typescript ? "ts" : "js";
+  } catch {
+    return "js";
   }
-  if (existsSync(join(targetDir, "go.mod"))) {
-    languages.push("go");
-  }
-  if (existsSync(join(targetDir, "Cargo.toml"))) {
-    languages.push("rust");
-  }
-  return languages;
 }
 
 function detectPackageManager(targetDir: string): string | null {
