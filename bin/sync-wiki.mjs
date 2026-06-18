@@ -5,7 +5,7 @@
 // with a {{VERSION}} token, and a Changelog page is mirrored from CHANGELOG.md.
 // This script is invoked automatically by commit-and-tag-version's `posttag`
 // hook (see .versionrc.json) so every version bump refreshes the wiki, and can
-// be run manually via `npm run sync-wiki`.
+// be run manually via `pnpm run sync-wiki`.
 //
 // Flags:
 //   --strict   Exit non-zero on failure (default: warn and exit 0 so a release
@@ -40,7 +40,7 @@ function fail(message, err) {
   const lines = [
     `wiki sync skipped: ${message}`,
     detail && `  ${detail.trim().split("\n").join("\n  ")}`,
-    "  Retry manually with: npm run sync-wiki",
+    "  Retry manually with: pnpm run sync-wiki",
   ].filter(Boolean);
   if (strict) {
     console.error(lines.join("\n"));

@@ -19,26 +19,29 @@ jobs:
         with:
           fetch-depth: 50
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: TypeScript typecheck
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Biome lint + format
-        run: npm run lint && npm run format:check
+        run: pnpm run lint && pnpm run format:check
 
       - name: Validate skills + templates
-        run: npm run validate-skills && npm run validate-templates
+        run: pnpm run validate-skills && pnpm run validate-templates
 
       - name: Fallow codebase intelligence
-        run: npm run fallow:ci
+        run: pnpm run fallow:ci
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
   publish:
     needs: quality
@@ -50,18 +53,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
           registry-url: https://registry.npmjs.org
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Publish to npmjs.org
-        run: npm publish
+        run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -69,6 +75,6 @@ jobs:
         run: |
           echo "@yarkingulacti:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
-          npm publish
+          pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

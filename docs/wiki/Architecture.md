@@ -32,17 +32,18 @@ docs/wiki/             Source for this wiki (rendered + pushed on every release)
 
 | Command | What it does |
 |---------|--------------|
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm test` | Run all tests (`node --import tsx`) |
-| `npm run typecheck` | TypeScript type checking (`--noEmit`) |
-| `npm run lint` | Biome lint check |
-| `npm run format` | Biome format + write |
-| `npm run format:check` | Biome CI format check |
-| `npm run validate-skills` | Validate skill frontmatter against schema |
-| `npm run validate-templates` | Validate template variables/partials + no HTML-escape leaks |
-| `UPDATE_GOLDEN=1 npm test` | Regenerate `tests/fixtures/*/expected/` golden output |
-| `npm run release` | Bump version, generate changelog, commit, tag, sync wiki |
-| `npm run sync-wiki` | Render `docs/wiki/` and push to the GitHub wiki manually |
+| `pnpm install` | Install dependencies (pnpm is the package manager) |
+| `pnpm run build` | Compile TypeScript to `dist/` |
+| `pnpm test` | Run all tests (`node --import tsx`) |
+| `pnpm run typecheck` | TypeScript type checking (`--noEmit`) |
+| `pnpm run lint` | Biome lint check |
+| `pnpm run format` | Biome format + write |
+| `pnpm run format:check` | Biome CI format check |
+| `pnpm run validate-skills` | Validate skill frontmatter against schema |
+| `pnpm run validate-templates` | Validate template variables/partials + no HTML-escape leaks |
+| `UPDATE_GOLDEN=1 pnpm test` | Regenerate `tests/fixtures/*/expected/` golden output |
+| `pnpm run release` | Bump version, generate changelog, commit, tag, sync wiki |
+| `pnpm run sync-wiki` | Render `docs/wiki/` and push to the GitHub wiki manually |
 
 ## How this wiki stays current
 

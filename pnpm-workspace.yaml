@@ -1,0 +1,5 @@
+# Allow esbuild (a tsx dependency) to run its install script so its platform
+# binary is linked. pnpm v11 blocks dependency build scripts by default
+# (strictDepBuilds) and replaced onlyBuiltDependencies with the allowBuilds map.
+allowBuilds:
+  esbuild: true
