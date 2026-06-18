@@ -216,4 +216,67 @@ describe("scaffold", () => {
     assert.ok(content.includes(".agents/skills/fill-docs/SKILL.md"));
     rmSync(dir, { recursive: true });
   });
+
+  it("creates create-hook skill when skills are included", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true });
+    assert.ok(existsSync(join(dir, ".agents", "skills", "create-hook", "SKILL.md")));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("creates hooks when not skipped", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true });
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "pre-feature.md")));
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "post-feature.md")));
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "post-bugfix.md")));
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "post-session.md")));
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "scripts", "pre-feature.sh")));
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "scripts", "post-feature.sh")));
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "scripts", "post-bugfix.sh")));
+    assert.ok(existsSync(join(dir, ".agents", "hooks", "scripts", "post-session.sh")));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("skips hooks when --skip-hooks is set", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true, skipHooks: true });
+    assert.equal(existsSync(join(dir, ".agents", "hooks")), false);
+    rmSync(dir, { recursive: true });
+  });
+
+  it("renders hooks section in AGENTS.md when hooks are included", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true });
+    const content = readFileSync(join(dir, "AGENTS.md"), "utf-8");
+    assert.ok(content.includes("Agent lifecycle hooks"));
+    assert.ok(content.includes(".agents/hooks/post-feature.md"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("renders agent hooks reference in implement skill", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: false });
+    const content = readFileSync(join(dir, ".agents", "skills", "implement", "SKILL.md"), "utf-8");
+    assert.ok(content.includes(".agents/hooks/pre-feature.md"));
+    assert.ok(content.includes(".agents/hooks/post-feature.md"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("renders agent hooks reference in bugfix skill", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: false });
+    const content = readFileSync(join(dir, ".agents", "skills", "bugfix", "SKILL.md"), "utf-8");
+    assert.ok(content.includes(".agents/hooks/post-bugfix.md"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("renders packageManager and projectName in hook script templates", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, projectName: "TestApp", packageManager: "pnpm", skipDocs: true, skipScripts: true, skipSkills: true });
+    const content = readFileSync(join(dir, ".agents", "hooks", "scripts", "post-feature.sh"), "utf-8");
+    assert.ok(content.includes("TestApp"));
+    assert.ok(content.includes("pnpm"));
+    rmSync(dir, { recursive: true });
+  });
 });

@@ -36,10 +36,10 @@ export async function askOverwrite(filePath) {
 export async function askComponents() {
   const r = rl();
   console.log("\nComponent groups to include (comma-separated):");
-  console.log("  docs, scripts, skills");
+  console.log("  docs, scripts, skills, hooks");
   const answer = await r.question("All [default]: ");
   r.close();
   const trimmed = answer.trim().toLowerCase();
-  if (!trimmed) return ["docs", "scripts", "skills"];
+  if (!trimmed) return ["docs", "scripts", "skills", "hooks"];
   return trimmed.split(",").map((s) => s.trim()).filter(Boolean);
 }

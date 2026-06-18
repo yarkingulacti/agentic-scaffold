@@ -43,10 +43,11 @@ function resolveIncludes(argv) {
   if (argv.only && argv.only !== "all") {
     return new Set(argv.only.split(",").map((s) => s.trim()));
   }
-  const set = new Set(["docs", "scripts", "skills"]);
+  const set = new Set(["docs", "scripts", "skills", "hooks"]);
   if (argv.skipDocs) set.delete("docs");
   if (argv.skipScripts) set.delete("scripts");
   if (argv.skipSkills) set.delete("skills");
+  if (argv.skipHooks) set.delete("hooks");
   return set;
 }
 
@@ -239,6 +240,12 @@ async function scaffoldSkills(config, extraOpts = {}) {
   return copyStaticDir(skillsSrc, skillsDest, { force: config.force, interactive: config.interactive, ...extraOpts });
 }
 
+async function scaffoldHooks(config, hbData, extraOpts = {}) {
+  const hooksSrc = join(TEMPLATES_DIR, "hooks");
+  const hooksDest = join(config.target, ".agents", "hooks");
+  return renderDir(hooksSrc, hooksDest, hbData, { force: config.force, interactive: config.interactive, ...extraOpts });
+}
+
 async function scaffoldScratchpad(config, extraOpts = {}) {
   const src = join(TEMPLATES_DIR, "scratchpad");
   const dest = join(config.target, ".scratchpad");
@@ -257,6 +264,7 @@ function countTemplateFiles(config) {
     ...(config.include.has("docs") ? [join(TEMPLATES_DIR, "docs")] : []),
     ...(config.include.has("scripts") ? [join(TEMPLATES_DIR, "scripts")] : []),
     ...(config.include.has("skills") ? [join(TEMPLATES_DIR, "skills")] : []),
+    ...(config.include.has("hooks") ? [join(TEMPLATES_DIR, "hooks")] : []),
     join(TEMPLATES_DIR, "scratchpad"),
     join(TEMPLATES_DIR, "history"),
   ];
@@ -311,6 +319,7 @@ export async function scaffold(argv) {
   if (config.include.has("docs")) results.push(...(await scaffoldDocs(config, hbData, tickOpts)));
   if (config.include.has("scripts")) results.push(...(await scaffoldScripts(config, hbData, tickOpts)));
   if (config.include.has("skills")) results.push(...(await scaffoldSkills(config, tickOpts)));
+  if (config.include.has("hooks")) results.push(...(await scaffoldHooks(config, hbData, tickOpts)));
 
   results.push(...(await scaffoldScratchpad(config, tickOpts)));
   results.push(...(await scaffoldHistory(config, tickOpts)));

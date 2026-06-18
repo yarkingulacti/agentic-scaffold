@@ -9,4 +9,5 @@ Diagnose and fix a described bug.
 3. Identify the smallest root-cause fix.
 4. Add or update a regression test when practical.
 5. Run focused verification.
-6. Record shipped work in `.history/DD.MM.YYYY/README.md` when the fix ships.
+6. If `.agents/hooks/post-bugfix.md` exists, read and follow it.
+   Otherwise record shipped work in `.history/DD.MM.YYYY/README.md`.

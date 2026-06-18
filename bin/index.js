@@ -35,11 +35,14 @@ const argv = yargs(hideBin(process.argv))
     description: "Comma-separated component groups to include: docs,scripts,skills,all",
     default: "all",
   })
-  .option("skip-skills", {
-    type: "boolean",
-    description: "Skip skill files",
-    default: false,
-  })
+      .option("skip-skills", {
+        type: "boolean",
+        description: "Skip agent skill definitions",
+      })
+      .option("skip-hooks", {
+        type: "boolean",
+        description: "Skip agent lifecycle hook templates",
+      })
   .option("skip-scripts", {
     type: "boolean",
     description: "Skip memory scripts",

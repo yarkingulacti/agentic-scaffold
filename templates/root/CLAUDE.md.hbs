@@ -22,6 +22,18 @@ Shipped work is summarized in `.history/DD.MM.YYYY/README.md`. Use separated
 dated worklog files only; do not use issue comments as the project memory.
 After every successful coding session, follow `docs/agents/session-close.md`.
 
+### Agent lifecycle hooks
+
+Pre/post lifecycle hooks live in `.agents/hooks/`. Implementation skills
+reference them automatically. Available hooks:
+
+- `.agents/hooks/pre-feature.md` — before implementing a feature
+- `.agents/hooks/post-feature.md` — after implementing a feature
+- `.agents/hooks/post-bugfix.md` — after fixing a bug
+- `.agents/hooks/post-session.md` — after a coding session (canonical
+  post-session workflow, replaces `docs/agents/session-close.md`)
+- `.agents/hooks/scripts/` — executable helpers for the hooks above
+
 ### Domain docs
 
 Use `BUSINESS_LOGIC.md`, `docs/`, and `docs/adr/` as tracked source material.
