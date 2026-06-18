@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.12.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.11.2...v0.12.0) (2026-06-18)
+
+
+### Changed
+
+* extract shared root Handlebars partials for AGENTS.md and CLAUDE.md
+* replace repeated scaffold component functions with a component registry and render loop
+* skip private root partial templates in render, dry-run, and template file counts
+
 ## [0.11.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.11.1...v0.11.2) (2026-06-18)
 
 
