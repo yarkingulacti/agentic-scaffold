@@ -109,21 +109,22 @@ Resolution:
 
 ### 5. Detection collects richer facts than rendering uses
 
-Status: Open
+Status: Resolved
 
-`detectProjectProfile()` detects Dockerfile, `.env.example`, contributing docs,
-changelog, API docs, and migrations. Most of those facts do not currently affect
-selection, output, or completion guidance.
+`detectProjectProfile()` previously detected Dockerfile, `.env.example`,
+contributing docs, changelog, API docs, and migrations. Those facts did not
+affect selection, output, or completion guidance.
 
 Why it matters: unused detection adds maintenance cost and implies intelligence
 the tool does not actually provide.
 
-Suggested fix:
+Resolution:
 
-- Either remove unused fields until a feature needs them, or use them to drive
-  extras selection and "already present" guidance.
-- Add a detection-to-rendering matrix in the docs so each detected field has an
-  owner and purpose.
+- Removed the unused `has*` fields from `ProjectProfile` and deleted their
+  implementation-detail tests.
+- Added [10-detection-rendering-matrix.md](10-detection-rendering-matrix.md) so
+  every retained detection field has a documented owner and user-visible effect.
+- Updated the sprint spec to stop advertising ownerless detection fields.
 
 ### 6. Unscaffold still cannot protect all scaffold-related files
 

@@ -9,12 +9,6 @@ export interface ProjectProfile {
   aiTools: string[];
   issueTracker: string | null;
   scriptLanguage: string | null;
-  hasDockerfile: boolean;
-  hasEnvExample: boolean;
-  hasContributing: boolean;
-  hasChangelog: boolean;
-  hasApiDocs: boolean;
-  hasMigrations: boolean;
 }
 
 export function detectProjectProfile(targetDir: string): ProjectProfile {
@@ -28,16 +22,8 @@ export function detectProjectProfile(targetDir: string): ProjectProfile {
     aiTools: detectAITools(targetDir),
     issueTracker: detectIssueTracker(targetDir),
     scriptLanguage: detectScriptLanguage(targetDir),
-    hasDockerfile: existsSync(join(targetDir, "Dockerfile")),
-    hasEnvExample: existsSync(join(targetDir, ".env.example")),
-    hasContributing: existsSync(join(targetDir, "CONTRIBUTING.md")),
-    hasChangelog: existsSync(join(targetDir, "CHANGELOG.md")),
-    hasApiDocs: existsSync(join(targetDir, "docs", "api")),
-    hasMigrations: migrationDirs.some((dir) => existsSync(join(targetDir, dir))),
   };
 }
-
-const migrationDirs = ["migrations", "db/migrations", "prisma/migrations", "alembic"];
 
 function detectLanguages(targetDir: string): string[] {
   const languages: string[] = [];

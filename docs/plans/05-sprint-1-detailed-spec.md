@@ -19,14 +19,7 @@ ProjectProfile {
   ciProvider: string|null,        // 'github'|'gitlab'|'circleci'|null
   aiTools: string[],              // ['opencode', 'cursor', 'copilot', ...]
   issueTracker: string|null,      // 'github'|null (github if .github/ exists)
-  scriptLanguage: string|null,    // 'python'|'node'|'docker'|null
-  // Existence flags (for future --only auto use)
-  hasDockerfile: boolean,
-  hasEnvExample: boolean,
-  hasContributing: boolean,
-  hasChangelog: boolean,
-  hasApiDocs: boolean,
-  hasMigrations: boolean,
+  scriptLanguage: string|null,    // 'node'|'python'|null
 }
 ```
 
@@ -40,7 +33,9 @@ Detection heuristics:
 | `aiTools` | `opencode.json` → 'opencode', `.cursorrules` → 'cursor', `.copilot-instructions.md` → 'copilot' | — |
 | `issueTracker` | `.github/` directory → 'github' | — |
 | `scriptLanguage` | `package.json` → 'node', `requirements.txt` or `pyproject.toml` → 'python' | — |
-| All `has*` booleans | `existsSync` check | — |
+
+Detection fields should be added only when they have a documented rendering,
+config, or CLI owner. See [10-detection-rendering-matrix.md](10-detection-rendering-matrix.md).
 
 ## Files to Modify
 
@@ -52,7 +47,7 @@ Detection heuristics:
 const DEFAULTS = {
   projectDescription: "A project.",
   issueTracker: "linear",
-  scriptLanguage: "python",
+  scriptLanguage: "node",
 };
 ```
 
