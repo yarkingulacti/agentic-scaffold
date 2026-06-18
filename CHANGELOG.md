@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.1.2...v1.2.0) (2026-06-18)
+
+
+### Added
+
+* **detect:** recursive multi-language detection and --languages override ([c4247a9](https://github.com/yarkingulacti/agentic-scaffold/commit/c4247a9edcd2286a9c85aace1994015f36afd17c))
+
 ## [1.1.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.1.1...v1.1.2) (2026-06-18)
 
 

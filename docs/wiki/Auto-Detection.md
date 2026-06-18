@@ -6,7 +6,7 @@ it only informs rendered content and pre-filled prompts.
 
 | What | Detected from |
 |------|---------------|
-| 🧬 **Languages** | JavaScript/TypeScript, Python, Go, Rust (manifest files) |
+| 🧬 **Languages** | JS/TS, Python, Go, Rust, C++ (CMake/meson/conan), Godot, Swift, Kotlin, Java, Dart — scanned recursively across monorepo subpackages |
 | 📦 **Package manager** | npm, yarn, pnpm, pip, poetry (lockfiles) |
 | 🔧 **CI provider** | GitHub Actions, GitLab CI, CircleCI (config files) |
 | 🤝 **AI tools** | opencode, Cursor, Copilot, Windsurf, Cline (config files) |
@@ -31,8 +31,12 @@ npx @yarkingulacti/agentic-scaffold \
   --package-manager pnpm \
   --ci-provider github \
   --ai-tools opencode,cursor \
-  --issue-tracker github
+  --issue-tracker github \
+  --languages ts,cpp,godot,swift
 ```
+
+Use `--languages` (comma-separated) when a monorepo mixes stacks the scanner
+does not recognize, or to pin the exact set rendered into generated docs.
 
 Every retained detection field has a documented owner and user-visible effect —
 see `docs/plans/10-detection-rendering-matrix.md` in the repository.

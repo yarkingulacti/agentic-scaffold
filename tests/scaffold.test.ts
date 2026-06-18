@@ -405,4 +405,12 @@ describe("scaffold", () => {
     );
     rmSync(dir, { recursive: true });
   });
+
+  it("honors the --languages override over detection", () => {
+    const dir = tempDir();
+    writeFileSync(p(dir, "package.json"), "{}", "utf-8");
+    const config = resolveConfig({ target: dir, languages: "cpp, godot, swift" } as ScaffoldArgs);
+    assert.deepEqual(config.languages, ["cpp", "godot", "swift"]);
+    rmSync(dir, { recursive: true });
+  });
 });

@@ -9,7 +9,7 @@ CLI display, component selection, or tests that protect user-visible behavior.
 | Field | Detected from | Owner | User-visible effect |
 |-------|---------------|-------|---------------------|
 | `projectName` | Target directory basename | Config resolution, root templates, hook scripts | Rendered into `AGENTS.md`, `CLAUDE.md`, and hook script comments |
-| `languages` | Language manifest files | CLI profile display, onboarding extra | Shown in interactive profile and onboarding output |
+| `languages` | Language manifest/project markers, scanned recursively across subpackages; `--languages` overrides | Config resolution, CLI profile display, onboarding extra, copilot config | Shown in interactive profile, rendered into onboarding and copilot instructions |
 | `packageManager` | Lockfiles | Config resolution, root docs, CI, onboarding, hooks | Selects package-manager commands in generated docs, CI, and hook scripts |
 | `ciProvider` | Existing CI config | Config resolution, root docs, CI component | Selects provider-specific CI templates and renders CI guidance |
 | `aiTools` | Existing AI tool config files | Config resolution, interactive prompts | Seeds interactive AI-tool selection |
