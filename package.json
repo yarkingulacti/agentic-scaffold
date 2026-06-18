@@ -1,6 +1,6 @@
 {
   "name": "@yarkingulacti/agentic-scaffold",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "Scaffold agentic development documentation & configuration into any project",
   "type": "module",
   "bin": {

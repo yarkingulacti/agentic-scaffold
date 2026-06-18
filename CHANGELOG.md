@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.15.0...v0.15.1) (2026-06-18)
+
+
+### Changed
+
+* align README and critique with 0.15 release state ([43102bd](https://github.com/yarkingulacti/agentic-scaffold/commit/43102bd851dbf86315510fb2cde480fc2565892e))
+* credit RTK in README ([e753510](https://github.com/yarkingulacti/agentic-scaffold/commit/e75351058a4a286ba490941673a84b9a7a1ec584))
+* **release:** harden scaffold release contract ([6040c47](https://github.com/yarkingulacti/agentic-scaffold/commit/6040c4747568b426c87cc316ddd194351c94d6f1))
+
 ## [0.15.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.14.2...v0.15.0) (2026-06-18)
 
 ### Added

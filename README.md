@@ -146,59 +146,14 @@ Extras are opt-in with `--extras` so zero-config mode stays conservative:
 
 ## Current release
 
-Version `0.14.x` focuses on making scaffold output predictable and releasable:
+Version `0.15.x` focuses on making scaffold output predictable and releasable:
 
 - **Conservative zero-config defaults** — extras are opt-in, so running with no flags writes the core scaffold, `.scratchpad/`, and `.history/` without adding CI, onboarding, contribution, AI tool config, or RTK filter files.
 - **Registry-driven dry-run preview** — `--dry-run` now uses the same component decisions as real scaffolding, including provider-specific CI output and `--skip-history` / `--skip-scratchpad`.
 - **Template and golden-output validation** — template variables, Markdown escaping, and representative rendered projects are validated before publish.
 - **RTK filter extra** — generated projects can opt into `.rtk/filters.toml` with `--extras rtk` or `--extras all` to reduce agent token cost from noisy shell output.
+- **Locked script runtime** — `--script-language` accepts only `node`, matching the shipped `.mjs` memory scripts, so generated docs never claim an unavailable runtime.
 - **Component registry rendering** — scaffold groups are rendered through a single component registry rather than repeated per-group control flow.
-
-## New in v0.7
-
-- **Agent lifecycle hooks** — new `.agents/hooks/` component group with 4 hooks (pre-feature, post-feature, post-bugfix, post-session) and executable shell scripts. Skills reference hooks conditionally with graceful fallback.
-- **`create-hook` skill** — new agent skill that guides you through adding custom hooks for any lifecycle point.
-- **`--skip-hooks` flag** — skip the hooks component group.
-- **98 tests** — detection, scaffolding, CLI, and hooks tested end-to-end.
-
-## New in v0.7.1
-
-- **`unscaffold` command** — `npx @yarkingulacti/agentic-scaffold un` removes all scaffolded files and symlinks interactively; `--force` skips confirmation.
-- **`next` skill** — new agent skill for planning and executing the next development step.
-- **Template refinements** — improved task/issue descriptions, clearer checklists, refined AGENTS.md/CLAUDE.md formatting across all templates.
-- **164 tests** — detection, scaffolding, CLI, unscaffold, and all hooks tested end-to-end.
-
-## New in v0.6
-
-- **Interactive mode redesign** — shows detected project profile before prompts, pre-fills prompts with detected values, and per-file conflict resolver that asks before overwriting existing files.
-- **MEMORY.md golden rules** — feature branches mandatory for new features, every release gets a version tag.
-- **Per-file conflict resolution** — `askOverwrite()` prompt lets you decide for each existing file during scaffolding.
-
-## New in v0.5
-
-- **`fill-docs` skill** — new agent skill that interviews you to complete placeholder content in BUSINESS_LOGIC.md, glossary, and other scaffolded docs.
-- **Scaffold metadata in AGENTS.md/CLAUDE.md** — version info, incomplete files list, and fill-docs skill reference at the bottom of every scaffolded project.
-- **Post-scaffold completion checklist** — the CLI now lists which documentation files have placeholder content and suggests the `fill-docs` skill.
-
-## New in v0.4
-
-- **Sci-fi themed CLI UI** — styled info-box header, animated spinner, real-time progress bar, colored summary with icons.
-- **New `src/ui.js` module** — reusable `infoBox()`, `progressBar()`, `spinner()`, `summaryLine()` helpers.
-
-## New in v0.4.1
-
-- **Test-before-publish CI** — publish workflow runs test job first; publish depends on it.
-- **`prepublishOnly` script** — `npm test` runs automatically before every `npm publish`.
-
-## New in v0.3
-
-- **Auto-detection engine** — detects languages, package manager, CI, AI tools from project files.
-- **Three tiers** — zero-config, flag mode, and interactive mode.
-- **`--force`** (`-f`) — overwrite existing files.
-- **Override flags** — `--package-manager`, `--ci-provider`, `--ai-tools`, `--script-language`.
-- **Rich `--help`** — tiers overview and usage examples.
-- **Conditional AGENTS.md** — sections for package manager, CI/CD, script runtime appear only when detected.
-- **82 tests** — detection, scaffolding, and CLI tested end-to-end.
 
 ## After scaffolding
 
