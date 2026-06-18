@@ -19,7 +19,7 @@
     "lint": "biome lint src/ bin/ tests/",
     "lint:fix": "biome lint --fix src/ bin/ tests/",
     "format": "biome format --write src/ bin/ tests/",
-    "format:check": "biome format --check src/ bin/ tests/",
+    "format:check": "biome ci src/ bin/ tests/",
     "fallow": "npx fallow",
     "fallow:ci": "npx fallow --ci",
     "prepublishOnly": "npm run build && npm run typecheck && npm test",
