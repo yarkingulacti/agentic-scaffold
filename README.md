@@ -235,3 +235,12 @@ root to apply compact output filters for local test and validation commands.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — contribution guidelines
 - [SECURITY.md](SECURITY.md) — security policy
 - [Issues](https://github.com/yarkingulacti/agentic-scaffold/issues) — bug reports and feature requests
+
+## Credits & acknowledgements
+
+Token-cost controls in this project are powered by [RTK](https://github.com/rtk-ai/rtk)
+(Rust Token Killer) by the [rtk-ai](https://github.com/rtk-ai) team. RTK filters
+high-volume command output to cut agent token usage, and agentic-scaffold both
+uses it locally (`.rtk/filters.toml`) and ships an opt-in RTK extra
+(`--extras rtk`) so generated projects can adopt the same workflow. Thanks to the
+RTK maintainers for the tooling.
