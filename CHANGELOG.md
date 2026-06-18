@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.2.2...v1.3.0) (2026-06-18)
+
+
+### Added
+
+* **scaffold:** gate initial and update runs on a Node runtime check ([ee82df4](https://github.com/yarkingulacti/agentic-scaffold/commit/ee82df45f5fbece7ebceffe471b0039a8c49e12d))
+
 ## [1.2.2](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.2.1...v1.2.2) (2026-06-18)
 
 

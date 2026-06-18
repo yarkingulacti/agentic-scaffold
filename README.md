@@ -82,6 +82,10 @@ That's the entire loop. The scaffold detects your project (language, package
 manager, CI, AI tools), seeds the generated docs with what it found, and writes
 only the files that don't already exist.
 
+> **Requires Node.js 18+.** Both initial and update runs perform a runtime check
+> and abort before writing if the active Node is older — the generated memory
+> scripts and hook helpers are ESM `.mjs` files that need a supported runtime.
+
 ## 🎛️ Three ways to run it
 
 Pick the level of control you want — all three produce the same scaffold shape.

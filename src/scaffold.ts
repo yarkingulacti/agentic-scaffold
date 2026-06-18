@@ -6,6 +6,7 @@ import type { WriteOptions, WrittenEntry } from "./fs-utils.js";
 import { createSymlinks, writeManifestForTarget } from "./fs-utils.js";
 import { PACKAGE_JSON } from "./paths.js";
 import { askAITools, askComponents, askIssueTracker, askProjectName } from "./prompts.js";
+import { checkNodeRuntime } from "./runtime.js";
 import type { DryRunEntry } from "./templates.js";
 import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
 
@@ -49,6 +50,14 @@ interface JsonResult {
 }
 
 export async function scaffold(argv: ScaffoldArgs): Promise<void> {
+  // Hard runtime gate (initial + update runs): the scaffolded .mjs memory
+  // scripts and hook helpers need a supported Node runtime. Abort before any
+  // detection or writes if it is unmet.
+  const runtime = checkNodeRuntime();
+  if (!runtime.ok) {
+    throw new Error(runtime.message);
+  }
+
   const config = resolveConfig(argv);
 
   if (config.interactive) {
