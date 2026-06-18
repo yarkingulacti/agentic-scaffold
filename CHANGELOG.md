@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.14.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.4...v0.14.0) (2026-06-18)
+
+
+### Added
+
+* **tooling:** add template variable + escape validator ([ba636e4](https://github.com/yarkingulacti/agentic-scaffold/commit/ba636e460e5fc26627e5e538cdd71856faa5a29d))
+
 ## [0.13.4](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.3...v0.13.4) (2026-06-18)
 
 
