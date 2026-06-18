@@ -1,5 +1,12 @@
 name: Publish
 
+# Trigger model (deterministic per release):
+#   push to master      -> quality only (CI gate for merges / the release commit)
+#   push of a v* tag     -> quality, then publish + wiki in parallel
+# The branch and the tag MUST arrive as two SEPARATE push events, otherwise
+# GitHub may collapse a simultaneous branch+tag push into a single branch-ref
+# run and skip publish/wiki. `pnpm run release:push` guarantees the split.
+
 on:
   push:
     branches:
@@ -49,7 +56,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v4
 
@@ -71,16 +77,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to GitHub Packages
-        run: |
-          echo "@yarkingulacti:registry=https://npm.pkg.github.com" >> .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
-          pnpm publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   wiki:
-    needs: publish
+    needs: quality
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -55,8 +55,8 @@ This project follows [Semantic Versioning](https://semver.org/).
 ## Release workflow
 
 1. Ensure you're on `master` with all changes merged.
-2. Run `npm run release` — this reads commits since the last tag, determines the next version, updates `CHANGELOG.md`, bumps `package.json`, commits, and tags.
-3. Run `git push --follow-tags origin master` to trigger the CI publish workflow.
+2. Run `pnpm run release` — this reads commits since the last tag, determines the next version, updates `CHANGELOG.md`, bumps `package.json`, commits, and tags.
+3. Run `pnpm run release:push` to ship. This pushes the branch and the tag as **two separate git events** (`git push origin master && git push origin --tags`). The separation is required: a single `git push --follow-tags` lets GitHub collapse the branch+tag into one branch-ref workflow run, which skips the tag-gated `publish` and `wiki` jobs. The tag event reliably triggers the publish + wiki jobs in CI.
 
 ## Before every PR
 

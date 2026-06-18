@@ -61,9 +61,12 @@ A PR with no description or no activity is not ready to merge.
 Every PR merged to master must result in a SemVer-compliant version tag
 (`v<major>.<minor>.<patch>`). The tag must be pushed to origin.
 
-- Use `npm run release` for automatic version bump, changelog generation,
-  commit, and tag
-- Or manually: `git tag v<version> && git push origin v<version>`
+- Use `pnpm run release` to bump the version, generate the changelog, commit,
+  and tag, then `pnpm run release:push` to push the branch and tag as two
+  separate events (a single `git push --follow-tags` can skip the tag-gated CI
+  publish + wiki jobs)
+- Or manually: `git push origin master` first, then `git tag v<version> &&
+  git push origin v<version>` as a distinct push
 - The version bump must reflect the PR's scope (patch for fixes, minor for
   features, major for breaking changes)
 
