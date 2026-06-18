@@ -2,9 +2,11 @@ import { createHash } from "node:crypto";
 import {
   copyFileSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   readdirSync,
   readFileSync,
+  readlinkSync,
   statSync,
   symlinkSync,
   writeFileSync,
@@ -16,7 +18,21 @@ export interface WriteOptions {
   interactive?: boolean;
   force?: boolean;
   onProgress?: () => void;
+  onWritten?: (entry: WrittenEntry) => void;
 }
+
+export interface WrittenFileEntry {
+  path: string;
+  type: "file";
+}
+
+export interface WrittenSymlinkEntry {
+  path: string;
+  type: "symlink";
+  linkTarget: string;
+}
+
+export type WrittenEntry = WrittenFileEntry | WrittenSymlinkEntry;
 
 export async function write(targetPath: string, content: string, options: WriteOptions = {}): Promise<string> {
   const dir = dirname(targetPath);
@@ -33,6 +49,7 @@ export async function write(targetPath: string, content: string, options: WriteO
 
   writeFileSync(targetPath, content, "utf-8");
   options.onProgress?.();
+  options.onWritten?.({ path: targetPath, type: "file" });
   return "written";
 }
 
@@ -51,6 +68,7 @@ export async function copyFile(src: string, dest: string, options: WriteOptions 
 
   copyFileSync(src, dest);
   options.onProgress?.();
+  options.onWritten?.({ path: dest, type: "file" });
   return "written";
 }
 
@@ -64,7 +82,7 @@ export async function copyStaticDir(srcDir: string, destDir: string, options: Wr
   return results;
 }
 
-export function createSymlinks(target: string, scaffoldDir: string): string[] {
+export function createSymlinks(target: string, scaffoldDir: string, options: WriteOptions = {}): string[] {
   const names = ["AGENTS.md", "CLAUDE.md"];
   const created: string[] = [];
   for (const name of names) {
@@ -82,17 +100,20 @@ export function createSymlinks(target: string, scaffoldDir: string): string[] {
     if (process.platform === "win32") {
       copyFileSync(sourcePath, linkPath);
       console.warn(`  Symlinks not supported on Windows; copied ${name} instead.`);
+      options.onWritten?.({ path: linkPath, type: "file" });
       created.push("written");
       continue;
     }
     try {
       symlinkSync(linkTarget, linkPath);
+      options.onWritten?.({ path: linkPath, type: "symlink", linkTarget });
       created.push("written");
     } catch (err: unknown) {
       const nodeErr = err as NodeJS.ErrnoException;
       if (nodeErr.code === "ENOSYS" || nodeErr.code === "EPERM" || nodeErr.code === "EACCES") {
         copyFileSync(sourcePath, linkPath);
         console.warn(`  Symlinks not supported on this system; copied ${name} instead.`);
+        options.onWritten?.({ path: linkPath, type: "file" });
         created.push("written");
       } else {
         created.push("skipped-existing");
@@ -121,10 +142,19 @@ export function walkDir(dir: string): DirEntry[] {
   return entries;
 }
 
-export interface ManifestEntry {
+export interface ManifestFileEntry {
   path: string;
+  type?: "file";
   contentHash: string;
 }
+
+export interface ManifestSymlinkEntry {
+  path: string;
+  type: "symlink";
+  linkTarget: string;
+}
+
+export type ManifestEntry = ManifestFileEntry | ManifestSymlinkEntry;
 
 export interface Manifest {
   version: number;
@@ -138,7 +168,32 @@ function fileHash(filePath: string): string {
   return createHash("sha256").update(content).digest("hex");
 }
 
-export function generateManifest(scaffoldDir: string, scaffoldVersion: string): Manifest {
+function manifestEntryFor(root: string, entry: WrittenEntry): ManifestEntry {
+  const relPath = relative(root, entry.path);
+  if (entry.type === "symlink") {
+    return { path: relPath, type: "symlink", linkTarget: entry.linkTarget };
+  }
+  return { path: relPath, type: "file", contentHash: fileHash(entry.path) };
+}
+
+export function generateManifest(
+  scaffoldDir: string,
+  scaffoldVersion: string,
+  options?: { target?: string; writtenEntries?: WrittenEntry[] },
+): Manifest {
+  if (options?.target && options.writtenEntries) {
+    const files = options.writtenEntries
+      .filter((entry) => existsSync(entry.path))
+      .map((entry) => manifestEntryFor(options.target as string, entry));
+    files.sort((a, b) => a.path.localeCompare(b.path));
+    return {
+      version: 2,
+      scaffoldVersion,
+      createdAt: new Date().toISOString(),
+      files,
+    };
+  }
+
   const files: ManifestEntry[] = [];
   for (const entry of walkDir(scaffoldDir)) {
     if (entry.name === ".manifest.json") continue;
@@ -159,6 +214,16 @@ export function writeManifest(scaffoldDir: string, scaffoldVersion: string): voi
   writeFileSync(join(scaffoldDir, ".manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
 }
 
+export function writeManifestForTarget(
+  target: string,
+  scaffoldDir: string,
+  scaffoldVersion: string,
+  writtenEntries: WrittenEntry[],
+): void {
+  const manifest = generateManifest(scaffoldDir, scaffoldVersion, { target, writtenEntries });
+  writeFileSync(join(scaffoldDir, ".manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
+}
+
 export function readManifest(scaffoldDir: string): Manifest | null {
   const manifestPath = join(scaffoldDir, ".manifest.json");
   if (!existsSync(manifestPath)) return null;
@@ -175,12 +240,28 @@ export interface ModifiedFile {
   expectedHash: string;
 }
 
-export function verifyManifest(scaffoldDir: string, manifest: Manifest): ModifiedFile[] {
+export function verifyManifest(root: string, manifest: Manifest): ModifiedFile[] {
   const modified: ModifiedFile[] = [];
   for (const entry of manifest.files) {
-    const fullPath = join(scaffoldDir, entry.path);
+    const fullPath = join(root, entry.path);
     if (!existsSync(fullPath)) {
-      modified.push({ path: entry.path, currentHash: "(deleted)", expectedHash: entry.contentHash });
+      const expectedHash = entry.type === "symlink" ? entry.linkTarget : entry.contentHash;
+      modified.push({ path: entry.path, currentHash: "(deleted)", expectedHash });
+      continue;
+    }
+    if (entry.type === "symlink") {
+      if (!lstatSync(fullPath).isSymbolicLink()) {
+        modified.push({ path: entry.path, currentHash: "(replaced)", expectedHash: entry.linkTarget });
+        continue;
+      }
+      const currentTarget = readlinkSync(fullPath);
+      if (currentTarget !== entry.linkTarget) {
+        modified.push({ path: entry.path, currentHash: currentTarget, expectedHash: entry.linkTarget });
+      }
+      continue;
+    }
+    if (lstatSync(fullPath).isSymbolicLink()) {
+      modified.push({ path: entry.path, currentHash: "(replaced)", expectedHash: entry.contentHash });
       continue;
     }
     const currentHash = fileHash(fullPath);

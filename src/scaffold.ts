@@ -3,8 +3,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { HandlebarsData, IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
 import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.js";
-import type { WriteOptions } from "./fs-utils.js";
-import { copyStaticDir, createSymlinks, writeManifest } from "./fs-utils.js";
+import type { WriteOptions, WrittenEntry } from "./fs-utils.js";
+import { copyStaticDir, createSymlinks, writeManifestForTarget } from "./fs-utils.js";
 import { askAITools, askComponents, askIssueTracker, askProjectName } from "./prompts.js";
 import type { DryRunEntry } from "./templates.js";
 import { listRenderedFiles, renderDir } from "./templates.js";
@@ -164,6 +164,7 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
 
   const total = dryRunEntries(config).length;
   let done = 0;
+  const writtenEntries: WrittenEntry[] = [];
   const tickOpts: WriteOptions = {
     onProgress: () => {
       if (!config.json) {
@@ -173,6 +174,9 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
         done++;
       }
     },
+    onWritten: (entry) => {
+      writtenEntries.push(entry);
+    },
   };
 
   const results: string[] = [];
@@ -180,9 +184,9 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
     results.push(...(await comp.render(config, hbData, tickOpts)));
   }
 
-  results.push(...(await createSymlinks(config.target, config.scaffoldDir)));
+  results.push(...createSymlinks(config.target, config.scaffoldDir, tickOpts));
 
-  writeManifest(config.scaffoldDir, PKG.version);
+  writeManifestForTarget(config.target, config.scaffoldDir, PKG.version, writtenEntries);
 
   if (!config.json) {
     process.stdout.write(`${"\r".padEnd(60)}\r`);

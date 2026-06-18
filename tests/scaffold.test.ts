@@ -308,6 +308,35 @@ describe("scaffold", () => {
     rmSync(dir, { recursive: true });
   });
 
+  it("writes a v2 root-relative manifest for scaffold-owned files", async () => {
+    const dir = tempDir();
+    await scaffold({
+      target: dir,
+      force: true,
+      extras: "ai-config,ci",
+      ciProvider: "github",
+      skipDocs: true,
+      skipScripts: true,
+      skipSkills: true,
+    });
+
+    const manifest = JSON.parse(readFileSync(p(dir, S, ".manifest.json"), "utf-8")) as {
+      version: number;
+      files: Array<{ path: string; type?: string; contentHash?: string; linkTarget?: string }>;
+    };
+    const paths = new Set(manifest.files.map((entry) => entry.path));
+
+    assert.equal(manifest.version, 2);
+    assert.ok(paths.has("opencode.json"));
+    assert.ok(paths.has(".github/workflows/ci.yml"));
+    assert.ok(paths.has(".github/dependabot.yml"));
+    assert.ok(paths.has("AGENTS.md"));
+    assert.ok(paths.has(".agentic-scaffold/AGENTS.md"));
+    assert.equal(manifest.files.find((entry) => entry.path === "AGENTS.md")?.type, "symlink");
+
+    rmSync(dir, { recursive: true });
+  });
+
   it("renders agent hooks reference in bugfix skill", async () => {
     const dir = tempDir();
     await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: false });
