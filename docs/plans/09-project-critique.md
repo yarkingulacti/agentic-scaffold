@@ -24,7 +24,7 @@ The planning set was inconsistent with the implementation:
 
 - The stale v1 release plan was removed after it no longer reflected current
   implementation.
-- The README had stale release-highlight copy from `v0.9`.
+- The README carried stale per-version "New in vX" highlight blocks (v0.3–v0.7.1) that duplicated CHANGELOG.md.
 - README and planning docs had stale skill counts.
 
 Why it matters: contributors and agents will make bad decisions if the planning
@@ -32,8 +32,9 @@ docs are treated as canonical but are behind the code.
 
 Resolution:
 
-- Replaced the stale README "New in v0.9" block with a current-release summary
-  for `0.13.x`.
+- Removed every per-version "New in vX" block in favor of a single "Current
+  release" summary pinned to the published version; CHANGELOG.md is the
+  canonical per-version history.
 - Corrected README and planning skill counts to match the 23 shipped skills.
 - Added a release docs freshness gate to `docs/plans/README.md`.
 - Updated this critique entry to reflect the current implementation baseline and
