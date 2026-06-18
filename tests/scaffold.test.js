@@ -217,6 +217,13 @@ describe("scaffold", () => {
     rmSync(dir, { recursive: true });
   });
 
+  it("creates create-hook skill when skills are included", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true });
+    assert.ok(existsSync(join(dir, ".agents", "skills", "create-hook", "SKILL.md")));
+    rmSync(dir, { recursive: true });
+  });
+
   it("creates hooks when not skipped", async () => {
     const dir = tempDir();
     await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true });
