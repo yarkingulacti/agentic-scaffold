@@ -89,7 +89,5 @@ function detectIssueTracker(targetDir: string): string | null {
 
 function detectScriptLanguage(targetDir: string): string | null {
   if (existsSync(join(targetDir, "package.json"))) return "node";
-  if (existsSync(join(targetDir, "requirements.txt"))) return "python";
-  if (existsSync(join(targetDir, "pyproject.toml"))) return "python";
   return null;
 }

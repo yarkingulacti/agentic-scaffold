@@ -80,10 +80,11 @@ Resolution:
 - Added a regression test that generated `AGENTS.md` agrees with the generated
   `.agentic-scaffold/scripts/memory_*.mjs` files.
 
-Remaining follow-up:
+Follow-up resolution:
 
-- Decide whether `python` and `docker` should remain accepted CLI choices before
-  matching template output modes exist.
+- Locked `--script-language` to the only runtime with shipped templates: Node.js
+  `.mjs` memory scripts. Python and Docker can be added later only with matching
+  script templates and behavior tests.
 
 ### 4. Dry-run was not the same plan the scaffold would execute
 

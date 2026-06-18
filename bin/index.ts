@@ -129,8 +129,8 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     })
     .option("script-language", {
       type: "string",
-      choices: ["python", "node", "docker"] as const,
-      description: "Memory script language (overrides auto-detection)",
+      choices: ["node"] as const,
+      description: "Memory script runtime. Only node is supported because the shipped scripts are .mjs files.",
     });
 }
 

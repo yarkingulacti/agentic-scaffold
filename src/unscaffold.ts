@@ -123,13 +123,14 @@ function removeV2OwnedFiles(target: string, scaffoldPath: string, manifest: Mani
   return removed;
 }
 
-export async function unscaffold(argv: { target?: string; force?: boolean }): Promise<void> {
+export async function unscaffold(argv: { target?: string; force?: boolean; quiet?: boolean }): Promise<void> {
   const target = argv.target || process.cwd();
   const force = argv.force ?? false;
+  const quiet = argv.quiet ?? false;
 
   const scaffoldData = findScaffoldFiles(target);
   if (!scaffoldData) {
-    console.log(` ${summaryLine("Nothing to unscaffold — .agentic-scaffold/ not found.", "done")}`);
+    if (!quiet) console.log(` ${summaryLine("Nothing to unscaffold — .agentic-scaffold/ not found.", "done")}`);
     return;
   }
 
@@ -179,7 +180,7 @@ export async function unscaffold(argv: { target?: string; force?: boolean }): Pr
     ...(modified.length > 0 ? [["Modified", style.yellow(String(modified.length))] as [string, string]] : []),
     ...(unknown.length > 0 ? [["Unknown", style.yellow(String(unknown.length))] as [string, string]] : []),
   ];
-  console.log(`\n${infoBox(rows)}`);
+  if (!quiet) console.log(`\n${infoBox(rows)}`);
 
   if (!force) {
     const ok = await confirm(`  Remove scaffolded files (${fileCount} files, ${symlinkCount} symlinks)? [y/N]: `);
@@ -204,5 +205,5 @@ export async function unscaffold(argv: { target?: string; force?: boolean }): Pr
     }
   }
 
-  console.log(` ${summaryLine(`Removed ${removedFiles} files and ${removedSymlinks} symlinks.`, "done")}`);
+  if (!quiet) console.log(` ${summaryLine(`Removed ${removedFiles} files and ${removedSymlinks} symlinks.`, "done")}`);
 }

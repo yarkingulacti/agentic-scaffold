@@ -8,6 +8,8 @@ export const DEFAULTS = {
   scriptLanguage: "node",
 };
 
+const SUPPORTED_SCRIPT_LANGUAGES = [DEFAULTS.scriptLanguage];
+
 export interface ScaffoldArgs {
   target?: string;
   projectName?: string;
@@ -22,6 +24,7 @@ export interface ScaffoldArgs {
   interactive?: boolean;
   dryRun?: boolean;
   json?: boolean;
+  quiet?: boolean;
   only?: string;
   skipDocs?: boolean;
   skipSkills?: boolean;
@@ -50,6 +53,7 @@ export interface ScaffoldConfig {
   interactive: boolean;
   dryRun: boolean;
   json: boolean;
+  quiet: boolean;
   include: Set<string>;
 }
 
@@ -171,6 +175,15 @@ function resolveAiTools(value: string): string[] {
   if (tools.includes("all")) return [...ALL_AI_TOOLS];
   return tools;
 }
+function resolveScriptLanguage(value: string | null | undefined): string {
+  const resolved = value ?? DEFAULTS.scriptLanguage;
+  if (!SUPPORTED_SCRIPT_LANGUAGES.includes(resolved)) {
+    throw new Error(
+      `Unsupported scriptLanguage "${resolved}". Only node is supported because shipped scripts are .mjs files.`,
+    );
+  }
+  return resolved;
+}
 
 export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
   const target = argv.target || process.cwd();
@@ -186,11 +199,12 @@ export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
     packageManager: argv.packageManager ?? profile.packageManager ?? null,
     ciProvider: argv.ciProvider ?? profile.ciProvider ?? null,
     aiTools: argv.aiTools ? resolveAiTools(argv.aiTools) : profile.aiTools,
-    scriptLanguage: argv.scriptLanguage ?? profile.scriptLanguage ?? DEFAULTS.scriptLanguage,
+    scriptLanguage: resolveScriptLanguage(argv.scriptLanguage ?? profile.scriptLanguage),
     force: argv.force ?? false,
     interactive: argv.interactive ?? false,
     dryRun: argv.dryRun ?? false,
     json: argv.json ?? false,
+    quiet: argv.quiet ?? false,
     include: resolveIncludes(argv),
   };
 }

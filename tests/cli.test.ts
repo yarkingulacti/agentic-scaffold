@@ -215,11 +215,17 @@ describe("CLI", () => {
       rmSync(dir, { recursive: true });
     });
 
-    it("accepts --script-language override", () => {
+    it("accepts the supported --script-language override", () => {
       const dir = tempDir();
-      run(`--target ${dir} --force --script-language docker --skip-skills --skip-scripts`);
+      run(`--target ${dir} --force --script-language node --skip-skills --skip-scripts`);
       const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
-      assert.ok(content.includes("**docker**"));
+      assert.ok(content.includes("**node**"));
+      rmSync(dir, { recursive: true });
+    });
+
+    it("rejects unsupported --script-language values", () => {
+      const dir = tempDir();
+      assert.throws(() => run(`--target ${dir} --force --script-language python --skip-skills --skip-scripts`));
       rmSync(dir, { recursive: true });
     });
 
