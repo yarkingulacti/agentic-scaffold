@@ -6,7 +6,7 @@ import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.j
 import type { WriteOptions } from "./fs-utils.js";
 import { copyStaticDir, createSymlinks } from "./fs-utils.js";
 import { askComponents, askIssueTracker, askProjectName } from "./prompts.js";
-import { countTemplateFiles, renderDir } from "./templates.js";
+import { countTemplateFiles, listDryRunFiles, renderDir } from "./templates.js";
 import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -120,6 +120,21 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
     ["Include", [...config.include].join(" + ") || style.dim("(none)")],
   ];
   console.log(`\n${infoBox(rows)}`);
+
+  if (config.dryRun) {
+    const entries = listDryRunFiles(TEMPLATES_DIR, [...config.include]);
+    console.log(`\n ${style.bold("Dry run — no files will be written:")}`);
+    console.log(`   ${style.cyan(String(entries.length))} files would be created\n`);
+    for (const entry of entries) {
+      const icon = entry.type === "dir" ? style.dim("📁") : "📄";
+      console.log(`   ${icon} ${entry.dest}`);
+    }
+    console.log(`\n   ${style.dim("Symlinks that would be created:")}`);
+    console.log(`   AGENTS.md → .agentic-scaffold/AGENTS.md`);
+    console.log(`   CLAUDE.md → .agentic-scaffold/CLAUDE.md`);
+    console.log(`\n ${summaryLine("Run without --dry-run to scaffold.", "done")}`);
+    return;
+  }
 
   const total = countTemplateFiles(TEMPLATES_DIR, [...config.include]);
   let done = 0;

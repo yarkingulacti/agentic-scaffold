@@ -20,6 +20,13 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     .example("$0 --ci-provider github", "Override auto-detected CI provider")
     .example("$0 --ai-tools opencode,cursor", "Generate configs for specific AI tools")
     .example("$0 -i", "Interactive mode with prompts")
+    .example("$0 -n", "Dry-run: preview files without writing")
+    .option("dry-run", {
+      alias: "n",
+      type: "boolean",
+      description: "Preview files that would be created without writing anything",
+      default: false,
+    })
     .option("interactive", {
       alias: "i",
       type: "boolean",
