@@ -5,6 +5,15 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.13.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.13.0...v0.13.1) (2026-06-18)
+
+
+### Changed
+
+* derive dry-run previews and progress totals from the component registry
+* refresh current-release planning docs and skill counts
+* remove ownerless detection fields and document detection ownership
+
 ## [0.13.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v0.12.0...v0.13.0) (2026-06-18)
 
 
