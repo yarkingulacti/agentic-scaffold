@@ -9,8 +9,6 @@ const c: Record<string, (s: string) => string> = {
   gray: (s) => `\x1b[90m${s}${reset}`,
 };
 
-export type StyleFn = (s: string) => string;
-
 export function infoBox(rows: [string, string][]): string {
   const labelWidth = Math.max(...rows.map((r) => r[0].length));
   const sep = c.dim("│");

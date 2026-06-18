@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import type { ScaffoldArgs } from "../src/scaffold.js";
+import type { ScaffoldArgs } from "../src/config.js";
 import { scaffold } from "../src/scaffold.js";
 import { unscaffold } from "../src/unscaffold.js";
 

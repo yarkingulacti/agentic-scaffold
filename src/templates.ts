@@ -1,0 +1,50 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import Handlebars from "handlebars";
+import type { HandlebarsData } from "./config.js";
+import type { WriteOptions } from "./fs-utils.js";
+import { copyFile, walkDir, write } from "./fs-utils.js";
+
+export function renderTemplate(sourcePath: string, hbData: HandlebarsData): string {
+  const raw = readFileSync(sourcePath, "utf-8");
+  const template = Handlebars.compile(raw);
+  return template(hbData);
+}
+
+export async function renderDir(
+  srcDir: string,
+  destDir: string,
+  data: HandlebarsData,
+  options: WriteOptions = {},
+): Promise<string[]> {
+  if (!existsSync(srcDir)) return [];
+  const results: string[] = [];
+  for (const entry of walkDir(srcDir)) {
+    const isHbs = entry.name.endsWith(".hbs");
+    const outName = isHbs ? entry.name.slice(0, -".hbs".length) : entry.name;
+    const dest = join(destDir, outName);
+    if (isHbs) {
+      const content = renderTemplate(entry.full, data);
+      results.push(await write(dest, content, options));
+    } else {
+      results.push(await copyFile(entry.full, dest, options));
+    }
+  }
+  return results;
+}
+
+export function countTemplateFiles(dir: string, components: string[]): number {
+  const dirs = [
+    join(dir, "root"),
+    ...(components.includes("docs") ? [join(dir, "docs")] : []),
+    ...(components.includes("scripts") ? [join(dir, "scripts")] : []),
+    ...(components.includes("skills") ? [join(dir, "skills")] : []),
+    ...(components.includes("hooks") ? [join(dir, "hooks")] : []),
+    join(dir, "scratchpad"),
+    join(dir, "history"),
+  ];
+  return dirs.reduce((sum, d) => {
+    if (existsSync(d)) return sum + walkDir(d).length;
+    return sum;
+  }, 0);
+}

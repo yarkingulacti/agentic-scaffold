@@ -10,10 +10,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
 
       - uses: actions/setup-node@v4
         with:
@@ -21,11 +23,20 @@ jobs:
 
       - run: npm ci
 
+      - name: TypeScript typecheck
+        run: npm run typecheck
+
+      - name: Biome lint + format
+        run: npm run lint && npm run format:check
+
+      - name: Fallow codebase intelligence
+        run: npm run fallow:ci
+
       - name: Run tests
         run: npm test
 
   publish:
-    needs: test
+    needs: quality
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,6 +50,9 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - run: npm ci
+
+      - name: Build
+        run: npm run build
 
       - name: Publish to npmjs.org
         run: npm publish
