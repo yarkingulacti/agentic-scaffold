@@ -29,7 +29,7 @@
     "prepublishOnly": "pnpm run lint && pnpm run format:check && pnpm run validate-skills && pnpm run validate-templates && pnpm run build && pnpm run typecheck && pnpm test",
     "release": "commit-and-tag-version",
     "release:dry": "commit-and-tag-version --dry-run",
-    "release:push": "git push origin master && git push origin --tags",
+    "release:push": "git push origin master && git push origin \"v$(node -p 'require(\"./package.json\").version')\"",
     "prepare": "husky"
   },
   "dependencies": {
