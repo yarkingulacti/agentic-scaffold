@@ -20,9 +20,10 @@
     "lint:fix": "biome lint --fix src/ bin/ tests/",
     "format": "biome format --write src/ bin/ tests/",
     "format:check": "biome ci src/ bin/ tests/",
+    "validate-skills": "node --import tsx bin/validate-skills.ts",
     "fallow": "npx fallow",
     "fallow:ci": "npx fallow --ci",
-    "prepublishOnly": "npm run build && npm run typecheck && npm test",
+    "prepublishOnly": "npm run validate-skills && npm run build && npm run typecheck && npm test",
     "release": "commit-and-tag-version",
     "release:dry": "commit-and-tag-version --dry-run",
     "prepare": "husky"

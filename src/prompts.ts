@@ -37,13 +37,31 @@ export async function askOverwrite(filePath: string): Promise<boolean> {
 export async function askComponents(): Promise<string[]> {
   const r = rl();
   console.log("\nComponent groups to include (comma-separated):");
-  console.log("  docs, scripts, skills, hooks");
+  console.log("  docs, scripts, skills, hooks, ci, ai-config, contribute, onboarding");
   const answer = await r.question("All [default]: ");
   r.close();
   const trimmed = answer.trim().toLowerCase();
-  if (!trimmed) return ["docs", "scripts", "skills", "hooks"];
+  if (!trimmed) return ["docs", "scripts", "skills", "hooks", "ci", "ai-config", "contribute", "onboarding"];
   return trimmed
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+export async function askAITools(detected: string[]): Promise<string[]> {
+  const r = rl();
+  const allTools = ["opencode", "cursor", "copilot", "windsurf", "cline"];
+  const defaultStr = detected.length > 0 ? detected.join(",") : "all";
+  console.log("\nAI tool configs to generate (comma-separated):");
+  console.log("  opencode, cursor, copilot, windsurf, cline, all");
+  const answer = await r.question(`Tools [${defaultStr}]: `);
+  r.close();
+  const trimmed = answer.trim().toLowerCase();
+  if (!trimmed) return detected.length > 0 ? detected : allTools;
+  const tools = trimmed
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (tools.includes("all")) return [...allTools];
+  return tools;
 }

@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: {{#if packageManager}}{{packageManager}}{{else}}npm{{/if}}
+
+      - name: Install dependencies
+        run: |
+{{#if packageManager}}
+          {{packageManager}} install --frozen-lockfile
+{{else}}
+          npm ci
+{{/if}}
+
+  lint:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: {{#if packageManager}}{{packageManager}}{{else}}npm{{/if}}
+
+      - run: |
+{{#if packageManager}}
+          {{packageManager}} run lint
+{{else}}
+          npm run lint
+{{/if}}
+
+  test:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: {{#if packageManager}}{{packageManager}}{{else}}npm{{/if}}
+
+      - run: |
+{{#if packageManager}}
+          {{packageManager}} test
+{{else}}
+          npm test
+{{/if}}
+
+  build:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: {{#if packageManager}}{{packageManager}}{{else}}npm{{/if}}
+
+      - run: |
+{{#if packageManager}}
+          {{packageManager}} run build
+{{else}}
+          npm run build
+{{/if}}

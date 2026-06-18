@@ -18,9 +18,17 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     .example("$0", "Zero-config: auto-detect and scaffold missing files")
     .example("$0 --force", "Force overwrite existing files")
     .example("$0 --ci-provider github", "Override auto-detected CI provider")
+    .example("$0 --extras ci,onboarding", "Only scaffold CI and onboarding extras")
+    .example("$0 --ai-tools all", "Generate configs for all known AI tools")
     .example("$0 --ai-tools opencode,cursor", "Generate configs for specific AI tools")
     .example("$0 -i", "Interactive mode with prompts")
     .example("$0 -n", "Dry-run: preview files without writing")
+    .example("$0 --json", "Output results as JSON")
+    .option("json", {
+      type: "boolean",
+      description: "Output results as JSON to stdout, progress to stderr",
+      default: false,
+    })
     .option("dry-run", {
       alias: "n",
       type: "boolean",
@@ -41,8 +49,12 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     })
     .option("only", {
       type: "string",
-      description: "Comma-separated component groups to include: docs,scripts,skills,all",
+      description: "Comma-separated core groups to include: docs,scripts,skills,hooks,all",
       default: "all",
+    })
+    .option("extras", {
+      type: "string",
+      description: "Comma-separated extras groups: ci,contribute,ai-config,onboarding,all",
     })
     .option("skip-skills", {
       type: "boolean",
@@ -61,6 +73,30 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
       type: "boolean",
       description: "Skip docs folder",
       default: false,
+    })
+    .option("skip-ci", {
+      type: "boolean",
+      description: "Skip CI/CD configuration templates",
+    })
+    .option("skip-contribute", {
+      type: "boolean",
+      description: "Skip contribution guide templates",
+    })
+    .option("skip-ai-config", {
+      type: "boolean",
+      description: "Skip AI tool configuration templates",
+    })
+    .option("skip-onboarding", {
+      type: "boolean",
+      description: "Skip onboarding guide templates",
+    })
+    .option("skip-history", {
+      type: "boolean",
+      description: "Skip .history directory",
+    })
+    .option("skip-scratchpad", {
+      type: "boolean",
+      description: "Skip .scratchpad directory",
     })
     .option("project-name", {
       type: "string",

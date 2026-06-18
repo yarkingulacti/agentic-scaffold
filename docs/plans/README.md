@@ -20,9 +20,10 @@ tool itself.
 - Sprint 1 (core infrastructure):          Done in v0.4.x
 - Sprint 2 (scaffold metadata + fill-docs): Done in v0.5.0
 - Sprint 3 (interactive mode redesign):     Done in v0.6.0
-- Sprint 4 (CI/CD + AI configs):            Not started
-- Sprint 5 (memory pipeline):               Not started
-- Sprint 6 (migrations + contribution):     Not started
-- Sprint 7 (extras + cleanup):              Not started
+- Sprint 4 (CI/CD + AI configs):            Done in v0.12.0
+- Sprint 5 (memory pipeline):               Done (hardening phase 2)
+- Sprint 6 (migrations + contribution):     Done in v0.12.0
+- Sprint 7 (extras + cleanup):              Done in v0.12.0
+- Hardening v1.0:                           All phases resolved (self-host, manifest, Node scripts, NO_COLOR, --json, skill validation, --skip-history/scratchpad)
 - Created: 2026-06-17
-- Updated: 2026-06-18 (added 07-hardening-roadmap.md)
+- Updated: 2026-06-18

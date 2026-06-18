@@ -16,14 +16,22 @@ export interface ScaffoldArgs {
   ciProvider?: string;
   aiTools?: string;
   scriptLanguage?: string;
+  extras?: string;
   force?: boolean;
   interactive?: boolean;
   dryRun?: boolean;
+  json?: boolean;
   only?: string;
   skipDocs?: boolean;
   skipSkills?: boolean;
   skipScripts?: boolean;
   skipHooks?: boolean;
+  skipCi?: boolean;
+  skipContribute?: boolean;
+  skipAiConfig?: boolean;
+  skipOnboarding?: boolean;
+  skipHistory?: boolean;
+  skipScratchpad?: boolean;
 }
 
 export interface ScaffoldConfig {
@@ -40,6 +48,7 @@ export interface ScaffoldConfig {
   force: boolean;
   interactive: boolean;
   dryRun: boolean;
+  json: boolean;
   include: Set<string>;
 }
 
@@ -69,6 +78,8 @@ export interface HandlebarsData {
   scriptLanguage: string;
   scaffoldVersion: string;
   incompleteFiles: IncompleteFile[];
+  includeScripts: boolean;
+  includeHooks: boolean;
 }
 
 export interface IncompleteFile {
@@ -115,16 +126,46 @@ const ISSUE_TRACKER_DOCS: Record<string, TrackerDoc> = {
   },
 };
 
+const EXTRAS_GROUPS = ["ci", "contribute", "ai-config", "onboarding"];
+
 function resolveIncludes(argv: ScaffoldArgs): Set<string> {
+  let set = new Set(["docs", "scripts", "skills", "hooks"]);
   if (argv.only && argv.only !== "all") {
-    return new Set(argv.only.split(",").map((s) => s.trim()));
+    set = new Set(argv.only.split(",").map((s) => s.trim()));
   }
-  const set = new Set(["docs", "scripts", "skills", "hooks"]);
+  const extras = argv.extras
+    ? argv.extras
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : EXTRAS_GROUPS;
+  for (const e of extras) {
+    if (e !== "all") set.add(e);
+  }
+  set.add("history");
+  set.add("scratchpad");
   if (argv.skipDocs) set.delete("docs");
   if (argv.skipScripts) set.delete("scripts");
   if (argv.skipSkills) set.delete("skills");
   if (argv.skipHooks) set.delete("hooks");
+  if (argv.skipCi) set.delete("ci");
+  if (argv.skipContribute) set.delete("contribute");
+  if (argv.skipAiConfig) set.delete("ai-config");
+  if (argv.skipOnboarding) set.delete("onboarding");
+  if (argv.skipHistory) set.delete("history");
+  if (argv.skipScratchpad) set.delete("scratchpad");
   return set;
+}
+
+const ALL_AI_TOOLS = ["opencode", "cursor", "copilot", "windsurf", "cline"];
+
+function resolveAiTools(value: string): string[] {
+  const tools = value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (tools.includes("all")) return [...ALL_AI_TOOLS];
+  return tools;
 }
 
 export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
@@ -140,16 +181,12 @@ export function resolveConfig(argv: ScaffoldArgs): ScaffoldConfig {
     issueTracker: argv.issueTracker ?? profile.issueTracker ?? DEFAULTS.issueTracker,
     packageManager: argv.packageManager ?? profile.packageManager ?? null,
     ciProvider: argv.ciProvider ?? profile.ciProvider ?? null,
-    aiTools: argv.aiTools
-      ? argv.aiTools
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : profile.aiTools,
+    aiTools: argv.aiTools ? resolveAiTools(argv.aiTools) : profile.aiTools,
     scriptLanguage: argv.scriptLanguage ?? profile.scriptLanguage ?? DEFAULTS.scriptLanguage,
     force: argv.force ?? false,
     interactive: argv.interactive ?? false,
     dryRun: argv.dryRun ?? false,
+    json: argv.json ?? false,
     include: resolveIncludes(argv),
   };
 }
@@ -172,6 +209,8 @@ export function buildHandlebars(config: ScaffoldConfig, version: string): Handle
     scriptLanguage: config.scriptLanguage,
     scaffoldVersion: version,
     incompleteFiles: buildIncompleteFiles(config),
+    includeScripts: config.include.has("scripts"),
+    includeHooks: config.include.has("hooks"),
   };
 }
 

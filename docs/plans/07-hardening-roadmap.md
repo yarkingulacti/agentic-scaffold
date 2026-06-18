@@ -55,7 +55,7 @@ gracefully fall back instead of silently skipping.
 
 ---
 
-## Phase 2 — Dependency Reduction (next milestone)
+## Phase 2 — Dependency Reduction (next milestone) ✅ Resolved
 
 ### 2.1 Replace Python memory pipeline with Node.js ✅ Resolved
 
@@ -70,10 +70,10 @@ should work without a second runtime.
   agent session memory that's searched by `grep`-equivalent patterns)
 - Files: `templates/scripts/*.py` → `templates/scripts/*.mjs`
 
-### 2.2 Opt-in `.history/` and `.scratchpad/` ❌ Open
+### 2.2 Opt-in `.history/` and `.scratchpad/` ✅ Resolved
 
-These directories are created unconditionally during scaffolding. Users should
-be able to skip them.
+These directories are created unconditionally during scaffolding. Users should be
+able to skip them.
 
 - Add `--skip-history` and `--skip-scratchpad` flags (consistent with existing
   `--skip-*` pattern)
@@ -83,9 +83,9 @@ be able to skip them.
 
 ---
 
-## Phase 3 — Polish (v1.0 release candidate)
+## Phase 3 — Polish (v1.0 release candidate) ✅ Resolved
 
-### 3.1 `NO_COLOR` support + `--json` output ❌ Open
+### 3.1 `NO_COLOR` support + `--json` output ✅ Resolved
 
 The sci-fi themed ANSI UI is a differentiator but gets in the way of scripting
 and accessibility.
@@ -96,7 +96,7 @@ and accessibility.
   "incompleteFiles": [...]}` to stdout and nothing else to stderr
 - Files: `src/ui.ts`, `src/scaffold.ts`, `bin/index.ts`
 
-### 3.2 Skill frontmatter schema validation ❌ Open
+### 3.2 Skill frontmatter schema validation ✅ Resolved
 
 The 22 skills are substantive (see e.g. `templates/skills/tdd/SKILL.md` at 109
 lines with real workflow guidance) but their frontmatter has no schema. Over

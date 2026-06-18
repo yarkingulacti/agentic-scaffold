@@ -1,12 +1,17 @@
-const reset = "\x1b[0m";
+const noColor = !!process.env.NO_COLOR;
+
+function ansi(code: number): (s: string) => string {
+  if (noColor) return (s) => s;
+  return (s) => `\x1b[${code}m${s}\x1b[0m`;
+}
 
 const c: Record<string, (s: string) => string> = {
-  cyan: (s) => `\x1b[36m${s}${reset}`,
-  green: (s) => `\x1b[32m${s}${reset}`,
-  yellow: (s) => `\x1b[33m${s}${reset}`,
-  dim: (s) => `\x1b[2m${s}${reset}`,
-  bold: (s) => `\x1b[1m${s}${reset}`,
-  gray: (s) => `\x1b[90m${s}${reset}`,
+  cyan: ansi(36),
+  green: ansi(32),
+  yellow: ansi(33),
+  dim: ansi(2),
+  bold: ansi(1),
+  gray: ansi(90),
 };
 
 export function infoBox(rows: [string, string][]): string {

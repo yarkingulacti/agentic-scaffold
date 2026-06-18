@@ -1,0 +1,35 @@
+# {{projectName}} — Copilot Instructions
+
+## Project Context
+
+{{projectName}} is a software project. This file tells GitHub Copilot how to
+behave when assisting with this codebase.
+
+## Default Behavior
+
+{{projectDescription}}
+
+## Language & Framework
+
+{{#if languages}}
+This project uses: {{languages}}.
+{{/if}}
+{{#if packageManager}}
+Package management: {{packageManager}}.
+{{/if}}
+{{#if ciProvider}}
+CI/CD: {{ciProvider}}.
+{{/if}}
+
+## Coding Conventions
+
+- Follow existing code style in the project.
+- Write tests for new functionality.
+- Use the project's domain language consistently.
+- Prefer small, focused functions over large monolithic ones.
+
+## Documentation
+
+- Business logic rules are documented in `.agentic-scaffold/BUSINESS_LOGIC.md`.
+- Architecture decisions are documented in `.agentic-scaffold/docs/adr/`.
+- Agent skills and workflows are in `.agentic-scaffold/.agents/`.

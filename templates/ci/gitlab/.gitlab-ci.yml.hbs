@@ -1,0 +1,64 @@
+image: node:20
+
+stages:
+  - install
+  - lint
+  - test
+  - build
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm/
+
+before_script:
+  - npm config set cache .npm
+{{#if packageManager}}
+  - {{packageManager}} config set cache .npm
+{{/if}}
+
+install:
+  stage: install
+  script:
+{{#if packageManager}}
+    - {{packageManager}} install --frozen-lockfile
+{{else}}
+    - npm ci
+{{/if}}
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+
+lint:
+  stage: lint
+  dependencies:
+    - install
+  script:
+{{#if packageManager}}
+    - {{packageManager}} run lint
+{{else}}
+    - npm run lint
+{{/if}}
+
+test:
+  stage: test
+  dependencies:
+    - install
+  script:
+{{#if packageManager}}
+    - {{packageManager}} test
+{{else}}
+    - npm test
+{{/if}}
+
+build:
+  stage: build
+  dependencies:
+    - install
+  script:
+{{#if packageManager}}
+    - {{packageManager}} run build
+{{else}}
+    - npm run build
+{{/if}}

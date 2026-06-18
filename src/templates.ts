@@ -47,6 +47,19 @@ export function listDryRunFiles(dir: string, components: string[]): DryRunEntry[
       ? [{ src: join(dir, "skills"), destBase: ".agentic-scaffold/.agents/skills" }]
       : []),
     ...(components.includes("hooks") ? [{ src: join(dir, "hooks"), destBase: ".agentic-scaffold/.agents/hooks" }] : []),
+    ...(components.includes("ci")
+      ? [
+          { src: join(dir, "ci", "github"), destBase: ".github" },
+          { src: join(dir, "ci", "gitlab"), destBase: "." },
+        ]
+      : []),
+    ...(components.includes("contribute")
+      ? [{ src: join(dir, "contribute"), destBase: ".agentic-scaffold/contribute" }]
+      : []),
+    ...(components.includes("ai-config") ? [{ src: join(dir, "ai-config"), destBase: "." }] : []),
+    ...(components.includes("onboarding")
+      ? [{ src: join(dir, "onboarding"), destBase: ".agentic-scaffold/onboarding" }]
+      : []),
     { src: join(dir, "scratchpad"), destBase: ".agentic-scaffold/.scratchpad" },
     { src: join(dir, "history"), destBase: ".agentic-scaffold/.history" },
   ];
@@ -69,6 +82,10 @@ export function countTemplateFiles(dir: string, components: string[]): number {
     ...(components.includes("scripts") ? [join(dir, "scripts")] : []),
     ...(components.includes("skills") ? [join(dir, "skills")] : []),
     ...(components.includes("hooks") ? [join(dir, "hooks")] : []),
+    ...(components.includes("ci") ? [join(dir, "ci")] : []),
+    ...(components.includes("contribute") ? [join(dir, "contribute")] : []),
+    ...(components.includes("ai-config") ? [join(dir, "ai-config")] : []),
+    ...(components.includes("onboarding") ? [join(dir, "onboarding")] : []),
     join(dir, "scratchpad"),
     join(dir, "history"),
   ];
