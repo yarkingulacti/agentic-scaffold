@@ -2,6 +2,10 @@
 
 No install required — run it straight from npm.
 
+> **Requires Node.js 18+.** Both initial and update runs perform a runtime check
+> and abort before writing if the active Node is older — the generated memory
+> scripts and hook helpers are ESM `.mjs` files that need a supported runtime.
+
 ## The 60-second loop
 
 ```bash
