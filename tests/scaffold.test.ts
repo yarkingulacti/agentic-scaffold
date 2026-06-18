@@ -176,11 +176,22 @@ describe("scaffold", () => {
     rmSync(dir, { recursive: true });
   });
 
-  it("renders scriptLanguage section with default 'python'", async () => {
+  it("renders scriptLanguage section with default 'node'", async () => {
     const dir = tempDir();
     await scaffold({ target: dir, force: true, skipDocs: true, skipScripts: true, skipSkills: true });
     const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
-    assert.ok(content.includes("Memory and utility scripts use **python**"));
+    assert.ok(content.includes("Memory and utility scripts use **node**"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("keeps the default scriptLanguage aligned with generated memory scripts", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, force: true, skipDocs: true, skipSkills: true });
+    const content = readFileSync(p(dir, S, "AGENTS.md"), "utf-8");
+    assert.ok(content.includes("Memory and utility scripts use **node**"));
+    assert.ok(existsSync(p(dir, S, "scripts", "memory_index.mjs")));
+    assert.ok(existsSync(p(dir, S, "scripts", "memory_search.mjs")));
+    assert.ok(existsSync(p(dir, S, "scripts", "memory_bundle.mjs")));
     rmSync(dir, { recursive: true });
   });
 

@@ -4,7 +4,7 @@ import { detectProjectProfile } from "./detect.js";
 export const DEFAULTS = {
   projectDescription: "A project.",
   issueTracker: "linear",
-  scriptLanguage: "python",
+  scriptLanguage: "node",
 };
 
 export interface ScaffoldArgs {
