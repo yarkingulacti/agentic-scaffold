@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 
 const CLI = `node --import tsx ${join(import.meta.dirname, "..", "bin", "index.ts")}`;
+const DIST_CLI = join(import.meta.dirname, "..", "dist", "bin", "index.js");
 const S = ".agentic-scaffold";
 
 function p(dir: string, ...parts: string[]): string {
@@ -24,6 +25,10 @@ describe("CLI", () => {
   describe("--help", () => {
     it("runs without error", () => {
       run("--help");
+    });
+
+    it("runs from built dist when build artifacts are present", { skip: !existsSync(DIST_CLI) }, () => {
+      execSync(`node ${DIST_CLI} --help`, { encoding: "utf-8" });
     });
 
     it("contains tier descriptions", () => {

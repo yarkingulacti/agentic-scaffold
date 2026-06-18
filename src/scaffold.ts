@@ -1,18 +1,16 @@
 import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import type { HandlebarsData, IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
 import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.js";
 import type { WriteOptions, WrittenEntry } from "./fs-utils.js";
 import { copyStaticDir, createSymlinks, writeManifestForTarget } from "./fs-utils.js";
+import { PACKAGE_JSON, TEMPLATES_DIR } from "./paths.js";
 import { askAITools, askComponents, askIssueTracker, askProjectName } from "./prompts.js";
 import type { DryRunEntry } from "./templates.js";
 import { listRenderedFiles, renderDir } from "./templates.js";
 import { infoBox, progressBar, spinner, style, summaryLine } from "./ui.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const TEMPLATES_DIR = join(__dirname, "..", "templates");
-const PKG = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf-8")) as { version: string };
+const PKG = JSON.parse(readFileSync(PACKAGE_JSON, "utf-8")) as { version: string };
 
 function out(config: ScaffoldConfig, ...args: unknown[]): void {
   if (config.json) {

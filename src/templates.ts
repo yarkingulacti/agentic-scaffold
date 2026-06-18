@@ -1,13 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import Handlebars from "handlebars";
 import type { HandlebarsData } from "./config.js";
 import type { WriteOptions } from "./fs-utils.js";
 import { copyFile, walkDir, write } from "./fs-utils.js";
+import { TEMPLATES_DIR } from "./paths.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT_TEMPLATES = join(__dirname, "..", "templates", "root");
+const ROOT_TEMPLATES = join(TEMPLATES_DIR, "root");
 
 function registerPartial(name: string, filename: string): void {
   const path = join(ROOT_TEMPLATES, filename);
