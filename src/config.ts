@@ -1,4 +1,5 @@
 import { join } from "node:path";
+import { componentNamesByCategory } from "./components.js";
 import { detectProjectProfile } from "./detect.js";
 
 export const DEFAULTS = {
@@ -127,10 +128,10 @@ const ISSUE_TRACKER_DOCS: Record<string, TrackerDoc> = {
   },
 };
 
-const EXTRAS_GROUPS = ["ci", "contribute", "ai-config", "onboarding"];
+const EXTRAS_GROUPS = componentNamesByCategory("extra");
 
 function resolveIncludes(argv: ScaffoldArgs): Set<string> {
-  let set = new Set(["docs", "scripts", "skills", "hooks"]);
+  let set = new Set(componentNamesByCategory("core"));
   if (argv.only && argv.only !== "all") {
     set = new Set(argv.only.split(",").map((s) => s.trim()));
   }
@@ -144,8 +145,9 @@ function resolveIncludes(argv: ScaffoldArgs): Set<string> {
   for (const e of extrasToAdd) {
     if (EXTRAS_GROUPS.includes(e)) set.add(e);
   }
-  set.add("history");
-  set.add("scratchpad");
+  for (const name of componentNamesByCategory("working-dir")) {
+    set.add(name);
+  }
   if (argv.skipDocs) set.delete("docs");
   if (argv.skipScripts) set.delete("scripts");
   if (argv.skipSkills) set.delete("skills");
