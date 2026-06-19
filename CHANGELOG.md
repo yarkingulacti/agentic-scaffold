@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.9.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.8.0...v1.9.0) (2026-06-19)
+
+
+### Added
+
+* **update:** flag stale memory index when scripts change ([509612e](https://github.com/yarkingulacti/agentic-scaffold/commit/509612ed714af431c95529c6a5843e42d1746aeb))
+
 ## [1.8.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.7.0...v1.8.0) (2026-06-19)
 
 
