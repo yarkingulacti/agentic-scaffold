@@ -160,6 +160,7 @@ function detectAITools(targetDir: string): string[] {
   if (existsSync(join(targetDir, ".gemini")) || existsSync(join(targetDir, "GEMINI.md"))) tools.push("gemini");
   if (existsSync(join(targetDir, ".deepcode"))) tools.push("deepcode");
   if (existsSync(join(targetDir, ".grok"))) tools.push("grok");
+  if (existsSync(join(targetDir, ".omp"))) tools.push("omp");
   if (existsSync(join(targetDir, ".windsurfrules"))) tools.push("windsurf");
   if (existsSync(join(targetDir, ".clinerules"))) tools.push("cline");
   return tools;

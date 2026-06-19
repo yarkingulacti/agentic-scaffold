@@ -73,7 +73,7 @@ const AI_TOOL_TEMPLATES: Record<string, { src: string; dest: string }> = {
   copilot: { src: ".copilot-instructions.md.hbs", dest: ".copilot-instructions.md" },
 };
 
-export const AI_SKILL_COMMAND_TOOLS = ["codex", "claude", "gemini", "deepcode", "grok"];
+export const AI_SKILL_COMMAND_TOOLS = ["codex", "claude", "gemini", "deepcode", "grok", "omp"];
 
 // Tools that also emit per-skill slash-command adapters. Cursor is here in
 // addition to AI_SKILL_COMMAND_TOOLS because it ALSO writes a `.cursorrules`
@@ -93,6 +93,11 @@ export const AI_TOOL_ALIASES: Record<string, string> = {
   deepcode: "deepcode",
   xai: "grok",
   grok: "grok",
+  "oh-my-pi": "omp",
+  ohmypi: "omp",
+  ompsh: "omp",
+  pi: "omp",
+  omp: "omp",
 };
 
 export const AI_CONFIG_TOOLS = [...Object.keys(AI_TOOL_TEMPLATES), ...AI_SKILL_COMMAND_TOOLS];
@@ -182,26 +187,55 @@ function cursorCommandContent(skill: SkillCommand): string {
   ].join("\n");
 }
 
+// Oh My Pi (omp.sh) discovers native slash commands from `.omp/commands/*.md`:
+// frontmatter `description` plus a body the engine expands (`$ARGUMENTS`). This
+// is what makes `/<skill>` work directly, distinct from the `.omp/skills/`
+// adapter that powers discovery, the system-prompt list, and `/skill:<skill>`.
+function ompCommandContent(skill: SkillCommand): string {
+  return [
+    "---",
+    `description: ${yamlString(skill.description)}`,
+    "argument-hint: [optional context]",
+    "---",
+    "",
+    `Read and follow \`.agentic-scaffold/.agents/skills/${skill.name}/SKILL.md\`.`,
+    "",
+    "User context:",
+    "",
+    "$ARGUMENTS",
+    "",
+  ].join("\n");
+}
+
 function skillCommandFiles(tool: string): { dest: string; content: string }[] {
   if (!SKILL_COMMAND_TOOLS.includes(tool)) return [];
-  return listSkillCommands().map((skill) => {
+  return listSkillCommands().flatMap((skill) => {
     const markdown = skillMarkdownContent(skill);
     switch (tool) {
       case "codex":
-        return { dest: join(".agents", "skills", skill.name, "SKILL.md"), content: markdown };
+        return [{ dest: join(".agents", "skills", skill.name, "SKILL.md"), content: markdown }];
       case "claude":
-        return { dest: join(".claude", "skills", skill.name, "SKILL.md"), content: markdown };
+        return [{ dest: join(".claude", "skills", skill.name, "SKILL.md"), content: markdown }];
       case "deepcode":
-        return { dest: join(".deepcode", "skills", skill.name, "SKILL.md"), content: markdown };
+        return [{ dest: join(".deepcode", "skills", skill.name, "SKILL.md"), content: markdown }];
       case "cursor":
-        return { dest: join(".cursor", "commands", `${skill.name}.md`), content: cursorCommandContent(skill) };
+        return [{ dest: join(".cursor", "commands", `${skill.name}.md`), content: cursorCommandContent(skill) }];
       case "grok":
-        return {
-          dest: join(".grok", "skills", skill.name, "SKILL.md"),
-          content: skillMarkdownContent(skill, ["user-invocable: true"]),
-        };
+        return [
+          {
+            dest: join(".grok", "skills", skill.name, "SKILL.md"),
+            content: skillMarkdownContent(skill, ["user-invocable: true"]),
+          },
+        ];
+      case "omp":
+        // Two adapters: the skill (discovery, system-prompt list, `/skill:<skill>`,
+        // `skill://`) AND the native slash command for direct `/<skill>` invocation.
+        return [
+          { dest: join(".omp", "skills", skill.name, "SKILL.md"), content: markdown },
+          { dest: join(".omp", "commands", `${skill.name}.md`), content: ompCommandContent(skill) },
+        ];
       default:
-        return { dest: join(".gemini", "commands", `${skill.name}.toml`), content: geminiCommandContent(skill) };
+        return [{ dest: join(".gemini", "commands", `${skill.name}.toml`), content: geminiCommandContent(skill) }];
     }
   });
 }
