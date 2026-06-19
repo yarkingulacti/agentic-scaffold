@@ -21,7 +21,7 @@ npx @yarkingulacti/agentic-scaffold \
 
 This installs adapters for every generated skill, including `fill-docs`.
 For practical workflows that combine those commands with scaffold files, see
-the 24 recipes in **[Real-life Use Cases](Use-Cases)** and the skill-to-scenario
-map in **[AI Skills](AI-Skills#skill-examples-by-use-case)**.
+the comprehensive 24-playbook **[Real-life Use Cases](Use-Cases)** guide and the
+skill-to-scenario map in **[AI Skills](AI-Skills#skill-examples-by-use-case)**.
 
 Boundary: model providers are not interchangeable with agent clients. The adapter is generated only when a concrete client has a known project-local discovery path. Tools without a documented local skill/command format should not be advertised as supporting `/fill-docs`.

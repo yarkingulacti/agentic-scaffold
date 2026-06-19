@@ -13,7 +13,9 @@ below; the complete catalog follows.
 
 ## Skill examples by use case
 
-The skills are most useful when paired with a concrete repository situation:
+The skills are most useful when paired with a concrete repository situation; the
+linked use-case playbooks include commands, docs to fill first, workflow steps,
+and completion checks:
 
 | Use case | Start with | Then use | Full example |
 |---|---|---|---|
