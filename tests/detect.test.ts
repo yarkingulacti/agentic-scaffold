@@ -301,6 +301,20 @@ describe("detectProjectProfile", () => {
       rmSync(dir, { recursive: true });
     });
 
+    it("detects claude from .claude", () => {
+      const dir = tempDir();
+      mkdirSync(join(dir, ".claude"), { recursive: true });
+      assert.deepEqual(detectProjectProfile(dir).aiTools, ["claude"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects gemini from .gemini or GEMINI.md", () => {
+      const dir = tempDir();
+      mkdirSync(join(dir, ".gemini"), { recursive: true });
+      assert.deepEqual(detectProjectProfile(dir).aiTools, ["gemini"]);
+      rmSync(dir, { recursive: true });
+    });
+
     it("detects windsurf from .windsurfrules", () => {
       const dir = tempDir();
       write(dir, ".windsurfrules");
@@ -320,8 +334,10 @@ describe("detectProjectProfile", () => {
       write(dir, "opencode.json");
       write(dir, ".cursorrules");
       write(dir, ".copilot-instructions.md");
+      mkdirSync(join(dir, ".claude"), { recursive: true });
+      write(dir, "GEMINI.md");
       const profile = detectProjectProfile(dir);
-      assert.deepEqual(profile.aiTools.sort(), ["opencode", "cursor", "copilot"].sort());
+      assert.deepEqual(profile.aiTools.sort(), ["opencode", "cursor", "copilot", "claude", "gemini"].sort());
       rmSync(dir, { recursive: true });
     });
 

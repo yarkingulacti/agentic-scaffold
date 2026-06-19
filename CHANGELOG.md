@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.4.0...v1.5.0) (2026-06-19)
+
+
+### Added
+
+* **ai-config:** generate skill command adapters ([20184c3](https://github.com/yarkingulacti/agentic-scaffold/commit/20184c3ef4f8f5ee735b7740654f5d9d8274f3b8))
+
 ## [1.4.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.3.0...v1.4.0) (2026-06-18)
 
 

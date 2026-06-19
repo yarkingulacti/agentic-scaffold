@@ -385,15 +385,35 @@ describe("scaffold", () => {
     assert.ok(existsSync(p(dir, "opencode.json")));
     assert.ok(!existsSync(p(dir, ".cursorrules")));
     assert.ok(!existsSync(p(dir, ".copilot-instructions.md")));
+    assert.ok(!existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
+    assert.ok(!existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
     rmSync(dir, { recursive: true });
   });
 
-  it("ai-config writes all renderable tools when --ai-tools is omitted", async () => {
+  it("ai-config writes all supported tool configs when --ai-tools is omitted", async () => {
     const dir = tempDir();
     await scaffold({ target: dir, extras: "ai-config", force: true, quiet: true });
     assert.ok(existsSync(p(dir, "opencode.json")));
     assert.ok(existsSync(p(dir, ".cursorrules")));
     assert.ok(existsSync(p(dir, ".copilot-instructions.md")));
+    assert.ok(existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
+    assert.ok(existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("ai-config generates slash-command adapters for skill-aware agents", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, extras: "ai-config", aiTools: "claude,gemini", force: true, quiet: true });
+    const claude = readFileSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md"), "utf-8");
+    const gemini = readFileSync(p(dir, ".gemini", "commands", "fill-docs.toml"), "utf-8");
+    assert.ok(
+      claude.includes('description: "Complete scaffold-generated documentation by interviewing the user about their"'),
+    );
+    assert.ok(claude.includes("Read and follow `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`."));
+    assert.ok(
+      gemini.includes('description = "Complete scaffold-generated documentation by interviewing the user about their"'),
+    );
+    assert.ok(gemini.includes("Read and follow .agentic-scaffold/.agents/skills/fill-docs/SKILL.md."));
     rmSync(dir, { recursive: true });
   });
 

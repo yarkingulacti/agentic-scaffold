@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { HandlebarsData, ScaffoldConfig } from "./config.js";
 import type { WriteOptions } from "./fs-utils.js";
@@ -72,11 +73,87 @@ const AI_TOOL_TEMPLATES: Record<string, { src: string; dest: string }> = {
   copilot: { src: ".copilot-instructions.md.hbs", dest: ".copilot-instructions.md" },
 };
 
-export const AI_CONFIG_TOOLS = Object.keys(AI_TOOL_TEMPLATES);
+export const AI_SKILL_COMMAND_TOOLS = ["claude", "gemini"];
+
+export const AI_CONFIG_TOOLS = [...Object.keys(AI_TOOL_TEMPLATES), ...AI_SKILL_COMMAND_TOOLS];
+
+interface SkillCommand {
+  name: string;
+  description: string;
+}
 
 function selectedAiTools(config: ScaffoldConfig): string[] {
   const requested = config.aiTools.length > 0 ? config.aiTools : AI_CONFIG_TOOLS;
-  return requested.filter((t) => t in AI_TOOL_TEMPLATES);
+  return requested.filter((t) => AI_CONFIG_TOOLS.includes(t));
+}
+
+function listSkillCommands(): SkillCommand[] {
+  const skillsDir = join(TEMPLATES_DIR, "skills");
+  return readdirSync(skillsDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => ({ name: entry.name, description: readSkillDescription(join(skillsDir, entry.name, "SKILL.md")) }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function readSkillDescription(path: string): string {
+  const raw = readFileSync(path, "utf-8");
+  const frontmatter = raw.match(/^---\n([\s\S]*?)\n---/);
+  const frontmatterDescription = frontmatter?.[1].match(/^description:\s*(.+)$/m)?.[1];
+  if (frontmatterDescription) return frontmatterDescription.replace(/^["']|["']$/g, "").trim();
+
+  const lines = raw.split("\n");
+  const firstText = lines.find((line) => line.trim() && !line.startsWith("#"));
+  return firstText?.trim() ?? "Run this agentic-scaffold skill.";
+}
+
+function yamlString(value: string): string {
+  return JSON.stringify(value);
+}
+
+function tomlString(value: string): string {
+  return JSON.stringify(value);
+}
+
+function tomlMultiline(value: string): string {
+  return `"""\n${value.replaceAll('"""', '\\"\\"\\"')}\n"""`;
+}
+
+function claudeSkillContent(skill: SkillCommand): string {
+  return [
+    "---",
+    `description: ${yamlString(skill.description)}`,
+    "argument-hint: [optional context]",
+    "disable-model-invocation: true",
+    "---",
+    "",
+    `Read and follow \`.agentic-scaffold/.agents/skills/${skill.name}/SKILL.md\`.`,
+    "",
+    "User context:",
+    "",
+    "$ARGUMENTS",
+    "",
+  ].join("\n");
+}
+
+function geminiCommandContent(skill: SkillCommand): string {
+  const prompt = [
+    `Read and follow .agentic-scaffold/.agents/skills/${skill.name}/SKILL.md.`,
+    "",
+    "User context:",
+    "{{args}}",
+    "",
+  ].join("\n");
+  return [`description = ${tomlString(skill.description)}`, "", `prompt = ${tomlMultiline(prompt)}`, ""].join("\n");
+}
+
+function skillCommandFiles(tool: string): { dest: string; content: string }[] {
+  if (!AI_SKILL_COMMAND_TOOLS.includes(tool)) return [];
+  return listSkillCommands().map((skill) => {
+    if (tool === "claude") {
+      return { dest: join(".claude", "skills", skill.name, "SKILL.md"), content: claudeSkillContent(skill) };
+    }
+    return { dest: join(".gemini", "commands", `${skill.name}.toml`), content: geminiCommandContent(skill) };
+  });
 }
 
 function aiConfigComponent(): RenderFns {
@@ -86,14 +163,25 @@ function aiConfigComponent(): RenderFns {
       const writeOpts = { force: config.force, interactive: config.interactive, ...opts };
       const results: string[] = [];
       for (const tool of selectedAiTools(config)) {
-        const { src, dest } = AI_TOOL_TEMPLATES[tool];
-        const content = renderTemplate(join(baseDir, src), hbData);
-        results.push(await write(join(config.target, dest), content, writeOpts));
+        const template = AI_TOOL_TEMPLATES[tool];
+        if (template) {
+          const content = renderTemplate(join(baseDir, template.src), hbData);
+          results.push(await write(join(config.target, template.dest), content, writeOpts));
+        }
+        for (const file of skillCommandFiles(tool)) {
+          results.push(await write(join(config.target, file.dest), file.content, writeOpts));
+        }
       }
       return results;
     },
     dryRun: (config) =>
-      selectedAiTools(config).map((tool) => ({ dest: join(".", AI_TOOL_TEMPLATES[tool].dest), type: "file" as const })),
+      selectedAiTools(config).flatMap((tool) => {
+        const template = AI_TOOL_TEMPLATES[tool];
+        const entries = template ? [{ dest: join(".", template.dest), type: "file" as const }] : [];
+        return entries.concat(
+          skillCommandFiles(tool).map((file) => ({ dest: join(".", file.dest), type: "file" as const })),
+        );
+      }),
   };
 }
 
