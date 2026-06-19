@@ -305,3 +305,11 @@ high-volume command output to cut agent token usage; `agentic-scaffold` uses it
 locally (`.rtk/filters.toml`) and ships an opt-in RTK extra (`--extras rtk`) so
 generated projects can adopt the same workflow. Thanks to the RTK maintainers
 for the tooling.
+
+The generated memory pipeline's hybrid search borrows *concepts* — similarity
+search, hybrid/weighted scoring, vector analytics — from
+[vectorai](https://github.com/vector-ai/vectorai) (now succeeded by Relevance
+AI). It takes **no dependency** on it: the scaffold's BM25 ranker is a pure,
+zero-dep, offline Node implementation (see
+[docs/plans/12-vector-memory-search.md](docs/plans/12-vector-memory-search.md)).
+Thanks to the vectorai authors for the ideas.
