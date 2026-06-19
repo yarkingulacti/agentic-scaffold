@@ -43,7 +43,7 @@ describe("CLI", () => {
       assert.ok(out.includes("Zero-config: auto-detect"));
       assert.ok(out.includes("--force"));
       assert.ok(out.includes("--ci-provider github"));
-      assert.ok(out.includes("--ai-tools claude,gemini"));
+      assert.ok(out.includes("Generate mainstream provider skill"));
       assert.ok(out.includes("-i"));
     });
 
@@ -91,6 +91,9 @@ describe("CLI", () => {
       assert.ok(existsSync(p(dir, "opencode.json")));
       assert.ok(existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
       assert.ok(existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
+      assert.ok(existsSync(p(dir, ".agents", "skills", "fill-docs", "SKILL.md")));
+      assert.ok(existsSync(p(dir, ".deepcode", "skills", "fill-docs", "SKILL.md")));
+      assert.ok(existsSync(p(dir, ".grok", "skills", "fill-docs", "SKILL.md")));
       assert.equal(existsSync(p(dir, S, "contribute")), false);
       assert.equal(existsSync(p(dir, S, "onboarding")), false);
       assert.equal(existsSync(p(dir, ".rtk", "filters.toml")), false);
@@ -107,6 +110,9 @@ describe("CLI", () => {
       assert.ok(existsSync(p(dir, "opencode.json")));
       assert.ok(existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
       assert.ok(existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
+      assert.ok(existsSync(p(dir, ".agents", "skills", "fill-docs", "SKILL.md")));
+      assert.ok(existsSync(p(dir, ".deepcode", "skills", "fill-docs", "SKILL.md")));
+      assert.ok(existsSync(p(dir, ".grok", "skills", "fill-docs", "SKILL.md")));
       assert.ok(existsSync(p(dir, S, "contribute", "CONTRIBUTING.md")));
       assert.ok(existsSync(p(dir, S, "onboarding", "ONBOARDING.md")));
       assert.ok(existsSync(p(dir, ".rtk", "filters.toml")));
@@ -276,8 +282,10 @@ describe("CLI", () => {
 
     it("prints slash command availability when skill-aware AI configs are included", () => {
       const dir = tempDir();
-      const out = run(`--target ${dir} --force --extras ai-config --ai-tools claude,gemini --skip-docs --skip-scripts`);
-      assert.ok(out.includes("Slash command adapters installed for claude, gemini: /fill-docs"));
+      const out = run(
+        `--target ${dir} --force --extras ai-config --ai-tools openai,anthropic,google,deepseek,grok --skip-docs --skip-scripts`,
+      );
+      assert.ok(out.includes("Skill adapters installed for codex, claude, gemini, deepcode, grok: /fill-docs"));
       assert.ok(out.includes("/commands reload"));
       rmSync(dir, { recursive: true });
     });

@@ -1,5 +1,11 @@
 import { readFileSync } from "node:fs";
-import { AI_SKILL_COMMAND_TOOLS, ALWAYS_INCLUDED, COMPONENTS, type ComponentSpec } from "./components.js";
+import {
+  AI_SKILL_COMMAND_TOOLS,
+  ALWAYS_INCLUDED,
+  COMPONENTS,
+  type ComponentSpec,
+  normalizeAiToolName,
+} from "./components.js";
 import type { HandlebarsData, IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
 import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.js";
 import type { WriteOptions, WrittenEntry } from "./fs-utils.js";
@@ -23,7 +29,7 @@ function out(config: ScaffoldConfig, ...args: unknown[]): void {
 
 function selectedSkillCommandTools(config: ScaffoldConfig): string[] {
   if (!config.include.has("ai-config")) return [];
-  const requested = config.aiTools.length > 0 ? config.aiTools : AI_SKILL_COMMAND_TOOLS;
+  const requested = config.aiTools.length > 0 ? config.aiTools.map(normalizeAiToolName) : AI_SKILL_COMMAND_TOOLS;
   return requested.filter((tool) => AI_SKILL_COMMAND_TOOLS.includes(tool));
 }
 
@@ -159,14 +165,14 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
       out(config, `   .agentic-scaffold/.agents/skills/fill-docs/SKILL.md`);
       const commandTools = selectedSkillCommandTools(config);
       if (commandTools.length > 0) {
-        out(config, `   ${style.dim(`Slash command adapters installed for ${commandTools.join(", ")}: /fill-docs`)}`);
+        out(config, `   ${style.dim(`Skill adapters installed for ${commandTools.join(", ")}: /fill-docs`)}`);
         if (commandTools.includes("gemini")) {
           out(config, `   ${style.dim("If Gemini CLI is already running, use /commands reload.")}`);
         }
       } else {
         out(
           config,
-          `   ${style.dim("For /fill-docs autocomplete, scaffold AI config with --extras ai-config --ai-tools claude,gemini.")}`,
+          `   ${style.dim("For /fill-docs autocomplete, scaffold AI config with --extras ai-config --ai-tools openai,anthropic,google,deepseek,grok.")}`,
         );
       }
     }

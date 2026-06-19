@@ -9,7 +9,7 @@ it only informs rendered content and pre-filled prompts.
 | 🧬 **Languages** | JS/TS, Python, Go, Rust, C++ (CMake/meson/conan), Godot, Swift, Kotlin, Java, Dart — scanned recursively across monorepo subpackages |
 | 📦 **Package manager** | npm, yarn, pnpm, pip, poetry (lockfiles) |
 | 🔧 **CI provider** | GitHub Actions, GitLab CI, CircleCI (config files) |
-| 🤝 **AI tools** | opencode, Cursor, Copilot, Claude Code, Gemini CLI, Windsurf, Cline (config files) |
+| 🤝 **AI tools** | opencode, Cursor, Copilot, Codex/OpenAI, Claude Code/Anthropic, Gemini CLI/Google, Deep Code/DeepSeek, Grok/xAI, Windsurf, Cline (config files) |
 | 🎫 **Issue tracker** | GitHub Issues (`.github/` directory) |
 | ⚙️ **Script runtime** | Node.js when `package.json` is present; otherwise still defaults to Node.js because the shipped memory scripts are `.mjs` files |
 
@@ -30,7 +30,7 @@ Any detected value can be overridden from the CLI:
 npx @yarkingulacti/agentic-scaffold \
   --package-manager pnpm \
   --ci-provider github \
-  --ai-tools claude,gemini,opencode,cursor \
+  --ai-tools openai,anthropic,google,deepseek,grok \
   --issue-tracker github \
   --languages ts,cpp,godot,swift
 ```

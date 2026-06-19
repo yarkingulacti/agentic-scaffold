@@ -155,8 +155,11 @@ function detectAITools(targetDir: string): string[] {
   if (existsSync(join(targetDir, "opencode.json"))) tools.push("opencode");
   if (existsSync(join(targetDir, ".cursorrules"))) tools.push("cursor");
   if (existsSync(join(targetDir, ".copilot-instructions.md"))) tools.push("copilot");
+  if (existsSync(join(targetDir, ".agents", "skills")) || existsSync(join(targetDir, ".codex"))) tools.push("codex");
   if (existsSync(join(targetDir, ".claude"))) tools.push("claude");
   if (existsSync(join(targetDir, ".gemini")) || existsSync(join(targetDir, "GEMINI.md"))) tools.push("gemini");
+  if (existsSync(join(targetDir, ".deepcode"))) tools.push("deepcode");
+  if (existsSync(join(targetDir, ".grok"))) tools.push("grok");
   if (existsSync(join(targetDir, ".windsurfrules"))) tools.push("windsurf");
   if (existsSync(join(targetDir, ".clinerules"))) tools.push("cline");
   return tools;

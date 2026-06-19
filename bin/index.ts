@@ -21,7 +21,7 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     .example("$0 --ci-provider github", "Override auto-detected CI provider")
     .example("$0 --extras ci,onboarding,rtk", "Scaffold CI, onboarding, and RTK token filters")
     .example("$0 --ai-tools all", "Generate configs for all known AI tools")
-    .example("$0 --ai-tools claude,gemini", "Generate project-local /skill commands for supported agents")
+    .example("$0 --ai-tools openai,anthropic,google,deepseek,grok", "Generate mainstream provider skill adapters")
     .example("$0 -i", "Interactive mode with prompts")
     .example("$0 -n", "Dry-run: preview files without writing")
     .example("$0 --json", "Output results as JSON")
@@ -130,7 +130,8 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     })
     .option("ai-tools", {
       type: "string",
-      description: "Comma-separated AI tools to configure: opencode,cursor,copilot,claude,gemini",
+      description:
+        "Comma-separated AI tools/providers to configure: opencode,cursor,copilot,codex/openai,claude/anthropic,gemini/google,deepcode/deepseek,grok/xai",
     })
     .option("languages", {
       type: "string",
