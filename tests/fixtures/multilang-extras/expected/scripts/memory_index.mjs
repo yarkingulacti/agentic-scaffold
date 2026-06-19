@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
-import { contentHash, findFiles, loadIndex, rel, saveIndex, splitMarkdown, tokenize, INDEX_PATH } from "./memory_common.mjs";
+import { buildIndexPayload, contentHash, findFiles, rel, saveIndex, splitMarkdown, termFrequencies, tokenize, INDEX_PATH } from "./memory_common.mjs";
 
 function main() {
   const args = process.argv.slice(2);
@@ -28,12 +28,13 @@ function main() {
         chunkIndex: i,
         content,
         contentHash: hash,
-        tokens,
+        termFreq: termFrequencies(tokens),
+        length: tokens.length,
       });
     }
   }
 
-  saveIndex(newChunks, indexPath);
+  saveIndex(buildIndexPayload(newChunks), indexPath);
   console.log(`indexed ${newChunks.length} chunks from ${files.length} markdown files`);
   console.log(`index: ${indexPath}`);
 }

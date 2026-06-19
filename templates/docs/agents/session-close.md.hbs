@@ -15,7 +15,7 @@ Otherwise, follow the steps below:
 3. Create or update `.agentic-scaffold/.history/DD.MM.YYYY/README.md` with the master work title,
    summary, changed files, verification, and remaining risk.
 4. Re-index Markdown memory with `.agentic-scaffold/scripts/memory_index.mjs` so `.agentic-scaffold/.history/` is in
-   the keyword index.
+   the search index.
 5. Update the related `.agentic-scaffold/.scratchpad/` status lines.
 6. Create a Conventional Commit under the master work title.
 7. Push a `feature/...`, `bugfix/...`, `docs/...`, or similar branch to the

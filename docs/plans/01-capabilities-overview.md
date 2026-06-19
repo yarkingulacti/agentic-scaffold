@@ -34,7 +34,7 @@ Pre-built workflows organized under `.agents/skills/`, each self-contained in a
 | `improve-codebase-architecture` | Find deepening opportunities, produce HTML report with before/after diagrams |
 | `ubiquitous-language` | Extract DDD-style glossary from conversation, flag ambiguities |
 | `status` | Compare current work against roadmap |
-| `today` | Create today's plan from roadmap, scratchpad, history, and vector memory |
+| `today` | Create today's plan from roadmap, scratchpad, history, and indexed memory |
 | `weekly` | Create weekly project summary |
 | `monthly` | Create monthly project summary |
 | `summary` | Create all-time project summary |
@@ -61,10 +61,10 @@ understand why past decisions were made and does not re-litigate them.
 
 ## 5. Persistent Memory
 
-`scripts/` — A local vector database for project knowledge:
+`scripts/` — A local BM25 search index for project knowledge:
 
-- `memory_index.mjs` — Indexes all project Markdown into a flat-file keyword index.
-- `memory_search.mjs` — Search by query with keyword overlap scoring.
+- `memory_index.mjs` — Indexes all project Markdown into a flat-file BM25 index (per-chunk term frequencies + corpus document frequencies).
+- `memory_search.mjs` — Search by query with BM25 relevance ranking.
 - `memory_bundle.mjs` — Write a focused Markdown bundle from search results
 
 The agent can retrieve relevant context across sessions without human hand-holding.
