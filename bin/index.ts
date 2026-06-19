@@ -131,7 +131,7 @@ function scaffoldBuilder(y: ReturnType<typeof yargs>) {
     .option("ai-tools", {
       type: "string",
       description:
-        "Comma-separated AI tools/providers to configure: opencode,cursor,copilot,codex/openai,claude/anthropic,gemini/google,deepcode/deepseek,grok/xai",
+        "Comma-separated AI tools/providers to configure: opencode,cursor,copilot,codex/openai,claude/anthropic,gemini/google,deepcode/deepseek,grok/xai,omp",
     })
     .option("languages", {
       type: "string",

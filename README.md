@@ -226,7 +226,7 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 |-------|-------------|
 | `ci` | CI/CD templates for the detected or requested provider |
 | `contribute` | Contribution guide, PR template, and review guidance |
-| `ai-config` | AI tool config files and skill-command adapters: `opencode.json`, `.cursorrules`, `.cursor/commands/*.md`, Copilot instructions, `.agents/skills/*/SKILL.md`, `.claude/skills/*/SKILL.md`, `.gemini/commands/*.toml`, `.deepcode/skills/*/SKILL.md`, `.grok/skills/*/SKILL.md` |
+| `ai-config` | AI tool config files and skill-command adapters: `opencode.json`, `.cursorrules`, `.cursor/commands/*.md`, Copilot instructions, `.agents/skills/*/SKILL.md`, `.claude/skills/*/SKILL.md`, `.gemini/commands/*.toml`, `.deepcode/skills/*/SKILL.md`, `.grok/skills/*/SKILL.md`, `.omp/skills/*/SKILL.md`, `.omp/commands/*.md` |
 | `onboarding` | Human onboarding guide and setup helper |
 | `rtk` | Project-local RTK token-cost filters in `.rtk/filters.toml` |
 | `all` | Include every extras group |

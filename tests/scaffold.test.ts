@@ -452,6 +452,29 @@ describe("scaffold", () => {
     rmSync(dir, { recursive: true });
   });
 
+  it("ai-config installs omp skill + native slash-command adapters", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, extras: "ai-config", aiTools: "omp", force: true, quiet: true });
+    // Oh My Pi gets BOTH: a discoverable skill (system-prompt list, skill://,
+    // /skill:fill-docs) AND a native slash command so /fill-docs works directly.
+    const skill = readFileSync(p(dir, ".omp", "skills", "fill-docs", "SKILL.md"), "utf-8");
+    assert.ok(skill.includes('name: "fill-docs"'));
+    assert.ok(skill.includes("Read and follow `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`."));
+    const command = readFileSync(p(dir, ".omp", "commands", "fill-docs.md"), "utf-8");
+    assert.ok(command.startsWith("---\n"));
+    assert.ok(command.includes("Read and follow `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`."));
+    assert.ok(command.includes("$ARGUMENTS"));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("resolves omp tool aliases to the omp adapter set", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, extras: "ai-config", aiTools: "oh-my-pi", force: true, quiet: true });
+    assert.ok(existsSync(p(dir, ".omp", "skills", "fill-docs", "SKILL.md")));
+    assert.ok(existsSync(p(dir, ".omp", "commands", "fill-docs.md")));
+    rmSync(dir, { recursive: true });
+  });
+
   it("rejects an unsupported issue tracker", () => {
     const dir = tempDir();
     assert.throws(

@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.12.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.11.3...v1.12.0) (2026-06-19)
+
+
+### Added
+
+* **ai-config:** generate Oh My Pi (omp.sh) skill + slash-command adapters ([bd8c623](https://github.com/yarkingulacti/agentic-scaffold/commit/bd8c62378ddfaba8f2673acd03e05b65c1cbf0f1))
+
 ## [1.11.3](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.11.2...v1.11.3) (2026-06-19)
 
 

@@ -336,6 +336,13 @@ describe("detectProjectProfile", () => {
       rmSync(dir, { recursive: true });
     });
 
+    it("detects omp from .omp", () => {
+      const dir = tempDir();
+      mkdirSync(join(dir, ".omp"), { recursive: true });
+      assert.deepEqual(detectProjectProfile(dir).aiTools, ["omp"]);
+      rmSync(dir, { recursive: true });
+    });
+
     it("detects windsurf from .windsurfrules", () => {
       const dir = tempDir();
       write(dir, ".windsurfrules");

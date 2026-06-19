@@ -83,7 +83,7 @@ npx @yarkingulacti/agentic-scaffold un --force
 | `-f, --force` | boolean | Overwrite existing files |
 | `--package-manager` | `npm` \| `yarn` \| `pnpm` \| `pip` \| `poetry` \| `go-mod` \| `cargo` | Package manager (overrides auto-detection) |
 | `--ci-provider` | `github` \| `gitlab` \| `circleci` | CI provider (overrides auto-detection) |
-| `--ai-tools` | string | Comma-separated AI tools/providers to configure: `opencode,cursor,copilot,codex/openai,claude/anthropic,gemini/google,deepcode/deepseek,grok/xai` |
+| `--ai-tools` | string | Comma-separated AI tools/providers to configure: `opencode,cursor,copilot,codex/openai,claude/anthropic,gemini/google,deepcode/deepseek,grok/xai,omp` |
 | `--languages` | string | Comma-separated languages, overrides auto-detection: `ts,js,python,go,rust,cpp,godot,swift,kotlin,java,dart` |
 | `--script-language` | `node` | Memory script runtime. Only `node` is supported because the shipped scripts are `.mjs` files. |
 
