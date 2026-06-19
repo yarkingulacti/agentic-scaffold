@@ -301,6 +301,13 @@ describe("detectProjectProfile", () => {
       rmSync(dir, { recursive: true });
     });
 
+    it("detects codex from .agents skills", () => {
+      const dir = tempDir();
+      mkdirSync(join(dir, ".agents", "skills"), { recursive: true });
+      assert.deepEqual(detectProjectProfile(dir).aiTools, ["codex"]);
+      rmSync(dir, { recursive: true });
+    });
+
     it("detects claude from .claude", () => {
       const dir = tempDir();
       mkdirSync(join(dir, ".claude"), { recursive: true });
@@ -312,6 +319,20 @@ describe("detectProjectProfile", () => {
       const dir = tempDir();
       mkdirSync(join(dir, ".gemini"), { recursive: true });
       assert.deepEqual(detectProjectProfile(dir).aiTools, ["gemini"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects deepcode from .deepcode", () => {
+      const dir = tempDir();
+      mkdirSync(join(dir, ".deepcode"), { recursive: true });
+      assert.deepEqual(detectProjectProfile(dir).aiTools, ["deepcode"]);
+      rmSync(dir, { recursive: true });
+    });
+
+    it("detects grok from .grok", () => {
+      const dir = tempDir();
+      mkdirSync(join(dir, ".grok"), { recursive: true });
+      assert.deepEqual(detectProjectProfile(dir).aiTools, ["grok"]);
       rmSync(dir, { recursive: true });
     });
 
@@ -336,8 +357,14 @@ describe("detectProjectProfile", () => {
       write(dir, ".copilot-instructions.md");
       mkdirSync(join(dir, ".claude"), { recursive: true });
       write(dir, "GEMINI.md");
+      mkdirSync(join(dir, ".agents", "skills"), { recursive: true });
+      mkdirSync(join(dir, ".deepcode"), { recursive: true });
+      mkdirSync(join(dir, ".grok"), { recursive: true });
       const profile = detectProjectProfile(dir);
-      assert.deepEqual(profile.aiTools.sort(), ["opencode", "cursor", "copilot", "claude", "gemini"].sort());
+      assert.deepEqual(
+        profile.aiTools.sort(),
+        ["opencode", "cursor", "copilot", "codex", "claude", "gemini", "deepcode", "grok"].sort(),
+      );
       rmSync(dir, { recursive: true });
     });
 

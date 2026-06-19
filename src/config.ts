@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { AI_CONFIG_TOOLS, componentNamesByCategory } from "./components.js";
+import { AI_CONFIG_TOOLS, componentNamesByCategory, normalizeAiToolName } from "./components.js";
 import { detectProjectProfile } from "./detect.js";
 
 export const DEFAULTS = {
@@ -175,7 +175,7 @@ function resolveAiTools(value: string): string[] {
     .map((s) => s.trim())
     .filter(Boolean);
   if (tools.includes("all")) return [...AI_CONFIG_TOOLS];
-  return tools;
+  return tools.map(normalizeAiToolName);
 }
 // Explicit --languages always wins over detection; comma-separated, trimmed.
 function resolveLanguages(value: string | undefined, detected: string[]): string[] {

@@ -24,7 +24,7 @@ npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
 npx @yarkingulacti/agentic-scaffold --languages ts,cpp,godot,swift
 
 # Generate AI tool configs and project-local skill/slash commands
-npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools claude,gemini,opencode,cursor
+npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools openai,anthropic,google,deepseek,grok
 
 # Generate extras such as CI, contribution docs, AI config, RTK filters, or onboarding
 npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding,rtk
@@ -83,7 +83,7 @@ npx @yarkingulacti/agentic-scaffold un --force
 | `-f, --force` | boolean | Overwrite existing files |
 | `--package-manager` | `npm` \| `yarn` \| `pnpm` \| `pip` \| `poetry` \| `go-mod` \| `cargo` | Package manager (overrides auto-detection) |
 | `--ci-provider` | `github` \| `gitlab` \| `circleci` | CI provider (overrides auto-detection) |
-| `--ai-tools` | string | Comma-separated AI tools to configure: `opencode,cursor,copilot,claude,gemini` |
+| `--ai-tools` | string | Comma-separated AI tools/providers to configure: `opencode,cursor,copilot,codex/openai,claude/anthropic,gemini/google,deepcode/deepseek,grok/xai` |
 | `--languages` | string | Comma-separated languages, overrides auto-detection: `ts,js,python,go,rust,cpp,godot,swift,kotlin,java,dart` |
 | `--script-language` | `node` | Memory script runtime. Only `node` is supported because the shipped scripts are `.mjs` files. |
 

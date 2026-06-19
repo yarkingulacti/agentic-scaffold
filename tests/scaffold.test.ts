@@ -387,6 +387,9 @@ describe("scaffold", () => {
     assert.ok(!existsSync(p(dir, ".copilot-instructions.md")));
     assert.ok(!existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
     assert.ok(!existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
+    assert.ok(!existsSync(p(dir, ".agents", "skills", "fill-docs", "SKILL.md")));
+    assert.ok(!existsSync(p(dir, ".deepcode", "skills", "fill-docs", "SKILL.md")));
+    assert.ok(!existsSync(p(dir, ".grok", "skills", "fill-docs", "SKILL.md")));
     rmSync(dir, { recursive: true });
   });
 
@@ -398,18 +401,37 @@ describe("scaffold", () => {
     assert.ok(existsSync(p(dir, ".copilot-instructions.md")));
     assert.ok(existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
     assert.ok(existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
+    assert.ok(existsSync(p(dir, ".agents", "skills", "fill-docs", "SKILL.md")));
+    assert.ok(existsSync(p(dir, ".deepcode", "skills", "fill-docs", "SKILL.md")));
+    assert.ok(existsSync(p(dir, ".grok", "skills", "fill-docs", "SKILL.md")));
     rmSync(dir, { recursive: true });
   });
 
-  it("ai-config generates slash-command adapters for skill-aware agents", async () => {
+  it("ai-config generates skill adapters for mainstream provider agents", async () => {
     const dir = tempDir();
-    await scaffold({ target: dir, extras: "ai-config", aiTools: "claude,gemini", force: true, quiet: true });
+    await scaffold({
+      target: dir,
+      extras: "ai-config",
+      aiTools: "openai,anthropic,google,deepseek,grok",
+      force: true,
+      quiet: true,
+    });
+    const codex = readFileSync(p(dir, ".agents", "skills", "fill-docs", "SKILL.md"), "utf-8");
     const claude = readFileSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md"), "utf-8");
     const gemini = readFileSync(p(dir, ".gemini", "commands", "fill-docs.toml"), "utf-8");
-    assert.ok(
-      claude.includes('description: "Complete scaffold-generated documentation by interviewing the user about their"'),
-    );
-    assert.ok(claude.includes("Read and follow `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`."));
+    const deepcode = readFileSync(p(dir, ".deepcode", "skills", "fill-docs", "SKILL.md"), "utf-8");
+    const grok = readFileSync(p(dir, ".grok", "skills", "fill-docs", "SKILL.md"), "utf-8");
+
+    for (const content of [codex, claude, deepcode, grok]) {
+      assert.ok(content.includes('name: "fill-docs"'));
+      assert.ok(
+        content.includes(
+          'description: "Complete scaffold-generated documentation by interviewing the user about their"',
+        ),
+      );
+      assert.ok(content.includes("Read and follow `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`."));
+    }
+    assert.ok(grok.includes("user-invocable: true"));
     assert.ok(
       gemini.includes('description = "Complete scaffold-generated documentation by interviewing the user about their"'),
     );

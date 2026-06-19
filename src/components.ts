@@ -73,9 +73,27 @@ const AI_TOOL_TEMPLATES: Record<string, { src: string; dest: string }> = {
   copilot: { src: ".copilot-instructions.md.hbs", dest: ".copilot-instructions.md" },
 };
 
-export const AI_SKILL_COMMAND_TOOLS = ["claude", "gemini"];
+export const AI_SKILL_COMMAND_TOOLS = ["codex", "claude", "gemini", "deepcode", "grok"];
+
+export const AI_TOOL_ALIASES: Record<string, string> = {
+  openai: "codex",
+  codex: "codex",
+  anthropic: "claude",
+  anthrophic: "claude",
+  claude: "claude",
+  google: "gemini",
+  gemini: "gemini",
+  deepseek: "deepcode",
+  deepcode: "deepcode",
+  xai: "grok",
+  grok: "grok",
+};
 
 export const AI_CONFIG_TOOLS = [...Object.keys(AI_TOOL_TEMPLATES), ...AI_SKILL_COMMAND_TOOLS];
+
+export function normalizeAiToolName(tool: string): string {
+  return AI_TOOL_ALIASES[tool] ?? tool;
+}
 
 interface SkillCommand {
   name: string;
@@ -84,7 +102,7 @@ interface SkillCommand {
 
 function selectedAiTools(config: ScaffoldConfig): string[] {
   const requested = config.aiTools.length > 0 ? config.aiTools : AI_CONFIG_TOOLS;
-  return requested.filter((t) => AI_CONFIG_TOOLS.includes(t));
+  return requested.map(normalizeAiToolName).filter((t) => AI_CONFIG_TOOLS.includes(t));
 }
 
 function listSkillCommands(): SkillCommand[] {
@@ -118,12 +136,13 @@ function tomlMultiline(value: string): string {
   return `"""\n${value.replaceAll('"""', '\\"\\"\\"')}\n"""`;
 }
 
-function claudeSkillContent(skill: SkillCommand): string {
+function skillMarkdownContent(skill: SkillCommand, extraFrontmatter: string[] = []): string {
   return [
     "---",
+    `name: ${yamlString(skill.name)}`,
     `description: ${yamlString(skill.description)}`,
     "argument-hint: [optional context]",
-    "disable-model-invocation: true",
+    ...extraFrontmatter,
     "---",
     "",
     `Read and follow \`.agentic-scaffold/.agents/skills/${skill.name}/SKILL.md\`.`,
@@ -149,10 +168,22 @@ function geminiCommandContent(skill: SkillCommand): string {
 function skillCommandFiles(tool: string): { dest: string; content: string }[] {
   if (!AI_SKILL_COMMAND_TOOLS.includes(tool)) return [];
   return listSkillCommands().map((skill) => {
-    if (tool === "claude") {
-      return { dest: join(".claude", "skills", skill.name, "SKILL.md"), content: claudeSkillContent(skill) };
+    const markdown = skillMarkdownContent(skill);
+    switch (tool) {
+      case "codex":
+        return { dest: join(".agents", "skills", skill.name, "SKILL.md"), content: markdown };
+      case "claude":
+        return { dest: join(".claude", "skills", skill.name, "SKILL.md"), content: markdown };
+      case "deepcode":
+        return { dest: join(".deepcode", "skills", skill.name, "SKILL.md"), content: markdown };
+      case "grok":
+        return {
+          dest: join(".grok", "skills", skill.name, "SKILL.md"),
+          content: skillMarkdownContent(skill, ["user-invocable: true"]),
+        };
+      default:
+        return { dest: join(".gemini", "commands", `${skill.name}.toml`), content: geminiCommandContent(skill) };
     }
-    return { dest: join(".gemini", "commands", `${skill.name}.toml`), content: geminiCommandContent(skill) };
   });
 }
 

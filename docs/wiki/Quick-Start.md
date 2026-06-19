@@ -42,7 +42,7 @@ Pick the level of control you want — all three produce the same scaffold shape
 1. Fill in `.agentic-scaffold/BUSINESS_LOGIC.md` with your product domain.
 2. Run `npm install` / `pnpm install` for your project's actual dependencies.
 3. Run `node .agentic-scaffold/scripts/memory_index.mjs` to index your project Markdown (no additional setup needed).
-4. If you scaffolded AI config for Claude Code or Gemini CLI, use `/fill-docs`; it is installed as a project-local command with a description for command help/autocomplete. If Gemini CLI is already open, run `/commands reload`.
+4. If you scaffolded AI config for a supported skill-aware agent, use its generated skill command. Claude Code, Gemini CLI, Deep Code, and Grok expose `/fill-docs`; Codex exposes `$fill-docs` or its skills picker. If Gemini CLI is already open, run `/commands reload`.
 5. If you did not scaffold AI config, use the generated skill file directly: `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`.
 6. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
 7. After upgrading this package, run `npx @yarkingulacti/agentic-scaffold update --dry-run` to preview generated-template changes before applying them.
