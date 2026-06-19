@@ -4,7 +4,7 @@
 
 **Give any repository an AI-native foundation in a single command.**
 
-Agent config · domain docs · an ADR system · a memory pipeline · 24 reusable skills · lifecycle hooks — all dropped into one tidy directory, none of your files touched.
+Agent config · domain docs · an ADR system · a memory pipeline · 31 reusable skills · lifecycle hooks — all dropped into one tidy directory, none of your files touched.
 
 [![npm version](https://img.shields.io/npm/v/%40yarkingulacti%2Fagentic-scaffold?logo=npm&label=version)](https://www.npmjs.com/package/@yarkingulacti/agentic-scaffold)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -180,7 +180,7 @@ project/
     │   ├── engineering/README.md
     │   └── product/README.md
     ├── .agents/
-    │   ├── skills/               # Agent skill definitions (24 skills)
+    │   ├── skills/               # Agent skill definitions (31 skills)
     │   └── hooks/                # Pre/post lifecycle hooks
     ├── scripts/                  # Markdown memory indexing pipeline
     ├── .scratchpad/              # Local detailed planning
@@ -217,7 +217,7 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
 | `scripts` | Node.js memory indexing pipeline (flat-file BM25 search index) | `--skip-scripts` |
-| `skills` | 24 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, superpowers, …) | `--skip-skills` |
+| `skills` | 31 agent skills (implement, bugfix, diagnose, tdd, superpowers, frontend-design, security-guidance, code-review, refactoring, …) | `--skip-skills` |
 | `hooks` | Pre/post lifecycle hooks (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
 
 **Extras** are opt-in via `--extras` so zero-config mode stays conservative:
@@ -321,3 +321,17 @@ by Jesse Vincent and the team at [Prime Radiant](https://primeradiant.com)
 the full upstream plugin; the same attribution travels in the scaffolded
 `.agentic-scaffold/.agents/skills/superpowers/SKILL.md`. Thanks to the
 Superpowers maintainers for the methodology.
+
+Seven further skills are adapted from community and Anthropic sources, each
+credited in its own `SKILL.md` and documented on the
+[AI Skills wiki page](docs/wiki/AI-Skills.md): **frontend-design** and
+**mcp-builder** from [anthropics/skills](https://github.com/anthropics/skills)
+(MIT); **security-guidance** and **code-review** from Anthropic's Claude Code
+plugins ([security-guidance](https://github.com/anthropics/claude-code/tree/main/plugins/security-guidance),
+[code-review](https://claude.com/plugins/code-review)); **playwright** from
+[lackeyjb/playwright-skill](https://github.com/lackeyjb/playwright-skill) (MIT);
+**refactoring** from [citypaul/.dotfiles](https://github.com/citypaul/.dotfiles)
+(Paul Hammond); and **claude-mem** from
+[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) (Apache-2.0).
+Each is a condensed skill capturing the upstream methodology — install the
+originals for their full implementations. Thanks to all of these authors.

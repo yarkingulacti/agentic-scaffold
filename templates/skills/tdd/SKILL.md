@@ -88,7 +88,7 @@ Rules:
 
 ### 4. Refactor
 
-After all tests pass, look for [refactor candidates](refactoring.md):
+After all tests pass, assess refactoring with the dedicated `refactoring` skill (`.agentic-scaffold/.agents/skills/refactoring/SKILL.md`). Look for:
 
 - [ ] Extract duplication
 - [ ] Deepen modules (move complexity behind simple interfaces)
