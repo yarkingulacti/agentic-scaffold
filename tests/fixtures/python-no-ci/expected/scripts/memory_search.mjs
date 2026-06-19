@@ -1,33 +1,5 @@
 #!/usr/bin/env node
-import { loadIndex, tokenize, INDEX_PATH } from "./memory_common.mjs";
-
-function scoreTokens(queryTokens, chunkTokens) {
-  if (chunkTokens.length === 0) return 0;
-  const set = new Set(chunkTokens);
-  let matches = 0;
-  for (const token of queryTokens) {
-    if (set.has(token)) matches++;
-  }
-  return matches / Math.sqrt(chunkTokens.length);
-}
-
-function search(chunks, query, limit) {
-  const queryTokens = tokenize(query);
-  if (queryTokens.length === 0) return [];
-
-  const scored = chunks
-    .map((chunk) => ({
-      score: scoreTokens(queryTokens, chunk.tokens),
-      path: chunk.path,
-      heading: chunk.heading,
-      content: chunk.content,
-    }))
-    .filter((r) => r.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
-
-  return scored;
-}
+import { loadIndex, searchChunks, INDEX_PATH, INDEX_VERSION } from "./memory_common.mjs";
 
 function main() {
   const args = process.argv.slice(2);
@@ -50,8 +22,16 @@ function main() {
     process.exit(1);
   }
 
-  const chunks = loadIndex(indexPath);
-  const results = search(chunks, query, limit);
+  const index = loadIndex(indexPath);
+  if (!index) {
+    console.error(`No index at ${indexPath}. Run memory_index.mjs first.`);
+    process.exit(1);
+  }
+  if (index.stale) {
+    console.error(`Index version ${index.version} is outdated (expected ${INDEX_VERSION}). Re-run memory_index.mjs.`);
+    process.exit(1);
+  }
+  const results = searchChunks(index, query, limit);
 
   for (const { score, path, heading, content } of results) {
     const preview = content.split(/\s+/).slice(0, 40).join(" ");

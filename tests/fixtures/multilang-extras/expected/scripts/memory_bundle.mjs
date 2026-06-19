@@ -1,35 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync, mkdirSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { loadIndex, tokenize, INDEX_PATH, ROOT } from "./memory_common.mjs";
-
-function scoreTokens(queryTokens, chunkTokens) {
-  if (chunkTokens.length === 0) return 0;
-  const set = new Set(chunkTokens);
-  let matches = 0;
-  for (const token of queryTokens) {
-    if (set.has(token)) matches++;
-  }
-  return matches / Math.sqrt(chunkTokens.length);
-}
-
-function search(chunks, query, limit) {
-  const queryTokens = tokenize(query);
-  if (queryTokens.length === 0) return [];
-
-  const scored = chunks
-    .map((chunk) => ({
-      score: scoreTokens(queryTokens, chunk.tokens),
-      path: chunk.path,
-      heading: chunk.heading,
-      content: chunk.content,
-    }))
-    .filter((r) => r.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
-
-  return scored;
-}
+import { loadIndex, searchChunks, INDEX_PATH, INDEX_VERSION, ROOT } from "./memory_common.mjs";
 
 function queryText(raw) {
   const fullPath = join(ROOT, raw);
@@ -66,8 +38,16 @@ function main() {
   }
 
   const query = queryText(queryOrPath);
-  const chunks = loadIndex(indexPath);
-  const results = search(chunks, query, limit);
+  const index = loadIndex(indexPath);
+  if (!index) {
+    console.error(`No index at ${indexPath}. Run memory_index.mjs first.`);
+    process.exit(1);
+  }
+  if (index.stale) {
+    console.error(`Index version ${index.version} is outdated (expected ${INDEX_VERSION}). Re-run memory_index.mjs.`);
+    process.exit(1);
+  }
+  const results = searchChunks(index, query, limit);
 
   mkdirSync(dirname(outputPath), { recursive: true });
   const lines = [`# Context Bundle\n`, `Query: \`${queryOrPath}\`\n`];

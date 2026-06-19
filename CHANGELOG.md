@@ -5,6 +5,18 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.8.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.7.0...v1.8.0) (2026-06-19)
+
+
+### Added
+
+* **memory:** rank memory search with BM25 (index v2) ([867c9d1](https://github.com/yarkingulacti/agentic-scaffold/commit/867c9d17edea9ccd0812e22eb473b6197822f7c8))
+
+
+### Changed
+
+* **plans:** add vectorai-inspired vector/semantic memory search plan ([ea85e29](https://github.com/yarkingulacti/agentic-scaffold/commit/ea85e29e54be926a927865fe635272d02e74345d))
+
 ## [1.7.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.6.0...v1.7.0) (2026-06-19)
 
 

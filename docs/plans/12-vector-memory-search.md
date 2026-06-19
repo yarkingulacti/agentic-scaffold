@@ -1,6 +1,6 @@
 # 12 — Vector / Semantic Memory Search
 
-Status: **Proposed** (not started). Created 2026-06-19.
+Status: **Phase 1 shipped** (BM25, v1.8.0). Phases 2–3 proposed. Created 2026-06-19.
 
 Inspiration: [vector-ai/vectorai](https://github.com/vector-ai/vectorai). This plan
 ports *concepts* from that project; it does **not** add a dependency on it (see
@@ -89,7 +89,7 @@ Problems this plan addresses:
   (`tests/templates-golden.test.ts`), so editing any `memory_*.mjs` requires
   regenerating fixtures with `UPDATE_GOLDEN=1 pnpm test`.
 
-## Phase 1 — Hybrid lexical search (BM25), zero-dep
+## Phase 1 — Hybrid lexical search (BM25), zero-dep — DONE (v1.8.0)
 
 **Goal:** replace naive overlap with BM25 — the "traditional search" half of
 vectorai's hybrid pitch — fully offline.

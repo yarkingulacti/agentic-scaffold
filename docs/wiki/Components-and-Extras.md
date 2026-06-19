@@ -10,7 +10,7 @@ Written by default. Skip any of them with its flag:
 | Group | Description | Flag |
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
-| `scripts` | Node.js memory indexing pipeline (flat-file keyword index) | `--skip-scripts` |
+| `scripts` | Node.js memory indexing pipeline (flat-file BM25 search index) | `--skip-scripts` |
 | `skills` | 23 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, …) | `--skip-skills` |
 | `hooks` | Pre/post lifecycle hooks (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
 
