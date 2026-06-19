@@ -17,6 +17,7 @@ tool itself.
 | [09-project-critique.md](09-project-critique.md) | Critical backlog from implementation and planning review |
 | [10-detection-rendering-matrix.md](10-detection-rendering-matrix.md) | Ownership matrix for detected project facts |
 | [11-update-strategy.md](11-update-strategy.md) | Manifest-based safe update design |
+| [12-vector-memory-search.md](12-vector-memory-search.md) | Vector/semantic + BM25 hybrid upgrade for the memory pipeline (vectorai-inspired) |
 
 ## Status
 
@@ -29,7 +30,7 @@ tool itself.
 - Sprint 7 (extras + cleanup):              Done in v0.12.0
 - Hardening v1.0:                           All phases resolved (self-host, manifest, Node scripts, NO_COLOR, --json, skill validation, --skip-history/scratchpad)
 - Created: 2026-06-17
-- Updated: 2026-06-18
+- Updated: 2026-06-19
 
 ## Release Docs Freshness Gate
 
