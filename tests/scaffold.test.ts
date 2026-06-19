@@ -384,6 +384,7 @@ describe("scaffold", () => {
     await scaffold({ target: dir, extras: "ai-config", aiTools: "opencode", force: true, quiet: true });
     assert.ok(existsSync(p(dir, "opencode.json")));
     assert.ok(!existsSync(p(dir, ".cursorrules")));
+    assert.ok(!existsSync(p(dir, ".cursor", "commands", "fill-docs.md")));
     assert.ok(!existsSync(p(dir, ".copilot-instructions.md")));
     assert.ok(!existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
     assert.ok(!existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
@@ -398,6 +399,7 @@ describe("scaffold", () => {
     await scaffold({ target: dir, extras: "ai-config", force: true, quiet: true });
     assert.ok(existsSync(p(dir, "opencode.json")));
     assert.ok(existsSync(p(dir, ".cursorrules")));
+    assert.ok(existsSync(p(dir, ".cursor", "commands", "fill-docs.md")));
     assert.ok(existsSync(p(dir, ".copilot-instructions.md")));
     assert.ok(existsSync(p(dir, ".claude", "skills", "fill-docs", "SKILL.md")));
     assert.ok(existsSync(p(dir, ".gemini", "commands", "fill-docs.toml")));
@@ -436,6 +438,17 @@ describe("scaffold", () => {
       gemini.includes('description = "Complete scaffold-generated documentation by interviewing the user about their"'),
     );
     assert.ok(gemini.includes("Read and follow .agentic-scaffold/.agents/skills/fill-docs/SKILL.md."));
+    rmSync(dir, { recursive: true });
+  });
+
+  it("ai-config installs Cursor slash commands alongside .cursorrules", async () => {
+    const dir = tempDir();
+    await scaffold({ target: dir, extras: "ai-config", aiTools: "cursor", force: true, quiet: true });
+    // Cursor gets BOTH the rules config and native slash-command adapters.
+    assert.ok(existsSync(p(dir, ".cursorrules")));
+    const command = readFileSync(p(dir, ".cursor", "commands", "fill-docs.md"), "utf-8");
+    assert.ok(command.startsWith("# fill-docs\n"));
+    assert.ok(command.includes("Read and follow `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`"));
     rmSync(dir, { recursive: true });
   });
 

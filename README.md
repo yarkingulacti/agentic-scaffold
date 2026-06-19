@@ -226,7 +226,7 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 |-------|-------------|
 | `ci` | CI/CD templates for the detected or requested provider |
 | `contribute` | Contribution guide, PR template, and review guidance |
-| `ai-config` | AI tool config files and skill-command adapters: `opencode.json`, `.cursorrules`, Copilot instructions, `.agents/skills/*/SKILL.md`, `.claude/skills/*/SKILL.md`, `.gemini/commands/*.toml`, `.deepcode/skills/*/SKILL.md`, `.grok/skills/*/SKILL.md` |
+| `ai-config` | AI tool config files and skill-command adapters: `opencode.json`, `.cursorrules`, `.cursor/commands/*.md`, Copilot instructions, `.agents/skills/*/SKILL.md`, `.claude/skills/*/SKILL.md`, `.gemini/commands/*.toml`, `.deepcode/skills/*/SKILL.md`, `.grok/skills/*/SKILL.md` |
 | `onboarding` | Human onboarding guide and setup helper |
 | `rtk` | Project-local RTK token-cost filters in `.rtk/filters.toml` |
 | `all` | Include every extras group |
@@ -236,7 +236,7 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 1. Fill in `.agentic-scaffold/BUSINESS_LOGIC.md` with your product domain.
 2. Run `npm install` / `pnpm install` for your project's actual dependencies.
 3. Run `node .agentic-scaffold/scripts/memory_index.mjs` to index your project Markdown (no additional setup needed).
-4. If you scaffolded AI config for a supported skill-aware agent, use its generated skill command. Claude Code, Gemini CLI, Deep Code, and Grok expose `/fill-docs`; Codex exposes `$fill-docs` or its skills picker. If Gemini CLI is already open, run `/commands reload`.
+4. If you scaffolded AI config for a supported skill-aware agent, use its generated skill command. Cursor, Claude Code, Gemini CLI, Deep Code, and Grok expose `/fill-docs`; Codex exposes `$fill-docs` or its skills picker. If Gemini CLI is already open, run `/commands reload`.
 5. If you did not scaffold AI config, use the generated skill file directly: `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`.
 6. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
 7. After upgrading this package, run `npx @yarkingulacti/agentic-scaffold update --dry-run` to preview generated-template changes before applying them.
