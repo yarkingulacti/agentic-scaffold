@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.6.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.5.0...v1.6.0) (2026-06-19)
+
+
+### Added
+
+* **ai-config:** cover mainstream skill agents ([8fd1a15](https://github.com/yarkingulacti/agentic-scaffold/commit/8fd1a151c38b42a9cd03e4176ace6beace7ac3c0))
+
 ## [1.5.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.4.0...v1.5.0) (2026-06-19)
 
 
