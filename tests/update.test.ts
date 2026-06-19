@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it } from "node:test";
@@ -31,6 +31,17 @@ function readRequiredManifest(dir: string): Manifest {
 
 function writeManifest(dir: string, manifest: Manifest): void {
   writeFileSync(manifestPath(dir), `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
+}
+
+// Simulate an older installed memory script that still matches its manifest
+// entry, so update() reconciles it as an upstream "updated" (not a conflict).
+function markScriptOutdated(dir: string, relPath: string): void {
+  writeFileSync(p(dir, relPath), "// outdated memory script\n", "utf-8");
+  const manifest = readRequiredManifest(dir);
+  const entry = manifest.files.find((e) => e.path === relPath);
+  assert.ok(entry && entry.type !== "symlink");
+  entry.contentHash = fileHash(p(dir, relPath));
+  writeManifest(dir, manifest);
 }
 
 async function createScaffold(dir: string): Promise<void> {
@@ -146,6 +157,38 @@ describe("update", () => {
       assert.deepEqual(result.conflicts, [BUSINESS_LOGIC]);
       assert.equal(existsSync(p(dir, `${BUSINESS_LOGIC}.new`)), false);
       assert.equal(readFileSync(manifestPath(dir), "utf-8"), beforeManifest);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("flags reindexRequired when an indexed project's memory scripts change", async () => {
+    const dir = tempDir();
+    try {
+      await scaffold({ target: dir, force: true, skipDocs: true, skipSkills: true, quiet: true });
+      markScriptOutdated(dir, `${S}/scripts/memory_common.mjs`);
+      mkdirSync(p(dir, ".memory"), { recursive: true });
+      writeFileSync(p(dir, ".memory", "index.json"), '{"version":1,"chunks":[]}', "utf-8");
+
+      const result = await update({ target: dir, skipDocs: true, skipSkills: true, quiet: true });
+
+      assert.ok(result.updated.includes(`${S}/scripts/memory_common.mjs`), "the outdated script is updated");
+      assert.equal(result.reindexRequired, true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("does not flag reindex when scripts change but no index exists", async () => {
+    const dir = tempDir();
+    try {
+      await scaffold({ target: dir, force: true, skipDocs: true, skipSkills: true, quiet: true });
+      markScriptOutdated(dir, `${S}/scripts/memory_common.mjs`);
+
+      const result = await update({ target: dir, skipDocs: true, skipSkills: true, quiet: true });
+
+      assert.ok(result.updated.includes(`${S}/scripts/memory_common.mjs`));
+      assert.equal(result.reindexRequired, false);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

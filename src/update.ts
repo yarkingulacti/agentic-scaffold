@@ -31,6 +31,7 @@ export interface UpdateResult {
   untracked: string[]; // path occupied by a non-scaffold file -> skipped
   deletedSkipped: string[]; // scaffold-owned file the user deleted -> not restored
   obsolete: string[]; // dropped from templates -> left in place
+  reindexRequired: boolean; // memory scripts changed and a .memory/index.json exists -> it is now stale
 }
 
 // lstat-based existence: true even for a dangling symlink.
@@ -206,6 +207,7 @@ export async function update(argv: ScaffoldArgs): Promise<UpdateResult> {
       untracked: [],
       deletedSkipped: [],
       obsolete: [],
+      reindexRequired: false,
     };
     const oldByPath = new Map(oldManifest.files.map((e) => [e.path, e] as const));
     const newPaths = new Set(newManifest.files.map((e) => e.path));
@@ -225,6 +227,14 @@ export async function update(argv: ScaffoldArgs): Promise<UpdateResult> {
     for (const old of oldManifest.files) {
       if (!newPaths.has(old.path)) result.obsolete.push(old.path);
     }
+
+    // The memory scripts own the .memory/index.json format. If update changed
+    // any of them and the user already built an index, that index is now stale
+    // (e.g. the v1->v2 BM25 bump): advise a reindex rather than silently
+    // leaving search to fail on the next run.
+    result.reindexRequired =
+      existsSync(join(target, ".memory", "index.json")) &&
+      [...result.added, ...result.updated, ...result.conflicts].some((p) => /scripts[\\/]memory_/.test(p));
 
     // Rebase the manifest to the new canonical baseline (see docs/plans/11).
     if (!dryRun) {
@@ -274,4 +284,11 @@ function report(result: UpdateResult, fromVersion: string, dryRun: boolean, json
     ? `${changed} file${changed !== 1 ? "s" : ""} would change, ${result.conflicts.length} conflict${result.conflicts.length !== 1 ? "s" : ""}.`
     : `${changed} file${changed !== 1 ? "s" : ""} changed, ${result.conflicts.length} conflict${result.conflicts.length !== 1 ? "s" : ""}.`;
   process.stdout.write(`\n ${summaryLine(tail, status)}\n`);
+
+  if (result.reindexRequired) {
+    const msg = dryRun
+      ? "Memory scripts would change — afterward re-run `node .agentic-scaffold/scripts/memory_index.mjs` to rebuild .memory/index.json (index format may differ)."
+      : "Memory scripts changed — re-run `node .agentic-scaffold/scripts/memory_index.mjs` to rebuild .memory/index.json (index format may differ).";
+    process.stdout.write(`\n ${summaryLine(msg, "warn")}\n`);
+  }
 }
