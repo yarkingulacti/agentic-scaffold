@@ -11,7 +11,7 @@
 | DeepSeek | Deep Code | `deepcode` or `deepseek` | `.deepcode/skills/<skill>/SKILL.md` | `/<skill>` or the skills menu |
 | xAI | Grok Build | `grok` or `xai` | `.grok/skills/<skill>/SKILL.md` | `/<skill>` or `/local:<skill>` if names collide |
 
-Example:
+## Example: install commands for every supported client
 
 ```bash
 npx @yarkingulacti/agentic-scaffold \
@@ -20,5 +20,7 @@ npx @yarkingulacti/agentic-scaffold \
 ```
 
 This installs adapters for every generated skill, including `fill-docs`.
+For practical workflows that combine those commands with scaffold files, see
+**[Real-life Use Cases](Use-Cases)**.
 
 Boundary: model providers are not interchangeable with agent clients. The adapter is generated only when a concrete client has a known project-local discovery path. Tools without a documented local skill/command format should not be advertised as supporting `/fill-docs`.

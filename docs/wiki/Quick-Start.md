@@ -37,6 +37,11 @@ Pick the level of control you want — all three produce the same scaffold shape
 | 🚩 **Flag mode** | `npx ... --force --ci-provider github` | Override auto-detection from the CLI; `--force` overwrites. |
 | 💬 **Interactive** | `npx ... -i` | Step-by-step prompts with detected defaults pre-filled. |
 
+
+Need a concrete setup for a production app, monorepo, client handoff, legacy
+modernization, security review, or documentation rescue? See **[Real-life Use
+Cases](Use-Cases)** for scenario-specific commands and skill pairings.
+
 ## After scaffolding
 
 1. Fill in `.agentic-scaffold/BUSINESS_LOGIC.md` with your product domain.

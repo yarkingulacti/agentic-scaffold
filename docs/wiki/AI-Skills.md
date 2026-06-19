@@ -11,6 +11,23 @@ This page explains the skills in topics: **What it does**, **How to use**, and
 **When to use**. The seven most recently added skills are documented in full
 below; the complete catalog follows.
 
+## Skill examples by use case
+
+The skills are most useful when paired with a concrete repository situation:
+
+| Use case | Start with | Then use | Full example |
+|---|---|---|---|
+| Greenfield SaaS | `to-prd`, `to-issues` | `implement`, `code-review` | [Greenfield SaaS app](Use-Cases#1-greenfield-saas-app) |
+| Production web app | `diagnose` | `security-guidance`, `playwright` | [Existing production web app](Use-Cases#2-existing-production-web-app) |
+| Web + mobile + C++/Godot monorepo | `ubiquitous-language` | `to-issues`, `implement`, `handoff` | [Monorepo scenario](Use-Cases#3-web--mobile--cppgodot-monorepo) |
+| Agency/client handoff | `fill-docs` | `weekly`, `summary`, `handoff` | [Agency handoff](Use-Cases#4-agency-or-client-handoff) |
+| Open source | `qa`, `issue` | `code-review`, `rollback-drill` | [Open-source project](Use-Cases#5-open-source-project) |
+| Legacy modernization | `diagnose` | `refactoring`, `improve-codebase-architecture` | [Legacy modernization](Use-Cases#6-legacy-modernization) |
+| Security-sensitive product | `security-guidance` | `code-review`, `handoff` | [Security-sensitive product](Use-Cases#7-security-sensitive-product) |
+| AI/MCP platform | `mcp-builder` | `tdd`, `code-review`, `claude-mem` | [AI/MCP platform](Use-Cases#8-ai-tool-agent-or-mcp-server) |
+| Documentation rescue | `ubiquitous-language` | `fill-docs`, `summary` | [Documentation rescue](Use-Cases#9-documentation-rescue) |
+| Incident follow-up | `diagnose`, `bugfix` | `handoff`, `monthly` | [Incident follow-up](Use-Cases#10-incident-follow-up) |
+
 ---
 
 ## Newly added skills
