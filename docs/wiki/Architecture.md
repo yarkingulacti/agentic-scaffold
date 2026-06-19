@@ -20,7 +20,7 @@ src/
 templates/             Handlebars templates (.hbs) for what gets scaffolded
   root/                AGENTS.md, CLAUDE.md, BUSINESS_LOGIC.md, .gitignore
   docs/                ADR templates, agent docs, CODING_PRINCIPLES, context
-  skills/              23 agent skills (bugfix, tdd, implement, handoff, …)
+  skills/              24 agent skills (bugfix, tdd, implement, superpowers, handoff, …)
   hooks/               4 lifecycle hooks (pre/post feature/bugfix/session)
   scripts/             Memory indexing pipeline (Node.js .mjs)
 tests/                 Node.js built-in test runner (node:test)
