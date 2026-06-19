@@ -4,7 +4,7 @@
 
 **Give any repository an AI-native foundation in a single command.**
 
-Agent config · domain docs · an ADR system · a memory pipeline · 23 reusable skills · lifecycle hooks — all dropped into one tidy directory, none of your files touched.
+Agent config · domain docs · an ADR system · a memory pipeline · 24 reusable skills · lifecycle hooks — all dropped into one tidy directory, none of your files touched.
 
 [![npm version](https://img.shields.io/npm/v/%40yarkingulacti%2Fagentic-scaffold?logo=npm&label=version)](https://www.npmjs.com/package/@yarkingulacti/agentic-scaffold)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -180,7 +180,7 @@ project/
     │   ├── engineering/README.md
     │   └── product/README.md
     ├── .agents/
-    │   ├── skills/               # Agent skill definitions (23 skills)
+    │   ├── skills/               # Agent skill definitions (24 skills)
     │   └── hooks/                # Pre/post lifecycle hooks
     ├── scripts/                  # Markdown memory indexing pipeline
     ├── .scratchpad/              # Local detailed planning
@@ -217,7 +217,7 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 |-------|-------------|------|
 | `docs` | Documentation framework (CODING_PRINCIPLES, ADR, agents, context) | `--skip-docs` |
 | `scripts` | Node.js memory indexing pipeline (flat-file BM25 search index) | `--skip-scripts` |
-| `skills` | 23 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, …) | `--skip-skills` |
+| `skills` | 24 agent skills (implement, bugfix, create-hook, diagnose, tdd, fill-docs, superpowers, …) | `--skip-skills` |
 | `hooks` | Pre/post lifecycle hooks (pre-feature, post-feature, post-bugfix, post-session) with executable scripts | `--skip-hooks` |
 
 **Extras** are opt-in via `--extras` so zero-config mode stays conservative:
@@ -313,3 +313,11 @@ AI). It takes **no dependency** on it: the scaffold's BM25 ranker is a pure,
 zero-dep, offline Node implementation (see
 [docs/plans/12-vector-memory-search.md](docs/plans/12-vector-memory-search.md)).
 Thanks to the vectorai authors for the ideas.
+
+The generated `superpowers` skill adapts the spec-first, plan-then-build,
+strict-TDD methodology from [Superpowers](https://github.com/obra/superpowers)
+by Jesse Vincent and the team at [Prime Radiant](https://primeradiant.com)
+(MIT License). It is a single condensed skill capturing the core workflow, not
+the full upstream plugin; the same attribution travels in the scaffolded
+`.agentic-scaffold/.agents/skills/superpowers/SKILL.md`. Thanks to the
+Superpowers maintainers for the methodology.

@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.10.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.9.1...v1.10.0) (2026-06-19)
+
+
+### Added
+
+* **skills:** add superpowers methodology skill with attribution ([345eaf4](https://github.com/yarkingulacti/agentic-scaffold/commit/345eaf43fd5e2bc0647c081d9b3b1744b01f76cc))
+
 ## [1.9.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.9.0...v1.9.1) (2026-06-19)
 
 

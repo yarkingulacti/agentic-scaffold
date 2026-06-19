@@ -60,7 +60,7 @@ project/
     ├── .gitignore
     ├── docs/                     # CODING_PRINCIPLES, ADR template, agent + context docs
     ├── .agents/
-    │   ├── skills/               # Agent skill definitions (23 skills)
+    │   ├── skills/               # Agent skill definitions (24 skills)
     │   └── hooks/                # Pre/post lifecycle hooks
     ├── scripts/                  # Markdown memory indexing pipeline
     ├── .scratchpad/              # Local detailed planning
