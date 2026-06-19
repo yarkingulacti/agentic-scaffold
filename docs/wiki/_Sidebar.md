@@ -4,6 +4,7 @@
 - [Quick Start](Quick-Start)
 - [CLI Reference](CLI-Reference)
 - [Components & Extras](Components-and-Extras)
+- [Real-life Use Cases](Use-Cases)
 - [Auto-Detection](Auto-Detection)
 - [AI Skill Commands](AI-Skill-Commands)
 - [AI Skills](AI-Skills)
