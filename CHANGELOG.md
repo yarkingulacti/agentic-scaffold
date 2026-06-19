@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.11.1](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.11.0...v1.11.1) (2026-06-19)
+
+
+### Changed
+
+* **wiki:** add real-life scaffold use cases ([65a4d25](https://github.com/yarkingulacti/agentic-scaffold/commit/65a4d256397d28aaf238c66584af1c92d589bd18))
+
 ## [1.11.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.10.0...v1.11.0) (2026-06-19)
 
 
