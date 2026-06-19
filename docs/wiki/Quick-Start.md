@@ -38,9 +38,10 @@ Pick the level of control you want — all three produce the same scaffold shape
 | 💬 **Interactive** | `npx ... -i` | Step-by-step prompts with detected defaults pre-filled. |
 
 
-Need a concrete setup for a production app, monorepo, client handoff, legacy
-modernization, security review, or documentation rescue? See **[Real-life Use
-Cases](Use-Cases)** for scenario-specific commands and skill pairings.
+Need a concrete setup for a production app, web/mobile/native monorepo, client
+handoff, regulated product, data pipeline, desktop app, game repo, migration,
+QA sprint, or documentation rescue? See **[Real-life Use Cases](Use-Cases)** for
+scenario-specific commands and skill pairings.
 
 ## After scaffolding
 

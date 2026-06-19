@@ -27,6 +27,20 @@ The skills are most useful when paired with a concrete repository situation:
 | AI/MCP platform | `mcp-builder` | `tdd`, `code-review`, `claude-mem` | [AI/MCP platform](Use-Cases#8-ai-tool-agent-or-mcp-server) |
 | Documentation rescue | `ubiquitous-language` | `fill-docs`, `summary` | [Documentation rescue](Use-Cases#9-documentation-rescue) |
 | Incident follow-up | `diagnose`, `bugfix` | `handoff`, `monthly` | [Incident follow-up](Use-Cases#10-incident-follow-up) |
+| Solo founder product | `to-prd`, `today` | `status`, `summary` | [Solo founder product](Use-Cases#11-solo-founder-product) |
+| Enterprise platform team | `grill-me` | `to-issues`, `code-review`, `weekly` | [Enterprise platform team](Use-Cases#12-enterprise-platform-team) |
+| Regulated fintech/healthcare | `security-guidance` | `rollback-drill`, `handoff` | [Regulated product](Use-Cases#13-regulated-fintech-or-healthcare) |
+| Data or ML pipeline | `diagnose` | `tdd`, `summary`, `monthly` | [Data or ML pipeline repo](Use-Cases#14-data-or-ml-pipeline-repo) |
+| Desktop/Electron app | `playwright` | `bugfix`, `code-review`, `handoff` | [Desktop or Electron app](Use-Cases#15-desktop-or-electron-app) |
+| Game studio repo | `ubiquitous-language` | `to-issues`, `implement`, `weekly` | [Game studio repository](Use-Cases#16-game-studio-repository) |
+| Design system/UI kit | `frontend-design` | `playwright`, `code-review` | [Design system or UI kit](Use-Cases#17-design-system-or-ui-kit) |
+| Internal tools/admin | `security-guidance` | `bugfix`, `diagnose` | [Internal tools or admin panel](Use-Cases#18-internal-tools-or-admin-panel) |
+| API/SDK/library | `tdd` | `code-review`, `issue`, `summary` | [API, SDK, or library project](Use-Cases#19-api-sdk-or-library-project) |
+| Education/research lab | `fill-docs` | `today`, `weekly`, `summary` | [Education or research lab repo](Use-Cases#20-education-or-research-lab-repo) |
+| Hackathon to product | `grill-me`, `to-prd` | `to-issues`, `implement` | [Hackathon prototype becoming real](Use-Cases#21-hackathon-prototype-becoming-real) |
+| Due-diligence review | `fill-docs`, `diagnose` | `security-guidance`, `summary` | [Acquisition or due-diligence review](Use-Cases#22-acquisition-or-due-diligence-review) |
+| Cloud migration | `to-issues` | `diagnose`, `rollback-drill`, `handoff` | [Cloud migration or platform move](Use-Cases#23-cloud-migration-or-platform-move) |
+| Multi-agent QA sprint | `qa`, `playwright` | `issue`, `code-review` | [Multi-agent QA sprint](Use-Cases#24-multi-agent-qa-sprint) |
 
 ---
 

@@ -25,7 +25,7 @@ npx @yarkingulacti/agentic-scaffold
 - **[Quick Start](Quick-Start)** — install, preview, scaffold, undo.
 - **[CLI Reference](CLI-Reference)** — every flag and invocation.
 - **[Components & Extras](Components-and-Extras)** — what's core, what's opt-in.
-- **[Real-life Use Cases](Use-Cases)** — concrete scenarios for SaaS, monorepos, legacy apps, security, OSS, and handoffs.
+- **[Real-life Use Cases](Use-Cases)** — 24 scenario recipes for SaaS, monorepos, legacy apps, regulated products, game/devtool repos, data pipelines, migrations, QA sprints, OSS, and handoffs.
 - **[Auto-Detection](Auto-Detection)** — what the scaffold sniffs and how it's used.
 - **[Architecture](Architecture)** — codebase layout and contributor commands.
 - **[Changelog](Changelog)** — per-version history.

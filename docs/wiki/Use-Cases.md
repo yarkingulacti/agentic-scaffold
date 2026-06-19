@@ -1,6 +1,6 @@
 # Real-life use cases
 
-`agentic-scaffold` is useful when the repository needs durable context before an
+`agentic-scaffold` is useful when a repository needs durable context before an
 AI agent starts changing code. The scaffold is intentionally boring: docs,
 skills, hooks, scratchpads, history, memory search, and optional tool adapters.
 The value comes from applying that baseline to real workflows.
@@ -12,13 +12,27 @@ The value comes from applying that baseline to real workflows.
 | Greenfield SaaS app | `npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding` | Architecture docs, ADRs, CI, PR templates, onboarding, slash commands | `/to-prd`, `/to-issues`, `/implement`, `/code-review` |
 | Existing production web app | `npx ... --dry-run` then `npx ... --extras ai-config,rtk` | Non-destructive docs, memory index, local skill adapters, token filters | `/bugfix`, `/diagnose`, `/security-guidance`, `/playwright` |
 | Web + mobile + C++/Godot monorepo | `npx ... --languages typescript,dart,kotlin,swift,cpp --extras all` | Shared repo memory, language-aware context, CI/contribution docs, project-wide lifecycle hooks | `/ubiquitous-language`, `/to-issues`, `/implement`, `/handoff` |
-| Agency/client handoff | `npx ... --extras onboarding,contribute` | Human onboarding, setup helper, contribution guide, decision records | `/fill-docs`, `/weekly`, `/summary`, `/handoff` |
+| Agency/client handoff | `npx ... --extras onboarding,contribute,ai-config` | Human onboarding, setup helper, contribution guide, decision records | `/fill-docs`, `/weekly`, `/summary`, `/handoff` |
 | Open-source project | `npx ... --extras ci,contribute,ai-config` | Contributor guide, PR template, review guidance, skill commands | `/qa`, `/issue`, `/code-review`, `/rollback-drill` |
 | Legacy modernization | `npx ... --extras ai-config,rtk` | Context docs, scratchpads, history, BM25 memory search, low-noise shell output | `/diagnose`, `/refactoring`, `/improve-codebase-architecture` |
 | Security-sensitive product | `npx ... --extras ci,contribute,ai-config` | Review guidance, lifecycle hooks, security review skill access | `/security-guidance`, `/code-review`, `/rollback-drill` |
 | AI/MCP platform work | `npx ... --extras ai-config,onboarding` | Agent instructions, local command adapters, architecture docs | `/mcp-builder`, `/tdd`, `/code-review`, `/claude-mem` |
 | Documentation rescue | `npx ... --extras ai-config` | Fillable product/engineering docs plus `/fill-docs` adapters | `/fill-docs`, `/ubiquitous-language`, `/summary` |
 | Incident follow-up | `npx ... --extras ai-config,rtk` | Timeline-friendly history, scratchpad investigation notes, searchable Markdown | `/diagnose`, `/bugfix`, `/handoff`, `/monthly` |
+| Solo founder product | `npx ... --extras ai-config,onboarding` | Product rules, decision log, repeatable build/release notes | `/to-prd`, `/today`, `/status`, `/summary` |
+| Enterprise platform team | `npx ... --extras ci,contribute,onboarding,ai-config` | Ownership docs, contribution gates, ADRs, cross-team handoffs | `/grill-me`, `/to-issues`, `/code-review`, `/weekly` |
+| Regulated fintech/healthcare | `npx ... --extras ci,contribute,ai-config` | Trust-boundary docs, ADR trail, review workflows, rollback rehearsal | `/security-guidance`, `/rollback-drill`, `/handoff` |
+| Data or ML pipeline repo | `npx ... --languages python,typescript --extras ai-config,rtk` | Pipeline context, experiment notes, memory index, low-noise logs | `/diagnose`, `/tdd`, `/summary`, `/monthly` |
+| Desktop or Electron app | `npx ... --languages typescript,rust --extras ci,ai-config,onboarding` | Runtime notes, release checklist context, UI testing skill access | `/playwright`, `/bugfix`, `/code-review`, `/handoff` |
+| Game studio repository | `npx ... --languages cpp,csharp,gdscript --extras ai-config,onboarding` | Gameplay language, engine/native context, asset-pipeline decisions | `/ubiquitous-language`, `/to-issues`, `/implement`, `/weekly` |
+| Design system or UI kit | `npx ... --extras ai-config,contribute` | Contribution rules, visual review guidance, component decision history | `/frontend-design`, `/playwright`, `/code-review` |
+| Internal tools/admin panel | `npx ... --extras ci,ai-config,rtk` | Auth/permission context, workflow docs, incident history | `/security-guidance`, `/bugfix`, `/diagnose` |
+| API/SDK/library project | `npx ... --extras ci,contribute,ai-config` | Public contract docs, compatibility ADRs, review and release notes | `/tdd`, `/code-review`, `/issue`, `/summary` |
+| Education/research lab repo | `npx ... --extras onboarding,ai-config` | Onboarding docs, reproducibility notes, searchable experiment history | `/fill-docs`, `/today`, `/weekly`, `/summary` |
+| Hackathon prototype becoming real | `npx ... --extras all` | Fast capture of assumptions, setup, first ADRs, tracker-ready issues | `/to-prd`, `/to-issues`, `/grill-me`, `/implement` |
+| Acquisition or due-diligence review | `npx ... --dry-run` then `npx ... --extras ai-config,rtk` | Read-only preview first, architecture/risk notes, searchable findings | `/fill-docs`, `/diagnose`, `/security-guidance`, `/summary` |
+| Cloud migration or platform move | `npx ... --extras ci,contribute,ai-config,rtk` | Migration ADRs, rollback notes, build/deploy command context | `/diagnose`, `/to-issues`, `/rollback-drill`, `/handoff` |
+| Multi-agent QA sprint | `npx ... --extras ai-config,rtk` | Shared findings, scratchpad test plans, low-noise test output | `/qa`, `/playwright`, `/issue`, `/code-review` |
 
 ## Detailed scenarios
 
@@ -226,6 +240,203 @@ Use:
 - `.history/` for the final incident summary.
 - `/handoff` when another engineer or agent must continue the work.
 - `/monthly` to roll repeated incidents into trend notes.
+
+### 11. Solo founder product
+
+A solo founder switches between product, engineering, support, and investor
+updates. The risk is context loss between intense sessions.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ai-config,onboarding
+```
+
+Use `BUSINESS_LOGIC.md` for pricing, customer promises, and non-negotiable UX
+rules. Keep `.scratchpad/` for one active bet at a time, then close each shipped
+slice into `.history/`. `/today` turns the backlog into a daily plan, `/status`
+checks drift against the roadmap, and `/summary` creates a compact all-time brief
+when you need to re-enter the work after a break.
+
+### 12. Enterprise platform team
+
+Platform teams serve many application teams. Their real product is stable
+contracts: commands, templates, deployment rules, and migration paths.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ci,contribute,onboarding,ai-config
+```
+
+Use ADRs for supported patterns and deprecation windows. Put ownership,
+escalation, and compatibility rules in `docs/context/`. Use `/grill-me` before
+publishing a new standard, `/to-issues` to slice migrations by consumer, and
+`/weekly` to publish progress without forcing every stakeholder into the repo.
+
+### 13. Regulated fintech or healthcare
+
+Regulated projects need a visible trail for decisions and review, even when the
+code change is small.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config
+```
+
+Use the scaffold to record data categories, retention rules, audit expectations,
+and third-party integrations. Pair `/security-guidance` with `/code-review` for
+changes touching permissions, identifiers, exports, reporting, billing, or PHI/PII.
+Run `/rollback-drill` before migrations and use `/handoff` to capture release
+risk, verification, and follow-up ownership.
+
+### 14. Data or ML pipeline repo
+
+Data repositories often break through silent schema drift, flaky jobs, and
+missing experiment context.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --languages python,typescript --extras ai-config,rtk
+```
+
+Document data sources, refresh cadence, quality gates, and model/report consumers
+in `docs/context/`. Use `.history/` for experiment summaries that should survive
+notebook churn. Use `/diagnose` for failing jobs, `/tdd` for parser/transform
+invariants, `/summary` for project state, and `/monthly` for trend reporting.
+
+### 15. Desktop or Electron app
+
+Desktop apps mix web UI, local files, installers, OS permissions, and release
+channels. Agents need those boundaries explicit.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --languages typescript,rust --extras ci,ai-config,onboarding
+```
+
+Put update channels, filesystem locations, IPC boundaries, and installer notes in
+`docs/context/`. Use `/playwright` for renderer flows, `/bugfix` for OS-specific
+regressions, `/code-review` before releases, and `/handoff` when a bug depends on
+a machine another maintainer owns.
+
+### 16. Game studio repository
+
+Game repos accumulate engine scripts, native plugins, assets, tools, and gameplay
+rules. The shared language matters more than any one build target.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --languages cpp,csharp,gdscript --extras ai-config,onboarding
+```
+
+Use `/ubiquitous-language` to define gameplay terms, currencies, progression,
+entities, and save-data rules. Record engine/native boundaries and asset-pipeline
+ADRs. Slice features with `/to-issues` so art, gameplay, backend, and native work
+can move independently, then use `/weekly` to summarize cross-discipline status.
+
+### 17. Design system or UI kit
+
+A design system fails when every component has a different reason for existing.
+The scaffold gives agents one place to find intent and review standards.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ai-config,contribute
+```
+
+Document tokens, accessibility rules, browser support, and release policy. Use
+`/frontend-design` before adding a new component family, `/playwright` for visual
+and interaction checks, and `/code-review` for API consistency and regressions.
+
+### 18. Internal tools or admin panel
+
+Internal tools look low risk until an agent changes permissions, exports, or a
+bulk action. Treat them as security-sensitive products with operational context.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ci,ai-config,rtk
+```
+
+Record roles, approval flows, audit logs, destructive actions, and support playbooks.
+Use `/security-guidance` for permission or data-export work, `/bugfix` for support
+escalations, and `/diagnose` when a background job or admin workflow behaves
+inconsistently.
+
+### 19. API, SDK, or library project
+
+Public libraries need compatibility discipline. Agents must know which behavior is
+contract and which internals may change.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config
+```
+
+Use ADRs for breaking-change policy, versioning, supported runtimes, and generated
+client behavior. Use `/tdd` for contract tests, `/code-review` for API surface
+changes, `/issue` for reproducible consumer reports, and `/summary` before a
+release train.
+
+### 20. Education or research lab repo
+
+Research repos need reproducibility and onboarding more than polish. New students
+or collaborators should not depend on oral history.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras onboarding,ai-config
+```
+
+Use `/fill-docs` to capture setup, datasets, expected outputs, hardware
+assumptions, and paper/experiment links. Use `/today` and `/weekly` for lab work
+planning, then `/summary` to produce a durable project overview for the next
+cohort.
+
+### 21. Hackathon prototype becoming real
+
+A hackathon repo usually has working code and missing decisions. Scaffold before
+people start layering production assumptions on top.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras all
+```
+
+Capture what is intentionally temporary, what must be rewritten, and what already
+has users. Use `/grill-me` to stress-test the product idea, `/to-prd` and
+`/to-issues` to turn the prototype into slices, and `/implement` only after the
+first real boundaries are written down.
+
+### 22. Acquisition or due-diligence review
+
+When reviewing a repo you do not own yet, start with a dry run. Do not write
+files until you understand the project's current conventions.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --dry-run
+npx @yarkingulacti/agentic-scaffold --extras ai-config,rtk
+```
+
+Use `/fill-docs` to interview maintainers, `/diagnose` to reproduce known risks,
+`/security-guidance` for sensitive areas, and `/summary` to produce a concise
+technical-risk brief. Keep findings in `.scratchpad/` and promote confirmed facts
+into `docs/context/`.
+
+### 23. Cloud migration or platform move
+
+Migrations fail when rollback, verification, and ownership are implicit.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,rtk
+```
+
+Use ADRs for target architecture, staged cutover, data movement, and observability.
+Use `/to-issues` for reversible slices, `/diagnose` for parity failures,
+`/rollback-drill` before high-risk steps, and `/handoff` at every operator
+boundary.
+
+### 24. Multi-agent QA sprint
+
+A QA sprint with several agents needs shared definitions of done and a place for
+findings that outlive chat.
+
+```bash
+npx @yarkingulacti/agentic-scaffold --extras ai-config,rtk
+```
+
+Use `.scratchpad/` for test charters, `.history/` for final QA summaries, and the
+memory index to search repeated findings. `/qa` turns reports into issues,
+`/playwright` checks real browser flows, `/issue` files durable work, and
+`/code-review` verifies fixes before merge.
 
 ## Choosing extras by situation
 
