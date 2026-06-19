@@ -75,6 +75,12 @@ const AI_TOOL_TEMPLATES: Record<string, { src: string; dest: string }> = {
 
 export const AI_SKILL_COMMAND_TOOLS = ["codex", "claude", "gemini", "deepcode", "grok"];
 
+// Tools that also emit per-skill slash-command adapters. Cursor is here in
+// addition to AI_SKILL_COMMAND_TOOLS because it ALSO writes a `.cursorrules`
+// config (so it stays in AI_TOOL_TEMPLATES), but it discovers slash commands
+// from `.cursor/commands/*.md` just like the skill-command-only tools.
+export const SKILL_COMMAND_TOOLS = [...AI_SKILL_COMMAND_TOOLS, "cursor"];
+
 export const AI_TOOL_ALIASES: Record<string, string> = {
   openai: "codex",
   codex: "codex",
@@ -165,8 +171,19 @@ function geminiCommandContent(skill: SkillCommand): string {
   return [`description = ${tomlString(skill.description)}`, "", `prompt = ${tomlMultiline(prompt)}`, ""].join("\n");
 }
 
+function cursorCommandContent(skill: SkillCommand): string {
+  return [
+    `# ${skill.name}`,
+    "",
+    skill.description,
+    "",
+    `Read and follow \`.agentic-scaffold/.agents/skills/${skill.name}/SKILL.md\`, then apply it using the context I provide in this chat.`,
+    "",
+  ].join("\n");
+}
+
 function skillCommandFiles(tool: string): { dest: string; content: string }[] {
-  if (!AI_SKILL_COMMAND_TOOLS.includes(tool)) return [];
+  if (!SKILL_COMMAND_TOOLS.includes(tool)) return [];
   return listSkillCommands().map((skill) => {
     const markdown = skillMarkdownContent(skill);
     switch (tool) {
@@ -176,6 +193,8 @@ function skillCommandFiles(tool: string): { dest: string; content: string }[] {
         return { dest: join(".claude", "skills", skill.name, "SKILL.md"), content: markdown };
       case "deepcode":
         return { dest: join(".deepcode", "skills", skill.name, "SKILL.md"), content: markdown };
+      case "cursor":
+        return { dest: join(".cursor", "commands", `${skill.name}.md`), content: cursorCommandContent(skill) };
       case "grok":
         return {
           dest: join(".grok", "skills", skill.name, "SKILL.md"),

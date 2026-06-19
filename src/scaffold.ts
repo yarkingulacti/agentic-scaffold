@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import {
-  AI_SKILL_COMMAND_TOOLS,
   ALWAYS_INCLUDED,
   COMPONENTS,
   type ComponentSpec,
   normalizeAiToolName,
+  SKILL_COMMAND_TOOLS,
 } from "./components.js";
 import type { HandlebarsData, IncompleteFile, ScaffoldArgs, ScaffoldConfig } from "./config.js";
 import { buildHandlebars, buildIncompleteFiles, resolveConfig } from "./config.js";
@@ -29,8 +29,8 @@ function out(config: ScaffoldConfig, ...args: unknown[]): void {
 
 function selectedSkillCommandTools(config: ScaffoldConfig): string[] {
   if (!config.include.has("ai-config")) return [];
-  const requested = config.aiTools.length > 0 ? config.aiTools.map(normalizeAiToolName) : AI_SKILL_COMMAND_TOOLS;
-  return requested.filter((tool) => AI_SKILL_COMMAND_TOOLS.includes(tool));
+  const requested = config.aiTools.length > 0 ? config.aiTools.map(normalizeAiToolName) : SKILL_COMMAND_TOOLS;
+  return requested.filter((tool) => SKILL_COMMAND_TOOLS.includes(tool));
 }
 
 function showDetectedProfile(config: ScaffoldConfig): void {
@@ -172,7 +172,7 @@ export async function scaffold(argv: ScaffoldArgs): Promise<void> {
       } else {
         out(
           config,
-          `   ${style.dim("For /fill-docs autocomplete, scaffold AI config with --extras ai-config --ai-tools openai,anthropic,google,deepseek,grok.")}`,
+          `   ${style.dim("For /fill-docs autocomplete, scaffold AI config with --extras ai-config --ai-tools cursor,openai,anthropic,google,deepseek,grok.")}`,
         );
       }
     }
