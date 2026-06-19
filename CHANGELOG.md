@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.7.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.6.0...v1.7.0) (2026-06-19)
+
+
+### Added
+
+* **ai-config:** install Cursor-native slash commands ([b88c320](https://github.com/yarkingulacti/agentic-scaffold/commit/b88c320952e3e7242365921cfa36f893d12e3262))
+
 ## [1.6.0](https://github.com/yarkingulacti/agentic-scaffold/compare/v1.5.0...v1.6.0) (2026-06-19)
 
 
