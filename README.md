@@ -119,8 +119,8 @@ npx @yarkingulacti/agentic-scaffold --package-manager pnpm --ci-provider github
 # Override detected languages (comma-separated; useful for monorepos and C++/Godot/mobile stacks)
 npx @yarkingulacti/agentic-scaffold --languages ts,cpp,godot,swift
 
-# Generate AI tool configs
-npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools opencode,cursor
+# Generate AI tool configs and project-local skill/slash commands
+npx @yarkingulacti/agentic-scaffold --extras ai-config --ai-tools claude,gemini,opencode,cursor
 
 # Generate extras such as CI, contribution docs, AI config, RTK filters, or onboarding
 npx @yarkingulacti/agentic-scaffold --extras ci,contribute,ai-config,onboarding,rtk
@@ -200,7 +200,7 @@ defaults from what it finds:
 | 🧬 **Languages** | JS/TS, Python, Go, Rust, C++ (CMake/meson/conan), Godot, Swift, Kotlin, Java, Dart — recursively across monorepo subpackages |
 | 📦 **Package manager** | npm, yarn, pnpm, pip, poetry (lockfiles) |
 | 🔧 **CI provider** | GitHub Actions, GitLab CI, CircleCI (config files) |
-| 🤝 **AI tools** | opencode, Cursor, Copilot, Windsurf, Cline (config files) |
+| 🤝 **AI tools** | opencode, Cursor, Copilot, Claude Code, Gemini CLI, Windsurf, Cline (config files) |
 | 🎫 **Issue tracker** | GitHub Issues (`.github/` directory) |
 | ⚙️ **Script runtime** | Node.js when `package.json` is present; otherwise still defaults to Node.js because the shipped memory scripts are `.mjs` files |
 
@@ -226,7 +226,7 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 |-------|-------------|
 | `ci` | CI/CD templates for the detected or requested provider |
 | `contribute` | Contribution guide, PR template, and review guidance |
-| `ai-config` | AI tool config files such as `opencode.json`, `.cursorrules`, and Copilot instructions |
+| `ai-config` | AI tool config files and skill-command adapters: `opencode.json`, `.cursorrules`, Copilot instructions, `.claude/skills/*/SKILL.md`, `.gemini/commands/*.toml` |
 | `onboarding` | Human onboarding guide and setup helper |
 | `rtk` | Project-local RTK token-cost filters in `.rtk/filters.toml` |
 | `all` | Include every extras group |
@@ -236,9 +236,9 @@ extras such as CI and AI-tool config are written only when requested with `--ext
 1. Fill in `.agentic-scaffold/BUSINESS_LOGIC.md` with your product domain.
 2. Run `npm install` / `pnpm install` for your project's actual dependencies.
 3. Run `node .agentic-scaffold/scripts/memory_index.mjs` to index your project Markdown (no additional setup needed).
-4. Install the skills in your AI tool (e.g. opencode) — each `.agentic-scaffold/.agents/skills/*/SKILL.md` is self-contained.
-5. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
-6. Use the `fill-docs` skill (`.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`) to complete scaffolded documentation.
+4. If you scaffolded AI config for Claude Code or Gemini CLI, use `/fill-docs`; it is installed as a project-local command with a description for command help/autocomplete. If Gemini CLI is already open, run `/commands reload`.
+5. If you did not scaffold AI config, use the generated skill file directly: `.agentic-scaffold/.agents/skills/fill-docs/SKILL.md`.
+6. Customize `.agentic-scaffold/docs/agents/triage-labels.md` to match your tracker's vocabulary.
 7. After upgrading this package, run `npx @yarkingulacti/agentic-scaffold update --dry-run` to preview generated-template changes before applying them.
 
 ## 🔁 Update strategy

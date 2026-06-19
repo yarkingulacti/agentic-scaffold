@@ -25,7 +25,7 @@ Opt-in via `--extras` so zero-config mode stays conservative:
 |-------|-------------|
 | `ci` | CI/CD templates for the detected or requested provider |
 | `contribute` | Contribution guide, PR template, and review guidance |
-| `ai-config` | AI tool config files such as `opencode.json`, `.cursorrules`, and Copilot instructions |
+| `ai-config` | AI tool config files and skill-command adapters: `opencode.json`, `.cursorrules`, Copilot instructions, `.claude/skills/*/SKILL.md`, `.gemini/commands/*.toml` |
 | `onboarding` | Human onboarding guide and setup helper |
 | `rtk` | Project-local RTK token-cost filters in `.rtk/filters.toml` |
 | `all` | Include every extras group |
